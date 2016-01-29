@@ -16,7 +16,7 @@ window.onload = function() {
 		game.stage.backgroundColor = '#555555';
 		map = game.add.tilemap('map');
 		map.addTilesetImage('basictiles', 'tileset');
-		layer = map.createLayer('layerfloor');
+		layer = map.createLayer('layer0');
 		layer.resizeWorld();
 		
 		// scaling
