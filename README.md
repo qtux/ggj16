@@ -8,5 +8,8 @@ Run a webserver (e.g. python2 -m SimpleHTTPServer) in the root of this repositor
 
 This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License](http://creativecommons.org/licenses/by-nc-sa/4.0/).
 
+# Etherpad
+https://etherpad.wikimedia.org/p/ggj16GoatMagic
+
 # Authors
 
