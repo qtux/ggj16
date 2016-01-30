@@ -9,6 +9,8 @@
 		<title>phaser test</title>
 		<script src="phaser/build/phaser.js"></script>
 		<!-- prevent caching (development version only) -->
+		<script>document.write('<script src="./src/effects.js?dev=' + Math.floor(Math.random() * 100) + '"\><\/script>');</script>
+		<script>document.write('<script src="./src/objects.js?dev=' + Math.floor(Math.random() * 100) + '"\><\/script>');</script>
 		<script>document.write('<script src="./src/main.js?dev=' + Math.floor(Math.random() * 100) + '"\><\/script>');</script>
 		<!-- alternative loading
 		<script src="./src/main.js"></script>

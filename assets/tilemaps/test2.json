@@ -96,6 +96,17 @@
          "width":32,
          "x":0,
          "y":0
+        }, 
+        {
+         "height":20,
+         "name":"objectsCollision",
+         "objects":[],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "width":32,
+         "x":0,
+         "y":0
         }],
  "orientation":"orthogonal",
  "properties":
