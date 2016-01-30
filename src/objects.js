@@ -36,6 +36,7 @@ Objects = function() {
 		
 		// enable physics for player
 		game.physics.p2.enable(player);
+		player.body.setRectangle(42, 36, 0, 18);
 		player.body.fixedRotation = true;
 		player.body.setCollisionGroup(playerCG);
 		player.body.collides(tileCG);
