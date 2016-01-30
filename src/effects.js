@@ -45,11 +45,11 @@ var Effects = function() {
 		mehSnd.play();
 	};
 	
-	this.fire = function() {
+	this.fire = function(x, y) {
 		if (game.time.now > nextFire && bullets.countDead() > 0) {
 			nextFire = game.time.now + FIRE_RATE;
 			var bullet = bullets.getFirstDead();
-			bullet.reset(player.body.x, player.body.y);
+			bullet.reset(x, y);
 			bullet.lifespan = 2000;
 			shootSnd.play();
 			game.physics.arcade.moveToPointer(bullet, 300);		// TODO fix this (wrong physics engine)

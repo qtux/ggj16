@@ -1,335 +1,120 @@
-	var game = new Phaser.Game(1152, 720, Phaser.AUTO, '', { preload: preload, create: create, update: update});
-	
-	var effects = new Effects();
-	
-	// game ressources
-	var levelNames = ['test', 'test2'];
-	var levelNum = 0;
-	var map, layer, layer1;		// tilemap related
-	var player, sheep;			// sprites
-	var npcCG, tileCG, playerCG, bulletsCG;					// collision groups
-	var overlay;
-	var playerstate;
-	var playerGrp, sheepGrp;
-	
-	var circleTile;
-	
-	var carried = null;
-	
-	var ritualCircle = {
-		posX : 0,
-		posY : 0
-	};
-	/**
-	 * preload - load assets
-	 */
-	function preload () {
-		game.load.tilemap('map', 'assets/tilemaps/'+levelNames[levelNum]+'.json', null, Phaser.Tilemap.TILED_JSON);
-		game.load.image('tileset', 'assets/tilesets/basictiles.png');
-		game.load.spritesheet('wizard', 'assets/spritesheets/wizard.png', 42, 72, 24);
-		game.load.spritesheet('sheep', 'assets/spritesheets/sheep.png', 36, 36, 15);
-		
-		game.load.audio('ritual_tier_brennt', 'assets/audio/ritual_tier_brennt.ogg');
-		
-		effects.preload();
-	}
-	
-	/**
-	 * create - generate and initialise game content
-	 */
-	function create () {
-		// start physics system
-		game.physics.startSystem(Phaser.Physics.P2JS);
-		game.physics.p2.setImpactEvents(true);
-		
-		// register collision groups
-		npcCG = game.physics.p2.createCollisionGroup();
-		tileCG = game.physics.p2.createCollisionGroup();
-		playerCG = game.physics.p2.createCollisionGroup();
-		bulletsCG = game.physics.p2.createCollisionGroup();
-		
-		// enable collision with world bounds
-		game.physics.p2.updateBoundsCollisionGroup();
-		// enable callbacks on collision
-		game.physics.p2.setImpactEvents(true);
-		// set the default coefficient of restitution between colliding bodies
-		//game.physics.p2.restitution = 0.8;
-		
-		// load tile map
-		game.stage.backgroundColor = '#555555';
-		map = game.add.tilemap('map');
-		map.addTilesetImage('basictiles', 'tileset');
-		layer = map.createLayer('layer0');
-		layer1 = map.createLayer('layer1');
-		
-		effects.create();
-		
-		playerstate = 'passive';
-		
-		// enable scaling
-		game.scale.fullScreenScaleMode = Phaser.ScaleManager.EXACT_FIT;
-		game.input.onDown.add(gofull, this);
-		
-		for (var i=0;i < map.width; i++) {
-			for (var j=0;j < map.height; j++) {
-//				console.log(map.getTile(i, j, 'layer1', true).index);
-				if (map.getTile(i, j, 'layer1', true).index == 7) {
-					circleTile = map.getTile(i, j, 'layer1', true);
-					ritualCircle.posX = i + 2;
-					ritualCircle.posY = j + 2;
-//					console.log(ritualCircle.posX + ", " + ritualCircle.posY);
-				}
-			}
-		}
-		
-		// set tile collision group
-		map.setCollision(100, true, 'collision');
-		var tileObjects = game.physics.p2.convertTilemap(map, 'collision');
-		for (var i = 0; i < tileObjects.length; i++) {
-			tileObjects[i].setCollisionGroup(tileCG);
-			tileObjects[i].collides(npcCG);
-			tileObjects[i].collides(playerCG);
-			tileObjects[i].collides(bulletsCG);
-		}
-		
-		// add sprites
-		playerGrp = game.add.group();
-		map.createFromObjects('objects', 102, 'wizard', 1, true, false, playerGrp);
-		player = playerGrp.getTop();
-		var playerAnimFPS = 10;
-		player.animations.add('player_idle', [0], playerAnimFPS, true);
-		player.animations.add('player_down', [0, 1,0, 2], playerAnimFPS, true);
-		player.animations.add('player_up', [3, 4, 3, 5], playerAnimFPS, true);
-		player.animations.add('player_right', [6, 7, 6, 8], playerAnimFPS, true);
-		player.animations.add('player_left', [9, 10, 9, 11], playerAnimFPS, true);
-		player.animations.add('player_carrying_idle', [12], playerAnimFPS, true);
-		player.animations.add('player_carrying_down', [12, 13, 12, 14], playerAnimFPS, true);
-		player.animations.add('player_carrying_up', [15, 16, 15, 17], playerAnimFPS, true);
-		player.animations.add('player_carrying_right', [18, 19, 18, 20], playerAnimFPS, true);
-		player.animations.add('player_carrying_left', [21, 22, 21, 23], playerAnimFPS, true);
-		//player.body.debug = true;
-		
-		// enable physics for player
-		game.physics.p2.enable(player);
-		player.body.fixedRotation = true;
-		player.body.setCollisionGroup(playerCG);
-		player.body.collides(tileCG);
-		player.body.collides(npcCG);
-		
-		sheepGrp = game.add.group();
-		map.createFromObjects('objects', 103, 'sheep', 1, true, false, sheepGrp);
-		sheepGrp.forEach(function(sheep) {
-			var sheepAnimFPS = 10;
-			sheep.animations.add('sheep_idle', [0], sheepAnimFPS, true);
-			sheep.animations.add('sheep_down', [9, 10, 11], sheepAnimFPS, true);
-			sheep.animations.add('sheep_up', [6, 7, 8], sheepAnimFPS, true);
-			sheep.animations.add('sheep_right', [3, 4, 5], sheepAnimFPS, true);
-			sheep.animations.add('sheep_left', [0, 1, 2], sheepAnimFPS, true);
-			sheep.animations.add('sheep_panic', [12, 13, 14], sheepAnimFPS, true);
-			// enable physics for sheep
-			game.physics.p2.enable(sheep);
-			sheep.body.fixedRotation = true;
-			sheep.body.setCollisionGroup(npcCG);
-			sheep.body.collides(playerCG, npcBumpedPlayer, this);
-			sheep.body.collides(tileCG, npcBumpedWall, this);
-			sheep.body.collides(bulletsCG, function() {effects.meh();}, this);},this
-		);
-		
-		// enable user input
-		cursors = game.input.keyboard.createCursorKeys();
+// global variables
+var game = new Phaser.Game(1152, 720, Phaser.AUTO, '', { preload: preload, create: create, update: update});
+var effects = new Effects();
+var objects = new Objects();
+var player;
+var npcCG, tileCG, playerCG, bulletsCG;		// collision groups
 
-		// create a new bitmap data object
-		var bmd = game.add.bitmapData(game.width, game.height);
+// TODO local variables
+var levelNames = ['test', 'test2'];
+var levelNum = 0;
+var map, layer, layer1;		// tilemap related
+var overlay;
+var circleTile;
+var ritualCircle = {
+	posX : 0,
+	posY : 0
+};
 
-		// draw to the canvas context like normal
-		bmd.ctx.beginPath();
-		bmd.ctx.rect(0, 0, game.width, game.height);
-		bmd.ctx.fillStyle = '#000000';
-		bmd.ctx.fill();
+/**
+ * preload - load assets
+ */
+function preload () {
+	game.load.tilemap('map', 'assets/tilemaps/'+levelNames[levelNum]+'.json', null, Phaser.Tilemap.TILED_JSON);
+	game.load.image('tileset', 'assets/tilesets/basictiles.png');
+	
+	// preload effects and objects
+	effects.preload();
+	objects.preload();
+}
 
-		// use the bitmap data as the texture for the sprite
-		overlay = game.add.sprite(0, 0, bmd);
-		overlay.alpha = 0.0;
+/**
+ * create - generate and initialise game content
+ */
+function create () {
+	// start physics system
+	game.physics.startSystem(Phaser.Physics.P2JS);
+	game.physics.p2.setImpactEvents(true);
+	
+	// register collision groups
+	npcCG = game.physics.p2.createCollisionGroup();
+	tileCG = game.physics.p2.createCollisionGroup();
+	playerCG = game.physics.p2.createCollisionGroup();
+	bulletsCG = game.physics.p2.createCollisionGroup();
+	
+	// enable collision with world bounds
+	game.physics.p2.updateBoundsCollisionGroup();
+	// enable callbacks on collision
+	game.physics.p2.setImpactEvents(true);
+	// set the default coefficient of restitution between colliding bodies
+	//game.physics.p2.restitution = 0.8;
+	
+	// load tile map
+	game.stage.backgroundColor = '#555555';
+	map = game.add.tilemap('map');
+	map.addTilesetImage('basictiles', 'tileset');
+	layer = map.createLayer('layer0');
+	layer1 = map.createLayer('layer1');
+	
+	// create effects and objects
+	effects.create();
+	objects.create();
+	
+	// enable scaling
+	game.scale.fullScreenScaleMode = Phaser.ScaleManager.EXACT_FIT;
+	game.input.onDown.add(gofull, this);
+	
+	// set tile collision group
+	map.setCollision(100, true, 'collision');
+	var tileObjects = game.physics.p2.convertTilemap(map, 'collision');
+	for (var i = 0; i < tileObjects.length; i++) {
+		tileObjects[i].setCollisionGroup(tileCG);
+		tileObjects[i].collides(npcCG);
+		tileObjects[i].collides(playerCG);
+		tileObjects[i].collides(bulletsCG);
 	}
 	
-	function gofull() {
-		if (game.scale.isFullScreen) {
-			game.scale.stopFullScreen();
-		}
-		else {
-			game.scale.startFullScreen(false);
+	for (var i=0;i < map.width; i++) {
+		for (var j=0;j < map.height; j++) {
+			//console.log(map.getTile(i, j, 'layer1', true).index);
+			if (map.getTile(i, j, 'layer1', true).index == 7) {
+				circleTile = map.getTile(i, j, 'layer1', true);
+				ritualCircle.posX = i + 2;
+				ritualCircle.posY = j + 2;
+				//console.log(ritualCircle.posX + ", " + ritualCircle.posY);
+			}
 		}
 	}
 	
-	function update() {
-		var dt = game.time.elapsed;
-		overlay.alpha -= dt * 0.0005;
-		
-		var tmpX = player.x / 36;
-		var tmpY = player.y / 36;
-		var playerRitualDist = Math.sqrt((ritualCircle.posX - tmpX)*(ritualCircle.posX - tmpX) + (ritualCircle.posY - tmpY)*(ritualCircle.posY - tmpY));
-		
-		if (playerRitualDist < 2) {
-			particleEffectBloodExplosion(player.x , player.y, 10, 300);
-		}
-		
-		var speed = 300;
-		if (game.input.keyboard.isDown(Phaser.Keyboard.A)) {
-			player.body.velocity.x = -speed;
-			if (carried != null) {
-				player.animations.play('player_carrying_left');
-			} else {
-				player.animations.play('player_left');
-			}
-		} else if (game.input.keyboard.isDown(Phaser.Keyboard.D)) {
-			player.body.velocity.x = speed;
-			if (carried != null) {
-				player.animations.play('player_carrying_right');
-			} else {
-				player.animations.play('player_right');
-			}
-		} else {
-			player.body.velocity.x = 0;
-		}
-		if (game.input.keyboard.isDown(Phaser.Keyboard.W)) {
-			player.body.velocity.y = -speed;
-			if (carried != null) {
-				player.animations.play('player_carrying_up');
-			} else {
-				player.animations.play('player_up');
-			}
-		} else if (game.input.keyboard.isDown(Phaser.Keyboard.S)) {
-			player.body.velocity.y = speed;
-			if (carried != null) {
-				player.animations.play('player_carrying_down');
-			} else {
-				player.animations.play('player_down');
-			}
-		} else {
-			player.body.velocity.y = 0;
-		}
-		
-		if (player.body.velocity.x == 0 && player.body.velocity.y == 0) {
-			if (carried != null) {
-				player.animations.play('player_carrying_idle', 3, true);
-			} else {
-				player.animations.play('player_idle', 3, true);
-			}
-		}
-		
-		if (game.input.keyboard.isDown(Phaser.Keyboard.N)) {
-			if (levelNum + 1 < levelNames.length){
-				levelNum += 1;
-			}
-			this.game.state.restart();	
-		}
-		
-		if (game.input.keyboard.isDown(Phaser.Keyboard.P)) {
-			if (levelNum > 0){
-				levelNum -= 1;
-			}
-			this.game.state.restart();
+	// create a new bitmap data object
+	var bmd = game.add.bitmapData(game.width, game.height);
+	
+	// draw to the canvas context like normal
+	bmd.ctx.beginPath();
+	bmd.ctx.rect(0, 0, game.width, game.height);
+	bmd.ctx.fillStyle = '#000000';
+	bmd.ctx.fill();
+	
+	// use the bitmap data as the texture for the sprite
+	overlay = game.add.sprite(0, 0, bmd);
+	overlay.alpha = 0.0;
+}
 
-		}
-		
-		if (game.input.keyboard.isDown(Phaser.Keyboard.R))
-		{
-		    var sound = game.add.audio('ritual_tier_brennt');
-		    sound.play();
-			effects.particleEffectBloodExplosion(player.body.x, player.body.y, 30, 2000);
-		}
-		
-		if (game.input.keyboard.isDown(Phaser.Keyboard.Q))
-		{
-			playerstate = 'angeredNPC';
-		}
-		
-		if (game.input.keyboard.isDown(Phaser.Keyboard.E))
-		{
-			effects.fire();
-		}
-		
-		if (game.input.keyboard.isDown(Phaser.Keyboard.B))
-		{
-			overlay.alpha = 1.0;
-		}
-		
-		if (carried != null && game.input.keyboard.isDown(Phaser.Keyboard.Y))
-		{
-			carried = null;
-		}
-		
-		effects.update();
-		
-		sheepGrp.forEach(function(sheep) { resolveAImovement(sheep, 'sheep') }, this);
+function gofull() {
+	if (game.scale.isFullScreen) {
+		game.scale.stopFullScreen();
 	}
-	
-	function resolveAImovement(npc, type) {	
-		if (carried === npc.body) {
-			if (type == 'sheep') {
-				npc.animations.play('sheep_panic');
-			}
-			npc.body.x = player.body.x + 0.01;
-			npc.body.y = player.body.y - 15;
-			return;
-		}
-		
-		// random walk
-		if (playerstate == 'passive') {
-			//npc.body.force.x = ((game.rnd.integer() % 20) - 10) * 10;
-			//npc.body.force.y = ((game.rnd.integer() % 20) - 10) * 10;
-			var newVelo = new Phaser.Point(((game.rnd.integer() % 20) - 10) * 10, ((game.rnd.integer() % 20) - 10) * 10);
-			if (Phaser.Point.angle(new Phaser.Point(npc.body.velocity.x, npc.body.velocity.y), newVelo) > 3.15/4) {
-//				console.debug('high change');
-			} else {
-				npc.body.force.x = newVelo.x;
-				npc.body.force.y = newVelo.y;
-			}
-		}
-		// seek
-		if (playerstate == 'angeredNPC') {
-			var maxSpeed = 100;
-			var target = new Phaser.Point(player.body.x, player.body.y);
-			var seeker = new Phaser.Point(npc.body.x, npc.body.y);
-			var distNPCPlayer = Phaser.Point.normalize(Phaser.Point.subtract(target, Phaser.Point.add(seeker, new Phaser.Point(npc.body.velocity.x, npc.body.velocity.y))));
-			npc.body.force.x = distNPCPlayer.x * maxSpeed;
-			npc.body.force.y = distNPCPlayer.y * maxSpeed;
-		}
-		
-		// sheep animation
-		if (type == 'sheep') {
-			if (Math.abs(npc.body.velocity.y) > Math.abs(npc.body.velocity.x)) {
-				if (npc.body.velocity.y > 0) {
-					npc.animations.play('sheep_down');
-				} else if (npc.body.velocity.y < 0) {
-					npc.animations.play('sheep_up');
-				} else {
-					npc.animations.play('sheep_idle');
-				}
-			}
-			
-			if (Math.abs(npc.body.velocity.y) < Math.abs(npc.body.velocity.x)) {
-				if (npc.body.velocity.x > 0) {
-					npc.animations.play('sheep_left');
-				} else if (npc.body.velocity.x < 0) {
-					npc.animations.play('sheep_right');
-				} else {
-					npc.animations.play('sheep_idle');
-				}
-			}
-		}
+	else {
+		game.scale.startFullScreen(false);
 	}
-	
-	function npcBumpedWall(npcBody, wallBody) {
-		npcBody.velocity.x = -npcBody.velocity.x;
-		npcBody.velocity.y = -npcBody.velocity.y;
-	}
-	
-	function npcBumpedPlayer(npcBody, playerBody) {
-		playerstate = 'passive';
-		if (carried == null && game.input.keyboard.isDown(Phaser.Keyboard.X))
-		{
-			carried = npcBody;
-		}
-	}
+}
 
+function update() {
+	var dt = game.time.elapsed;
+	overlay.alpha -= dt * 0.0005;
+	
+	// update effects and objects
+	effects.update();
+	objects.update();
+	
+}
