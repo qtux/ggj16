@@ -101,6 +101,7 @@ window.onload = function() {
 			sheep.animations.add('sheep_up', [6, 7, 8], sheepAnimFPS, true);
 			sheep.animations.add('sheep_right', [3, 4, 5], sheepAnimFPS, true);
 			sheep.animations.add('sheep_left', [0, 1, 2], sheepAnimFPS, true);
+			sheep.animations.add('sheep_panic', [12, 13, 14], sheepAnimFPS, true);
 			// enable physics for sheep
 			game.physics.p2.enable(sheep);
 			sheep.body.fixedRotation = true;
@@ -281,6 +282,10 @@ window.onload = function() {
 	
 	function npcBumpedPlayer(npcBody, playerBody) {
 		playerstate = 'passive';
+		if (game.input.keyboard.isDown(Phaser.Keyboard.X))
+		{
+			npc.animations.play('sheep_panic');
+		}
 	}
 
 	function fire() {
