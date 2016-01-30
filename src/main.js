@@ -311,12 +311,14 @@ window.onload = function() {
 			});
 		}
 		
-		sheepGrp.forEach(function(sheep) { resolveAImovement(sheep) }, this);
+		sheepGrp.forEach(function(sheep) { resolveAImovement(sheep, 'sheep') }, this);
 	}
 	
-	function resolveAImovement(npc) {		
+	function resolveAImovement(npc, type) {	
 		if (carried === npc.body) {
-			npc.animations.play('sheep_panic');
+			if (type == 'sheep') {
+				npc.animations.play('sheep_panic');
+			}
 			npc.body.x = player.body.x + 0.01;
 			npc.body.y = player.body.y - 15;
 			return;
@@ -345,23 +347,25 @@ window.onload = function() {
 		}
 		
 		// sheep animation
-		if (Math.abs(npc.body.velocity.y) > Math.abs(npc.body.velocity.x)) {
-			if (npc.body.velocity.y > 0) {
-				npc.animations.play('sheep_down');
-			} else if (npc.body.velocity.y < 0) {
-				npc.animations.play('sheep_up');
-			} else {
-				npc.animations.play('sheep_idle');
+		if (type == 'sheep') {
+			if (Math.abs(npc.body.velocity.y) > Math.abs(npc.body.velocity.x)) {
+				if (npc.body.velocity.y > 0) {
+					npc.animations.play('sheep_down');
+				} else if (npc.body.velocity.y < 0) {
+					npc.animations.play('sheep_up');
+				} else {
+					npc.animations.play('sheep_idle');
+				}
 			}
-		}
-		
-		if (Math.abs(npc.body.velocity.y) < Math.abs(npc.body.velocity.x)) {
-			if (npc.body.velocity.x > 0) {
-				npc.animations.play('sheep_left');
-			} else if (npc.body.velocity.x < 0) {
-				npc.animations.play('sheep_right');
-			} else {
-				npc.animations.play('sheep_idle');
+			
+			if (Math.abs(npc.body.velocity.y) < Math.abs(npc.body.velocity.x)) {
+				if (npc.body.velocity.x > 0) {
+					npc.animations.play('sheep_left');
+				} else if (npc.body.velocity.x < 0) {
+					npc.animations.play('sheep_right');
+				} else {
+					npc.animations.play('sheep_idle');
+				}
 			}
 		}
 	}
