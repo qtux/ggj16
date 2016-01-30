@@ -17,6 +17,8 @@ window.onload = function() {
 	var nextFire = 0;
 	var circleTile;
 	
+	var carried = null;
+	
 	var ritualCircle = {
 		posX : 0,
 		posY : 0
@@ -28,12 +30,13 @@ window.onload = function() {
 		game.load.tilemap('map', 'assets/tilemaps/'+levelNames[levelNum]+'.json', null, Phaser.Tilemap.TILED_JSON);
 		game.load.image('tileset', 'assets/tilesets/basictiles.png');
 		game.load.spritesheet('particles', 'assets/spritesheets/particles.png', 18, 18);
-		game.load.spritesheet('wizard', 'assets/spritesheets/wizard.png', 36, 72, 12);
-		game.load.spritesheet('sheep', 'assets/spritesheets/sheep.png', 36, 36, 12);
-		
-		game.load.audio('ritual_tier_brennt', 'assets/audio/ritual_tier_brennt.ogg');
-		game.load.audio('shoot', 'assets/audio/shoot.ogg');
-		game.load.audio('meh', 'assets/audio/meh.ogg');
+	    game.load.spritesheet('wizard', 'assets/spritesheets/wizard.png', 36, 72, 24);
+	    game.load.spritesheet('sheep', 'assets/spritesheets/sheep.png', 36, 36, 15);
+		playerstate = 'passive';
+	    
+	    game.load.audio('ritual_tier_brennt', 'assets/audio/ritual_tier_brennt.ogg');
+	    game.load.audio('shoot', 'assets/audio/shoot.ogg');
+	    game.load.audio('meh', 'assets/audio/meh.ogg');
 	}
 	
 	/**
@@ -101,6 +104,11 @@ window.onload = function() {
 		player.animations.add('player_up', [3, 4, 3, 5], playerAnimFPS, true);
 		player.animations.add('player_right', [6, 7, 6, 8], playerAnimFPS, true);
 		player.animations.add('player_left', [9, 10, 9, 11], playerAnimFPS, true);
+		player.animations.add('player_carrying_idle', [12], playerAnimFPS, true);
+		player.animations.add('player_carrying_down', [12, 13, 12, 14], playerAnimFPS, true);
+		player.animations.add('player_carrying_up', [15, 16, 15, 17], playerAnimFPS, true);
+		player.animations.add('player_carrying_right', [18, 19, 18, 20], playerAnimFPS, true);
+		player.animations.add('player_carrying_left', [21, 22, 21, 23], playerAnimFPS, true);
 		//player.body.debug = true;
 		
 		// enable physics for player
@@ -119,6 +127,7 @@ window.onload = function() {
 			sheep.animations.add('sheep_up', [6, 7, 8], sheepAnimFPS, true);
 			sheep.animations.add('sheep_right', [3, 4, 5], sheepAnimFPS, true);
 			sheep.animations.add('sheep_left', [0, 1, 2], sheepAnimFPS, true);
+			sheep.animations.add('sheep_panic', [12, 13, 14], sheepAnimFPS, true);
 			// enable physics for sheep
 			game.physics.p2.enable(sheep);
 			sheep.body.fixedRotation = true;
@@ -212,25 +221,45 @@ window.onload = function() {
 		var speed = 300;
 		if (game.input.keyboard.isDown(Phaser.Keyboard.A)) {
 			player.body.velocity.x = -speed;
-			player.animations.play('player_left');
+			if (carried != null) {
+				player.animations.play('player_carrying_left');
+			} else {
+				player.animations.play('player_left');
+			}
 		} else if (game.input.keyboard.isDown(Phaser.Keyboard.D)) {
 			player.body.velocity.x = speed;
-			player.animations.play('player_right');
+			if (carried != null) {
+				player.animations.play('player_carrying_right');
+			} else {
+				player.animations.play('player_right');
+			}
 		} else {
 			player.body.velocity.x = 0;
 		}
 		if (game.input.keyboard.isDown(Phaser.Keyboard.W)) {
 			player.body.velocity.y = -speed;
-			player.animations.play('player_up');
+			if (carried != null) {
+				player.animations.play('player_carrying_up');
+			} else {
+				player.animations.play('player_up');
+			}
 		} else if (game.input.keyboard.isDown(Phaser.Keyboard.S)) {
 			player.body.velocity.y = speed;
-			player.animations.play('player_down');
+			if (carried != null) {
+				player.animations.play('player_carrying_down');
+			} else {
+				player.animations.play('player_down');
+			}
 		} else {
 			player.body.velocity.y = 0;
 		}
 		
 		if (player.body.velocity.x == 0 && player.body.velocity.y == 0) {
-			player.animations.play('player_idle', 3, true);
+			if (carried != null) {
+				player.animations.play('player_carrying_idle', 3, true);
+			} else {
+				player.animations.play('player_idle', 3, true);
+			}
 		}
 		
 		if (game.input.keyboard.isDown(Phaser.Keyboard.N)) {
@@ -271,6 +300,11 @@ window.onload = function() {
 			overlay.alpha = 1.0;
 		}
 		
+		if (carried != null && game.input.keyboard.isDown(Phaser.Keyboard.Y))
+		{
+			carried = null;
+		}
+		
 		if (emitter != null) {
 			emitter.forEachAlive(function(p) {
 				p.alpha = p.lifespan / emitter.lifespan;
@@ -281,6 +315,13 @@ window.onload = function() {
 	}
 	
 	function resolveAImovement(npc) {		
+		if (carried === npc.body) {
+			npc.animations.play('sheep_panic');
+			npc.body.x = player.body.x + 0.01;
+			npc.body.y = player.body.y - 15;
+			return;
+		}
+		
 		// random walk
 		if (playerstate == 'passive') {
 			//npc.body.force.x = ((game.rnd.integer() % 20) - 10) * 10;
@@ -332,6 +373,10 @@ window.onload = function() {
 	
 	function npcBumpedPlayer(npcBody, playerBody) {
 		playerstate = 'passive';
+		if (carried == null && game.input.keyboard.isDown(Phaser.Keyboard.X))
+		{
+			carried = npcBody;
+		}
 	}
 
 	function fire() {
