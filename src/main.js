@@ -15,7 +15,10 @@ window.onload = function() {
 	var menuState;
 	var fsm; 
 	var ringSpeed, selectIdx;
-	var graphics
+	var graphics;
+	var switchTimer;
+	var switchTimer2;
+	var rot_tmp;
 	
 	
 	/**
@@ -23,20 +26,26 @@ window.onload = function() {
 	 */
 	function turnDir(a,b)
 	{
-		var g = b-a;
+		/*var g = b-a;
 		var f = a+2*Math.PI-b;
 		if (f > 2*Math.PI) f -= 2*Math.PI;
 		if (g > 2*Math.PI) g -= 2*Math.PI;
 		if (g < f) return g;
-		return -f;
+		return -f;*/
+		return Math.atan2(Math.sin(a-b), Math.cos(b-a));
 	}
 	
 	function turnDist(a,b, direction)
 	{
-		var g = b-(a+.001*direction);
-		var f = (a+.001*direction)+2*Math.PI-b;
-		if (direction < 0) return g;
-		return -f;
+		/*var g = b-a;
+		//if (direction = -1 && b == a) g -= 2*Math.PI;
+		var f = a+2*Math.PI-b;
+		if (direction > 0) return g;
+		return -f;*/
+		//return Math.atan2(Math.sin(a-b), Math.cos(b-a))
+		
+		if (b>a) return direction * (b-a);
+		return direction * (2*Math.PI + b - a);
 	}
 	
 	/**
@@ -51,8 +60,8 @@ window.onload = function() {
 	    game.load.spritesheet('wizard', 'assets/spritesheets/wizard.png', 36, 72, 12);
 	    game.load.spritesheet('sheep', 'assets/spritesheets/sheep.png', 36, 36, 12);
 	    
-		game.load.script('filterX', 'https://cdn.rawgit.com/photonstorm/phaser/master/filters/BlurX.js');
-		game.load.script('filterY', 'https://cdn.rawgit.com/photonstorm/phaser/master/filters/BlurY.js');
+		/*game.load.script('filterX', 'https://cdn.rawgit.com/photonstorm/phaser/master/filters/BlurX.js');
+		game.load.script('filterY', 'https://cdn.rawgit.com/photonstorm/phaser/master/filters/BlurY.js');*/
 	}
 	
 	/**
@@ -146,11 +155,11 @@ window.onload = function() {
 	    
 	    // set state of player for "regular" game play
 	    state = 0;
-	    nSpells = 1;
+	    nSpells = 2;
 	    spellPos = 0;
 	    selectIdx = 0;
 	    ringSpeed =0;
-	    
+	    switchTimer = game.time.now-5000;
 		
 		
 		//  Create a Rectangle
@@ -197,6 +206,8 @@ window.onload = function() {
 			});
 		
 		fsm.onbeforeactivateSpellMenu = function(event, from, to) {
+				player.body.velocity.x = 0.;
+				player.body.velocity.y = 0.;
 				fireSpell = game.add.sprite(player.body.x,player.body.y,'spells')
 				fireSpell.frameName = 'fire_spell';
 				fireSpell.pivot.y=-200;
@@ -204,6 +215,16 @@ window.onload = function() {
 				
 				fireSpell.x = player.body.x;
 				fireSpell.y = player.body.y;
+				
+				
+				poisonSpell = game.add.sprite(player.body.x,player.body.y,'spells')
+				poisonSpell.frameName = 'poison_spell';
+				poisonSpell.pivot.y=-200;
+				poisonSpell.anchor.setTo(.5,.5);
+				
+				poisonSpell.x = player.body.x;
+				poisonSpell.y = player.body.y;
+				poisonSpell.rotation = Math.PI;
 				
 				selector.x = player.body.x-18;
 				selector.y = player.body.y-18+200;
@@ -214,6 +235,7 @@ window.onload = function() {
 				graphics.drawRect(selector.x, selector.y, selector.width, selector.height);
 				
 				overlay.alpha = .7;
+				switchTimer2 = game.time.now;
 			};
 		fsm.onbeforeactivateMoveMode = function(event, from, to) {
 				fireSpell.destroy();
@@ -235,7 +257,7 @@ window.onload = function() {
 	
 	function update() {
 		var dt = game.time.elapsed;
-		if (state ==0){
+		if (fsm.is('move')){
 			overlay.alpha -= dt * 0.0005;
 			
 			var speed = 300;
@@ -272,39 +294,52 @@ window.onload = function() {
 				overlay.alpha = 1.0;
 			}
 		}
-		if (state == 1)
+		if (fsm.is('spellMenu'))
 		{
-			if (cursors.left.isDown) {
+			var angRange = 2*Math.PI / nSpells;
+			if (cursors.left.isDown && Math.abs(game.time.now - switchTimer2) > 800) {
 				selectIdx -= 1;
 				if (selectIdx <0) selectIdx = nSpells-1;
 				ringSpeed = +1;
+				switchTimer2 = game.time.now;
+				rot_tmp = turnDist(fireSpell.rotation, angRange*selectIdx, ringSpeed);
+				console.log(rot_tmp);
 			}
-			if (cursors.right.isDown) {
+			if (cursors.right.isDown && Math.abs(game.time.now - switchTimer2) > 800) {
 				selectIdx += 1;
-				if (selectIdx >= nSpells-1) selectIdx = 0;
+				if (selectIdx >= nSpells) selectIdx = 0;
 				ringSpeed = -1;
+				switchTimer2 = game.time.now;
+				rot_tmp = turnDist(fireSpell.rotation, angRange*selectIdx, ringSpeed);
+				console.log(rot_tmp);
 			}
-			var angRange = 2*Math.PI / nSpells;
+			
 			// rotation=0 is idx 0
 			
-			var rot_tmp = turnDist(fireSpell.rotation, angRange*selectIdx, ringSpeed);
-			console.log(rot_tmp);
+			
 			var rot_dir = Math.sign(rot_tmp);
-			var rot_tmp2 = Math.max(Math.sqrt(Math.abs(rot_tmp)),.08) * rot_dir/10.;
-			if (Math.abs(rot_tmp) < .01) 
+			//if (rot_dir != ringSpeed) rot_tmp += rot_dir* 2* Math.PI;
+			var rot_tmp2 = rot_dir * .08;
+			if ( Math.abs(rot_tmp) < .1)
 			{
 				fireSpell.rotation = angRange*selectIdx;
+				poisonSpell.rotation = angRange*selectIdx + angRange;
 				ringSpeed = 0;
 			}
 			
-			if (ringSpeed != 0)	fireSpell.rotation += rot_tmp2;
+			if (ringSpeed != 0)	
+			{
+				fireSpell.rotation += rot_tmp2;
+				poisonSpell.rotation += rot_tmp2;
+				rot_tmp -= rot_tmp2;
+			}
 		}
 		//fireSpell.rotation -= .02;
 		
 		
-		
-		if (game.input.keyboard.isDown(Phaser.Keyboard.M))
+		if (game.input.keyboard.isDown(Phaser.Keyboard.M)  && Math.abs(game.time.now - switchTimer) > 2000)
 	    {
+			switchTimer = game.time.now;
 			if (fsm.is('move'))
 			{
 				fsm.activateSpellMenu();
