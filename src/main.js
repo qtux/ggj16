@@ -7,6 +7,7 @@ window.onload = function() {
 	var npcCG, tileCG, playerCG;					// collision groups
 	var emitter;
 	var overlay;
+	var playerstate;
 	
 	/**
 	 * preload - load assets
@@ -18,6 +19,8 @@ window.onload = function() {
 		game.load.spritesheet('particles', 'assets/spritesheets/particles.png', 18, 18);
 	    game.load.spritesheet('wizard', 'assets/spritesheets/wizard.png', 36, 72, 12);
 	    game.load.spritesheet('sheep', 'assets/spritesheets/sheep.png', 36, 36, 12);
+	    
+	    playerstate = 'passive';
 	}
 	
 	/**
@@ -39,7 +42,7 @@ window.onload = function() {
 		// enable collision with world bounds
 		game.physics.p2.updateBoundsCollisionGroup();
 		// enable callbacks on collision
-		//game.physics.p2.setImpactEvents(true);
+		game.physics.p2.setImpactEvents(true);
 		// set the default coefficient of restitution between colliding bodies
 		//game.physics.p2.restitution = 0.8;
 		
@@ -90,8 +93,8 @@ window.onload = function() {
 		game.physics.p2.enable(sheep);
 		sheep.body.fixedRotation = true;
 		sheep.body.setCollisionGroup(npcCG);
-		sheep.body.collides(playerCG);
-		sheep.body.collides(tileCG);
+		sheep.body.collides(playerCG, sheepBumpedPlayer, this);
+		sheep.body.collides(tileCG, sheepBumpedWall, this);
 		
 		// enable user input
 		cursors = game.input.keyboard.createCursorKeys();
@@ -151,6 +154,11 @@ window.onload = function() {
 	    {
 			particleEffectBloodExplosion(player.body.x, player.body.y, 30, 2000);
 	    }
+	    
+	    if (game.input.keyboard.isDown(Phaser.Keyboard.Q))
+	    {
+			playerstate = 'angeredSheep';
+	    }
 		
 		if (game.input.keyboard.isDown(Phaser.Keyboard.B))
 	    {
@@ -162,7 +170,36 @@ window.onload = function() {
 				p.alpha = p.lifespan / emitter.lifespan;
 			});
 		}
+		
+		resolveAImovement();
 	}
+	
+	function resolveAImovement() {
+		// random walk
+		if (playerstate == 'passive') {
+			sheep.body.force.x = ((game.rnd.integer() % 20) - 10) * 10;
+			sheep.body.force.y = ((game.rnd.integer() % 20) - 10) * 10;
+		}
+		// seek
+		if (playerstate == 'angeredSheep') {
+			var maxSpeed = 100;
+			var target = new Phaser.Point(player.body.x, player.body.y);
+			var seeker = new Phaser.Point(sheep.body.x, sheep.body.y);
+			var distSheepPlayer = Phaser.Point.normalize(Phaser.Point.subtract(Phaser.Point.add(target, new Phaser.Point(player.body.velocity.x, player.body.velocity.y)), seeker));
+			sheep.body.velocity.x = distSheepPlayer.x * maxSpeed;
+			sheep.body.velocity.y = distSheepPlayer.y * maxSpeed;
+		}
+	}
+	
+	function sheepBumpedWall() {
+		sheep.body.velocity.x = -sheep.body.velocity.x;
+		sheep.body.velocity.y = -sheep.body.velocity.y;
+	}
+	
+	function sheepBumpedPlayer() {
+		playerstate = 'passive';
+	}
+
 	
 	function particleEffectBloodExplosion(x , y, numParticles, lifeTime) {
 		if (emitter == null){
