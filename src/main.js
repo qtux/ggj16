@@ -28,7 +28,7 @@ window.onload = function() {
 		game.load.tilemap('map', 'assets/tilemaps/test.json', null, Phaser.Tilemap.TILED_JSON);
 		game.load.image('tileset', 'assets/tilesets/basictiles.png');
 		game.load.spritesheet('particles', 'assets/spritesheets/particles.png', 18, 18);
-	    game.load.spritesheet('wizard', 'assets/spritesheets/wizard.png', 36, 72, 24);
+	    game.load.spritesheet('wizard', 'assets/spritesheets/wizard.png', 42, 72, 24);
 	    game.load.spritesheet('sheep', 'assets/spritesheets/sheep.png', 36, 36, 15);
 		playerstate = 'passive';
 	    
