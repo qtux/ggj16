@@ -69,10 +69,10 @@ window.onload = function() {
 		player = game.add.sprite(200, 200, 'wizard', 1);
 		var playerAnimFPS = 10;
 		player.animations.add('player_idle', [0], playerAnimFPS, true);
-		player.animations.add('player_down', [0, 1, 2], playerAnimFPS, true);
-		player.animations.add('player_up', [3, 4, 5], playerAnimFPS, true);
-		player.animations.add('player_right', [6, 7, 8], playerAnimFPS, true);
-		player.animations.add('player_left', [9, 10, 11], playerAnimFPS, true);
+		player.animations.add('player_down', [0, 1,0, 2], playerAnimFPS, true);
+		player.animations.add('player_up', [3, 4, 3, 5], playerAnimFPS, true);
+		player.animations.add('player_right', [6, 7, 6, 8], playerAnimFPS, true);
+		player.animations.add('player_left', [9, 10, 9, 11], playerAnimFPS, true);
 
 		sheep = game.add.sprite(400, 300, 'sheep');
 		var playerAnimFPS = 10;
