@@ -13,6 +13,19 @@ Objects = function() {
 		game.load.audio('ritual_tier_brennt', 'assets/audio/ritual_tier_brennt.ogg');
 	};
 	
+	this.stopPlayer = function() {
+		player.body.velocity.x = 0.;
+		player.body.velocity.y = 0.;
+	};
+	
+	this.getPlayerX = function() {
+		return player.body.x;
+	};
+	
+	this.getPlayerY = function() {
+		return player.body.y;
+	};
+	
 	this.create = function() {
 		playerstate = 'passive';
 		

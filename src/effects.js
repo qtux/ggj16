@@ -119,4 +119,8 @@ var Effects = function() {
 		overlay.alpha = 1.0;
 		lightningTime = 0;
 	};
+	
+	this.setOverlay = function(val) {
+		overlay.alpha = val;
+	};
 };
