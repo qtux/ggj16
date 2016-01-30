@@ -33,6 +33,7 @@ window.onload = function() {
 		game.physics.p2.convertTilemap(map, "collision");
 		game.physics.p2.enable(player);
 		player.body.fixedRotation = true; // no rotation
+		player.body.collideWorldBounds = true;
 		//player.body.addRectangle(72, 36, 0, 25);	// only lower part collides
 		//Controls
 		cursors = game.input.keyboard.createCursorKeys();
