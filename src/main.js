@@ -79,7 +79,7 @@ window.onload = function() {
 		});
 	}
 	
-	function particleEffectBloodExplosion(x , y, numParticles) {
+	function particleEffectBloodExplosion(x , y, numParticles, lifeTime) {
 		emitter = game.add.emitter(x, y, numParticles);
 	    emitter.makeParticles('particles', [0, 1, 2, 3, 4, 5, 6, 7, 8], numParticles, true, true);
 //	    emitter.minParticleSpeed.setTo(-400, -400);
@@ -87,6 +87,7 @@ window.onload = function() {
 	    emitter.gravity = 0;
 	    emitter.maxParticles = numParticles;
 	    
-	    emitter.start(true, 2000, null, numParticles);
+	    emitter.start(true, lifeTime, null, numParticles);
+	    game.time.events.add(lifeTime, function(){emitter.destroy();}, this);
 	}
 };
