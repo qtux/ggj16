@@ -137,7 +137,7 @@ window.onload = function() {
 			sheep.body.collides(tileCG, npcBumpedWall, this);
 			sheep.body.collides(bulletsCG, function() {var sound = game.add.audio('meh'); sound.play();}, this);}, this);
 		goatGrp = game.add.group();
-		map.createFromObjects('objects', 103, 'goat', 1, true, false, goatGrp);
+		map.createFromObjects('objects', 107, 'goat', 1, true, false, goatGrp);
 		goatGrp.forEach(function(goat) {
 			var goatAnimFPS = 10;
 			goat.animations.add('goat_idle', [0], goatAnimFPS, true);
