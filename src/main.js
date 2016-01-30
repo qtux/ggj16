@@ -186,7 +186,7 @@ function create () {
 			for (var i = spellSprites.length-1; i >=0; i--)
 			{
 				spellSprites[i].destroy();
-				shellSprites.pop();
+				spellSprites.pop();
 			}	
 			effects.setOverlay(0.);
 			graphics.destroy();
@@ -213,7 +213,7 @@ function update() {
 	if (fsm.is('spellMenu'))
 	{
 		var angRange = 2*Math.PI / nSpells;
-		if (cursors.left.isDown && Math.abs(game.time.now - switchTimer2) > 800) {
+		if (game.input.keyboard.isDown(Phaser.Keyboard.A) && Math.abs(game.time.now - switchTimer2) > 500) {
 			selectIdx -= 1;
 			if (selectIdx <0) selectIdx = nSpells-1;
 			ringSpeed = -1;
@@ -221,7 +221,7 @@ function update() {
 			rot_tmp = turnDist(spellSprites[0].rotation, angRange*(selectIdx-1), ringSpeed);
 			console.log(rot_tmp);
 		}
-		if (cursors.right.isDown && Math.abs(game.time.now - switchTimer2) > 800) {
+		if (game.input.keyboard.isDown(Phaser.Keyboard.D) && Math.abs(game.time.now - switchTimer2) > 500) {
 			selectIdx += 1;
 			if (selectIdx >= nSpells) selectIdx = 0;
 			ringSpeed = +1;
@@ -255,7 +255,7 @@ function update() {
 		}
 	}
 	
-	if (game.input.keyboard.isDown(Phaser.Keyboard.M)  && Math.abs(game.time.now - switchTimer) > 2000)
+	if (game.input.keyboard.isDown(Phaser.Keyboard.M)  && Math.abs(game.time.now - switchTimer) > 200)
 	{
 		switchTimer = game.time.now;
 		if (fsm.is('move'))
