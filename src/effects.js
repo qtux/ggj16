@@ -4,6 +4,9 @@ var Effects = function() {
 	
 	// variables
 	var nextFire = 0;
+	var bulletSprite;
+	var bullets;
+	var emitter;
 	
 	// sounds
 	var shootSnd;
@@ -13,16 +16,34 @@ var Effects = function() {
 		game.load.spritesheet('particles', 'assets/spritesheets/particles.png', 18, 18);
 		game.load.audio('shoot', 'assets/audio/shoot.ogg');
 		game.load.audio('meh', 'assets/audio/meh.ogg');
-	}
+	};
 	
 	this.create = function() {
 		shootSnd = game.add.audio('shoot');
 		mehSnd = game.add.audio('meh');
-	}
+		
+		// initialise bullets
+		bullets = game.add.group();
+		bullets.enableBody = true;
+		bullets.physicsBodyType = Phaser.Physics.P2JS;
+		bullets.createMultiple(10, 'particles', maxBullets);
+		var maxBullets = 10;
+		for (var i = 0; i < bullets.children.length; i++) {
+			var tmpBullet = bullets.children[i];
+			game.physics.p2.enable(tmpBullet);
+			tmpBullet.animations.add('bullet_anim', [10, 11, 12, 13], 20, true);
+			tmpBullet.animations.play('bullet_anim')
+			tmpBullet.body.setCollisionGroup(bulletsCG);
+			tmpBullet.body.collides(tileCG);
+			tmpBullet.body.collides(npcCG);
+		}
+		bullets.setAll('checkWorldBounds', true);
+		bullets.setAll('outOfBoundsKill', true);
+	};
 	
 	this.meh = function() {
 		mehSnd.play();
-	}
+	};
 	
 	this.fire = function() {
 		if (game.time.now > nextFire && bullets.countDead() > 0) {
@@ -30,11 +51,10 @@ var Effects = function() {
 			var bullet = bullets.getFirstDead();
 			bullet.reset(player.body.x, player.body.y);
 			bullet.lifespan = 2000;
-			//bullet.animations.play('bullet_anim');
 			shootSnd.play();
-			game.physics.arcade.moveToPointer(bullet, 300);
+			game.physics.arcade.moveToPointer(bullet, 300);		// TODO fix this (wrong physics engine)
 		}
-	}
+	};
 	
 	this.particleEffectBloodExplosion = function(x , y, numParticles, lifeTime) {
 		if (emitter == null){
@@ -47,6 +67,14 @@ var Effects = function() {
 			
 			emitter.start(true, lifeTime, null, numParticles);
 			game.time.events.add(lifeTime, function(){emitter.destroy(); emitter = null;}, this);
+		}
+	};
+	
+	this.update = function() {
+		if (emitter != null) {
+			emitter.forEachAlive(function(p) {
+				p.alpha = p.lifespan / emitter.lifespan;
+			});
 		}
 	}
 };

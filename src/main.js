@@ -6,13 +6,11 @@
 	var levelNames = ['test', 'test2'];
 	var levelNum = 0;
 	var map, layer, layer1;		// tilemap related
-	var player, sheep, bulletSprite;			// sprites
+	var player, sheep;			// sprites
 	var npcCG, tileCG, playerCG, bulletsCG;					// collision groups
-	var emitter;
 	var overlay;
 	var playerstate;
 	var playerGrp, sheepGrp;
-	var bullets;
 	
 	var circleTile;
 	
@@ -40,12 +38,6 @@
 	 * create - generate and initialise game content
 	 */
 	function create () {
-		effects.create();
-		playerstate = 'passive';
-		// enable scaling
-		game.scale.fullScreenScaleMode = Phaser.ScaleManager.EXACT_FIT;
-		game.input.onDown.add(gofull, this);
-		
 		// start physics system
 		game.physics.startSystem(Phaser.Physics.P2JS);
 		game.physics.p2.setImpactEvents(true);
@@ -69,6 +61,14 @@
 		map.addTilesetImage('basictiles', 'tileset');
 		layer = map.createLayer('layer0');
 		layer1 = map.createLayer('layer1');
+		
+		effects.create();
+		
+		playerstate = 'passive';
+		
+		// enable scaling
+		game.scale.fullScreenScaleMode = Phaser.ScaleManager.EXACT_FIT;
+		game.input.onDown.add(gofull, this);
 		
 		for (var i=0;i < map.width; i++) {
 			for (var j=0;j < map.height; j++) {
@@ -132,51 +132,8 @@
 			sheep.body.setCollisionGroup(npcCG);
 			sheep.body.collides(playerCG, npcBumpedPlayer, this);
 			sheep.body.collides(tileCG, npcBumpedWall, this);
-			sheep.body.collides(bulletsCG, function() {effects.meh();}, this);}, this);
-		
-		// bullets
-		bullets = game.add.group();
-		bullets.enableBody = true;
-		bullets.physicsBodyType = Phaser.Physics.P2JS;
-		bullets.createMultiple(10, 'particles', maxBullets);
-		var maxBullets = 10;
-		for (var i = 0; i < bullets.children.length; i++)
-		{
-			var tmpBullet = bullets.children[i];
-//			tmpBullet.lifespan = 1000;
-//			var tmpBullet = bullets.create(0, 0, 'particles', 10);
-//			tmpBullet.body.setRectangle(40, 40);
-			game.physics.p2.enable(tmpBullet);
-//			tmpBullet.scale.setTo(2, 2);
-			tmpBullet.animations.add('bullet_anim', [10, 11, 12, 13], 20, true);
-			tmpBullet.animations.play('bullet_anim')
-			
-			tmpBullet.body.setCollisionGroup(bulletsCG);
-			tmpBullet.body.collides(tileCG);
-			tmpBullet.body.collides(npcCG);
-		}
-		
-//		bullets.callAll('animations.add', 'animations', 'bullet_anim', [10, 11, 12, 13], 1, true, false);
-//		bullets.callAll('play', 'animations', 'bullet_anim');
-		
-//		for (var i in bullets) {
-//			console.log(typeof(bullets.getAt(i)));
-////			tmpBullet = game.add.sprite(100, 0, 'particles', 1);
-//			bullets.getAt(i).animations.add('bullet_anim', [10, 11, 12, 13], 20, true);
-//			tmpBullet.animations.play('bullet_anim')
-//		}
-
-		bullets.setAll('checkWorldBounds', true);
-		bullets.setAll('outOfBoundsKill', true);
-		
-//		bulletSprite = game.add.sprite(400, 300, 'particles', 10);
-//		bulletSprite.animations.add('bullet_anim', [10, 11, 12, 13], 20, true);
-//		bulletSprite.animations.play('bullet_anim');
-//		bulletSprite.anchor.set(0.5);
-
-//		game.physics.enable(bulletSprite, Phaser.Physics.P2JS);
-
-//		bulletSprite.body.allowRotation = false;
+			sheep.body.collides(bulletsCG, function() {effects.meh();}, this);},this
+		);
 		
 		// enable user input
 		cursors = game.input.keyboard.createCursorKeys();
@@ -302,11 +259,7 @@
 			carried = null;
 		}
 		
-		if (emitter != null) {
-			emitter.forEachAlive(function(p) {
-				p.alpha = p.lifespan / emitter.lifespan;
-			});
-		}
+		effects.update();
 		
 		sheepGrp.forEach(function(sheep) { resolveAImovement(sheep, 'sheep') }, this);
 	}
