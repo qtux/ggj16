@@ -74,6 +74,13 @@ function create () {
 		tileObjects[i].collides(playerCG);
 		tileObjects[i].collides(bulletsCG);
 	}
+	var polygon = game.physics.p2.convertCollisionObjects(map, 'objectsCollision', true);   
+	for(var i in polygon) {
+		polygon[i].setCollisionGroup(tileCG);
+		polygon[i].collides(npcCG);
+		polygon[i].collides(playerCG);
+		polygon[i].collides(bulletsCG);
+	}
 	
 	// TODO ritual thing
 	for (var i=0;i < map.width; i++) {
