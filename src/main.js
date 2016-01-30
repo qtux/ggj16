@@ -5,12 +5,12 @@ window.onload = function() {
 	var levelNames = ['test', 'test2'];
 	var levelNum = 0;
 	var map, layer, layer1;		// tilemap related
-	var player, sheep, bulletSprite;			// sprites
+	var player, sheep, goat, bulletSprite;			// sprites
 	var npcCG, tileCG, playerCG, bulletsCG;					// collision groups
 	var emitter;
 	var overlay;
 	var playerstate;
-	var playerGrp, sheepGrp;
+	var playerGrp, sheepGrp, goatGrp;
 	var bullets;
 	
 	var fireRate = 300;
@@ -32,6 +32,7 @@ window.onload = function() {
 		game.load.spritesheet('particles', 'assets/spritesheets/particles.png', 18, 18);
 	    game.load.spritesheet('wizard', 'assets/spritesheets/wizard.png', 42, 72, 24);
 	    game.load.spritesheet('sheep', 'assets/spritesheets/sheep.png', 36, 36, 15);
+	    game.load.spritesheet('goat', 'assets/spritesheets/goat.png', 36, 36, 15);
 		playerstate = 'passive';
 	    
 	    game.load.audio('ritual_tier_brennt', 'assets/audio/ritual_tier_brennt.ogg');
@@ -135,6 +136,23 @@ window.onload = function() {
 			sheep.body.collides(playerCG, npcBumpedPlayer, this);
 			sheep.body.collides(tileCG, npcBumpedWall, this);
 			sheep.body.collides(bulletsCG, function() {var sound = game.add.audio('meh'); sound.play();}, this);}, this);
+		goatGrp = game.add.group();
+		map.createFromObjects('objects', 103, 'goat', 1, true, false, goatGrp);
+		goatGrp.forEach(function(goat) {
+			var goatAnimFPS = 10;
+			goat.animations.add('goat_idle', [0], goatAnimFPS, true);
+			goat.animations.add('goat_down', [9, 10, 11], goatAnimFPS, true);
+			goat.animations.add('goat_up', [6, 7, 8], goatAnimFPS, true);
+			goat.animations.add('goat_right', [3, 4, 5], goatAnimFPS, true);
+			goat.animations.add('goat_left', [0, 1, 2], goatAnimFPS, true);
+			goat.animations.add('goat_panic', [12, 13, 14], goatAnimFPS, true);
+			// enable physics for goat
+			game.physics.p2.enable(goat);
+			goat.body.fixedRotation = true;
+			goat.body.setCollisionGroup(npcCG);
+			goat.body.collides(playerCG, npcBumpedPlayer, this);
+			goat.body.collides(tileCG, npcBumpedWall, this);
+			goat.body.collides(bulletsCG, function() {var sound = game.add.audio('meh'); sound.play();}, this);}, this);
 		
 		// bullets
 		bullets = game.add.group();
@@ -311,12 +329,16 @@ window.onload = function() {
 		}
 		
 		sheepGrp.forEach(function(sheep) { resolveAImovement(sheep, 'sheep') }, this);
+		goatGrp.forEach(function(goat) { resolveAImovement(goat, 'goat') }, this);
 	}
 	
 	function resolveAImovement(npc, type) {	
 		if (carried === npc.body) {
 			if (type == 'sheep') {
 				npc.animations.play('sheep_panic');
+			}
+			if (type == 'goat') {
+				npc.animations.play('goat_panic');
 			}
 			npc.body.x = player.body.x + 0.01;
 			npc.body.y = player.body.y - 15;
@@ -364,6 +386,28 @@ window.onload = function() {
 					npc.animations.play('sheep_right');
 				} else {
 					npc.animations.play('sheep_idle');
+				}
+			}
+		}
+		// goat animation
+		if (type == 'goat') {
+			if (Math.abs(npc.body.velocity.y) > Math.abs(npc.body.velocity.x)) {
+				if (npc.body.velocity.y > 0) {
+					npc.animations.play('goat_down');
+				} else if (npc.body.velocity.y < 0) {
+					npc.animations.play('goat_up');
+				} else {
+					npc.animations.play('goat_idle');
+				}
+			}
+			
+			if (Math.abs(npc.body.velocity.y) < Math.abs(npc.body.velocity.x)) {
+				if (npc.body.velocity.x > 0) {
+					npc.animations.play('goat_left');
+				} else if (npc.body.velocity.x < 0) {
+					npc.animations.play('goat_right');
+				} else {
+					npc.animations.play('goat_idle');
 				}
 			}
 		}
@@ -420,6 +464,7 @@ window.onload = function() {
 //		overlay.destroy(true, true);
 //		playerGrp.destroy(true, true);
 //		sheepGrp.destroy(true, true);
+//		goatGrp.destroy(true, true);
 //		bullets.destroy(true, true);
 //	}
 };
