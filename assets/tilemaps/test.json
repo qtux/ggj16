@@ -229,6 +229,48 @@
                  "width":0,
                  "x":396,
                  "y":540
+                }, 
+                {
+                 "gid":114,
+                 "height":0,
+                 "name":"",
+                 "properties":
+                    {
+
+                    },
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":108,
+                 "y":360
+                }, 
+                {
+                 "gid":106,
+                 "height":0,
+                 "name":"",
+                 "properties":
+                    {
+
+                    },
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":540,
+                 "y":396
+                }, 
+                {
+                 "gid":111,
+                 "height":0,
+                 "name":"",
+                 "properties":
+                    {
+
+                    },
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":144,
+                 "y":180
                 }],
          "opacity":1,
          "type":"objectgroup",

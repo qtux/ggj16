@@ -1,6 +1,6 @@
 Objects = function() {
 	
-	var playerGrp, sheepGrp, goatGrp;	// sprite groupes
+	var playerGrp, sheepGrp, goatGrp, wormGrp;	// sprite groupes
 	var playerstate;
 	var carriedObject = null;
 	
@@ -10,6 +10,7 @@ Objects = function() {
 		game.load.spritesheet('wizard', 'assets/spritesheets/wizard.png', 42, 72, 24);
 		game.load.spritesheet('sheep', 'assets/spritesheets/sheep.png', 36, 36, 15);
 		game.load.spritesheet('goat', 'assets/spritesheets/goat.png', 36, 36, 15);
+		game.load.spritesheet('worm', 'assets/spritesheets/worm.png', 36, 36, 8);
 		game.load.audio('ritual_tier_brennt', 'assets/audio/ritual_tier_brennt.ogg');
 	};
 	
@@ -52,6 +53,25 @@ Objects = function() {
 			sheep.body.collides(playerCG, npcBumpedPlayer, this);
 			sheep.body.collides(tileCG, npcBumpedWall, this);
 			sheep.body.collides(bulletsCG, function() {effects.meh();}, this);},this
+		);
+		
+		// add worms
+		wormGrp = game.add.group();
+		map.createFromObjects('objects', 114, 'worm', 1, true, false, wormGrp);
+		wormGrp.forEach(function(worm) {
+			var wormAnimFPS = 10;
+			worm.animations.add('worm_down', [4, 5], wormAnimFPS, true);
+			worm.animations.add('worm_up', [6, 7], wormAnimFPS, true);
+			worm.animations.add('worm_right', [0, 1], wormAnimFPS, true);
+			worm.animations.add('worm_left', [2, 3], wormAnimFPS, true);
+			worm.animations.add('worm_panic', [0], wormAnimFPS, true);
+			// enable physics for sheep
+			game.physics.p2.enable(worm);
+			worm.body.fixedRotation = true;
+			worm.body.setCollisionGroup(npcCG);
+			worm.body.collides(playerCG, npcBumpedPlayer, this);
+			worm.body.collides(tileCG, npcBumpedWall, this);
+			worm.body.collides(bulletsCG, function() {effects.meh();}, this);},this
 		);
 		
 		// add goats
@@ -188,6 +208,7 @@ Objects = function() {
 		}
 		sheepGrp.forEach(function(sheep) { resolveAImovement(sheep, 'sheep') }, this);
 		goatGrp.forEach(function(goat) { resolveAImovement(goat, 'goat') }, this);
+		wormGrp.forEach(function(worm) { resolveAImovement(worm, 'worm') }, this);
 	};
 	
 	
@@ -199,6 +220,9 @@ Objects = function() {
 			}
 			if (type == 'goat') {
 				npc.animations.play('goat_panic');
+			}
+			if (type == 'worm') {
+				npc.animations.play('worm_panic');
 			}
 			npc.body.x = player.body.x + 0.01;
 			npc.body.y = player.body.y - 15;
@@ -245,6 +269,30 @@ Objects = function() {
 				}
 			}
 		}
+		
+		// worm animation
+		if (type == 'worm') {
+			if (Math.abs(npc.body.velocity.y) > Math.abs(npc.body.velocity.x)) {
+				if (npc.body.velocity.y > 0) {
+					npc.animations.play('worm_down');
+				} else if (npc.body.velocity.y < 0) {
+					npc.animations.play('worm_up');
+				} else {
+					npc.animations.play('worm_idle');
+				}
+			}
+			
+			if (Math.abs(npc.body.velocity.y) < Math.abs(npc.body.velocity.x)) {
+				if (npc.body.velocity.x > 0) {
+					npc.animations.play('worm_left');
+				} else if (npc.body.velocity.x < 0) {
+					npc.animations.play('worm_right');
+				} else {
+					npc.animations.play('worm_idle');
+				}
+			}
+		}
+		
 		// goat animation
 		if (type == 'goat') {
 			if (Math.abs(npc.body.velocity.y) > Math.abs(npc.body.velocity.x)) {
