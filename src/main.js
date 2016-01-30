@@ -7,6 +7,7 @@ window.onload = function() {
 	var npcCG, tileCG, playerCG;					// collision groups
 	var emitter;
 	var overlay;
+	var playerGrpplayerGrp;
 	
 	/**
 	 * preload - load assets
@@ -59,7 +60,9 @@ window.onload = function() {
 		}
 		
 		// add sprites
-		player = game.add.sprite(200, 200, 'wizard', 1);
+		playerGrp = game.add.group();
+		map.createFromObjects('objects', 102, 'wizard', 1, true, false, playerGrp);
+		player = playerGrp.getTop();
 		var playerAnimFPS = 10;
 		player.animations.add('player_idle', [0], playerAnimFPS, true);
 		player.animations.add('player_down', [0, 1, 2], playerAnimFPS, true);
