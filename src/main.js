@@ -54,8 +54,11 @@ function create () {
 	layer = map.createLayer('layer0');
 	layer1 = map.createLayer('layer1');
 	
-	// create effects and objects
+	// create effects, top layer and objects
 	objects.create();
+	
+	layer2 = map.createLayer('layer2');
+	
 	effects.create();
 	
 	// enable scaling
