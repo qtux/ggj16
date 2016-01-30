@@ -13,7 +13,12 @@ window.onload = function() {
 	
 	var fireRate = 300;
 	var nextFire = 0;
+	var circleTile;
 	
+	var ritualCircle = {
+		posX : 0,
+		posY : 0
+	}
 	/**
 	 * preload - load assets
 	 */
@@ -62,6 +67,18 @@ window.onload = function() {
 		map.addTilesetImage('basictiles', 'tileset');
 		layer = map.createLayer('layer0');
 		layer1 = map.createLayer('layer1');
+		
+		for (var i=0;i < map.width; i++) {
+			for (var j=0;j < map.height; j++) {
+//				console.log(map.getTile(i, j, 'layer1', true).index);
+				if (map.getTile(i, j, 'layer1', true).index == 7) {
+					circleTile = map.getTile(i, j, 'layer1', true);
+					ritualCircle.posX = i + 2;
+					ritualCircle.posY = j + 2;
+//					console.log(ritualCircle.posX + ", " + ritualCircle.posY);
+				}
+			}
+		}
 		
 		// set tile collision group
 		map.setCollision(100, true, 'collision');
@@ -183,6 +200,16 @@ window.onload = function() {
 		var dt = game.time.elapsed;
 		overlay.alpha -= dt * 0.0005;
 		
+		var tmpX = player.x / 36;
+		var tmpY = player.y / 36;
+		var playerRitualDist = Math.sqrt((ritualCircle.posX - tmpX)*(ritualCircle.posX - tmpX) + (ritualCircle.posY - tmpY)*(ritualCircle.posY - tmpY));
+		
+		console.log(playerRitualDist)
+		
+		if (playerRitualDist < 2) {
+			particleEffectBloodExplosion(player.x , player.y, 10, 300);
+		}
+		
 		var speed = 300;
 		if (game.input.keyboard.isDown(Phaser.Keyboard.A)) {
 			player.body.velocity.x = -speed;
@@ -243,7 +270,7 @@ window.onload = function() {
 			//npc.body.force.y = ((game.rnd.integer() % 20) - 10) * 10;
 			var newVelo = new Phaser.Point(((game.rnd.integer() % 20) - 10) * 10, ((game.rnd.integer() % 20) - 10) * 10);
 			if (Phaser.Point.angle(new Phaser.Point(npc.body.velocity.x, npc.body.velocity.y), newVelo) > 3.15/4) {
-				console.debug('high change');
+//				console.debug('high change');
 			} else {
 				npc.body.force.x = newVelo.x;
 				npc.body.force.y = newVelo.y;
