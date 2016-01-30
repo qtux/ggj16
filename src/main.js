@@ -107,8 +107,7 @@ window.onload = function() {
 			sheep.body.setCollisionGroup(npcCG);
 			sheep.body.collides(playerCG, npcBumpedPlayer, this);
 			sheep.body.collides(tileCG, npcBumpedWall, this);
-			sheep.body.collides(bulletsCG);
-		}, this);
+			sheep.body.collides(bulletsCG, function() {var sound = game.add.audio('meh'); sound.play();}, this);}, this);
 		
 		// bullets
 		bullets = game.add.group();
