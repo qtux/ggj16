@@ -6,6 +6,7 @@ window.onload = function() {
 	var player, sheep;			// sprites
 	var npcCG, tileCG, playerCG;					// collision groups
 	var emitter;
+	var overlay;
 	
 	/**
 	 * preload - load assets
@@ -14,9 +15,9 @@ window.onload = function() {
 		game.load.tilemap('map', 'assets/tilemaps/test.json', null, Phaser.Tilemap.TILED_JSON);
 		game.load.image('tileset', 'assets/tilesets/basictiles.png');
 		game.load.spritesheet('player', 'assets/spritesheets/hero.png', 36, 72);
-		game.load.spritesheet('sheep', 'assets/spritesheets/goat.png', 36, 36);
 		game.load.spritesheet('particles', 'assets/spritesheets/particles.png', 18, 18);
 	    game.load.spritesheet('wizard', 'assets/spritesheets/wizard.png', 36, 72, 12);
+	    game.load.spritesheet('sheep', 'assets/spritesheets/sheep.png', 36, 72, 12);
 	}
 	
 	/**
@@ -86,6 +87,19 @@ window.onload = function() {
 		
 		// enable user input
 		cursors = game.input.keyboard.createCursorKeys();
+
+	    // create a new bitmap data object
+	    var bmd = game.add.bitmapData(game.width, game.height);
+
+	    // draw to the canvas context like normal
+	    bmd.ctx.beginPath();
+	    bmd.ctx.rect(0, 0, game.width, game.height);
+	    bmd.ctx.fillStyle = '#000000';
+	    bmd.ctx.fill();
+
+	    // use the bitmap data as the texture for the sprite
+	    overlay = game.add.sprite(0, 0, bmd);
+	    overlay.alpha = 0.0;
 	}
 	
 	function gofull() {
@@ -98,6 +112,9 @@ window.onload = function() {
 	}
 	
 	function update() {
+		var dt = game.time.elapsed;
+		overlay.alpha -= dt * 0.0005;
+		
 		var speed = 300;
 		if (cursors.left.isDown) {
 			player.body.velocity.x = -speed;
@@ -122,6 +139,16 @@ window.onload = function() {
 			player.animations.play('player_idle', 3, true);
 		}
 		
+		if (game.input.keyboard.isDown(Phaser.Keyboard.E))
+	    {
+			particleEffectBloodExplosion(player.body.x, player.body.y, 30, 2000);
+	    }
+		
+		if (game.input.keyboard.isDown(Phaser.Keyboard.B))
+	    {
+		    overlay.alpha = 1.0;
+	    }
+		
 		if (emitter != null) {
 			emitter.forEachAlive(function(p) {
 				p.alpha = p.lifespan / emitter.lifespan;
@@ -130,14 +157,17 @@ window.onload = function() {
 	}
 	
 	function particleEffectBloodExplosion(x , y, numParticles, lifeTime) {
-		emitter = game.add.emitter(x, y, numParticles);
-	    emitter.makeParticles('particles', [0, 1, 2, 3, 4, 5, 6, 7, 8], numParticles, true, true);
-//	    emitter.minParticleSpeed.setTo(-400, -400);
-//	    emitter.maxParticleSpeed.setTo(400, 400);
-	    emitter.gravity = 0;
-	    emitter.maxParticles = numParticles;
-	    
-	    emitter.start(true, lifeTime, null, numParticles);
-	    game.time.events.add(lifeTime, function(){emitter.destroy();}, this);
+		if (emitter == null){
+			emitter = game.add.emitter(x, y, numParticles);
+		    emitter.makeParticles('particles', [0, 1, 2, 3, 4, 5, 6, 7, 8], numParticles, true, true);
+//		    emitter.minParticleSpeed.setTo(-400, -400);
+//		    emitter.maxParticleSpeed.setTo(400, 400);
+		    emitter.gravity = 0;
+		    emitter.maxParticles = numParticles;
+		    
+		    emitter.start(true, lifeTime, null, numParticles);
+		    game.time.events.add(lifeTime, function(){emitter.destroy(); emitter = null;}, this);
+			
+		}
 	}
 };
