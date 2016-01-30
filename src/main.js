@@ -17,7 +17,7 @@ window.onload = function() {
 		game.load.spritesheet('player', 'assets/spritesheets/hero.png', 36, 72);
 		game.load.spritesheet('particles', 'assets/spritesheets/particles.png', 18, 18);
 	    game.load.spritesheet('wizard', 'assets/spritesheets/wizard.png', 36, 72, 12);
-	    game.load.spritesheet('sheep', 'assets/spritesheets/sheep.png', 36, 72, 12);
+	    game.load.spritesheet('sheep', 'assets/spritesheets/sheep.png', 36, 36, 12);
 	}
 	
 	/**
@@ -67,9 +67,17 @@ window.onload = function() {
 		player.animations.add('player_up', [3, 4, 5], playerAnimFPS, true);
 		player.animations.add('player_right', [6, 7, 8], playerAnimFPS, true);
 		player.animations.add('player_left', [9, 10, 11], playerAnimFPS, true);
-//		player.animations.play('player_down', 3, true);
+
+		sheep = game.add.sprite(400, 300, 'sheep');
+		var playerAnimFPS = 10;
+		sheep.animations.add('sheep_idle', [0], playerAnimFPS, true);
+		sheep.animations.add('sheep_down', [9, 10, 11], playerAnimFPS, true);
+		sheep.animations.add('sheep_up', [6, 7, 8], playerAnimFPS, true);
+		sheep.animations.add('sheep_right', [3, 4, 5], playerAnimFPS, true);
+		sheep.animations.add('sheep_left', [0, 1, 2], playerAnimFPS, true);
+		
 		//player.body.debug = true;
-		sheep = game.add.sprite(400, 200, 'sheep');
+
 		
 		// enable physics for player
 		game.physics.p2.enable(player);
