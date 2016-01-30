@@ -28,12 +28,11 @@
 	function preload () {
 		game.load.tilemap('map', 'assets/tilemaps/'+levelNames[levelNum]+'.json', null, Phaser.Tilemap.TILED_JSON);
 		game.load.image('tileset', 'assets/tilesets/basictiles.png');
-		game.load.spritesheet('particles', 'assets/spritesheets/particles.png', 18, 18);
 		game.load.spritesheet('wizard', 'assets/spritesheets/wizard.png', 42, 72, 24);
 		game.load.spritesheet('sheep', 'assets/spritesheets/sheep.png', 36, 36, 15);
 		
 		game.load.audio('ritual_tier_brennt', 'assets/audio/ritual_tier_brennt.ogg');
-		game.load.audio('meh', 'assets/audio/meh.ogg');
+		
 		effects.preload();
 	}
 	
@@ -133,7 +132,7 @@
 			sheep.body.setCollisionGroup(npcCG);
 			sheep.body.collides(playerCG, npcBumpedPlayer, this);
 			sheep.body.collides(tileCG, npcBumpedWall, this);
-			sheep.body.collides(bulletsCG, function() {var sound = game.add.audio('meh'); sound.play();}, this);}, this);
+			sheep.body.collides(bulletsCG, function() {effects.meh();}, this);}, this);
 		
 		// bullets
 		bullets = game.add.group();

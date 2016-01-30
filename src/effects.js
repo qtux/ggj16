@@ -7,13 +7,21 @@ var Effects = function() {
 	
 	// sounds
 	var shootSnd;
+	var mehSnd;
 	
 	this.preload = function() {
+		game.load.spritesheet('particles', 'assets/spritesheets/particles.png', 18, 18);
 		game.load.audio('shoot', 'assets/audio/shoot.ogg');
+		game.load.audio('meh', 'assets/audio/meh.ogg');
 	}
 	
 	this.create = function() {
 		shootSnd = game.add.audio('shoot');
+		mehSnd = game.add.audio('meh');
+	}
+	
+	this.meh = function() {
+		mehSnd.play();
 	}
 	
 	this.fire = function() {
