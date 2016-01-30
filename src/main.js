@@ -349,13 +349,9 @@ window.onload = function() {
 		if (playerstate == 'passive') {
 			//npc.body.force.x = ((game.rnd.integer() % 20) - 10) * 10;
 			//npc.body.force.y = ((game.rnd.integer() % 20) - 10) * 10;
-			var newVelo = new Phaser.Point(((game.rnd.integer() % 20) - 10) * 10, ((game.rnd.integer() % 20) - 10) * 10);
-			if (Phaser.Point.angle(new Phaser.Point(npc.body.velocity.x, npc.body.velocity.y), newVelo) > 3.15/4) {
-//				console.debug('high change');
-			} else {
-				npc.body.force.x = newVelo.x;
-				npc.body.force.y = newVelo.y;
-			}
+			var newVelo = new Phaser.Point(((game.rnd.integer() % 300) - 150), ((game.rnd.integer() % 300) - 150));
+			npc.body.force.x = newVelo.x;
+			npc.body.force.y = newVelo.y;
 		}
 		// seek
 		if (playerstate == 'angeredNPC') {
