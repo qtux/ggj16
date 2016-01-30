@@ -5,12 +5,14 @@ window.onload = function() {
 	var layer1;
 	//var layer2;
 	var player;
+	var emitter;
 	
 	function preload () {
 		console.log('starting preload()');
 		game.load.tilemap('map', 'assets/tilemaps/test.json', null, Phaser.Tilemap.TILED_JSON);
 		game.load.image('tileset', 'assets/tilesets/basictiles.png');
 		game.load.spritesheet('player', 'assets/spritesheets/hero.png', 36, 72);
+		game.load.spritesheet('particles', 'assets/spritesheets/particles.png', 18, 18);
 		console.log('preload() done');
 	}
 	
@@ -71,5 +73,20 @@ window.onload = function() {
 		} else {
 			player.body.velocity.y = 0;
 		}
+		
+		emitter.forEachAlive(function(p) {
+			p.alpha = p.lifespan / emitter.lifespan;
+		});
+	}
+	
+	function particleEffectBloodExplosion(x , y, numParticles) {
+		emitter = game.add.emitter(x, y, numParticles);
+	    emitter.makeParticles('particles', [0, 1, 2, 3, 4, 5, 6, 7, 8], numParticles, true, true);
+//	    emitter.minParticleSpeed.setTo(-400, -400);
+//	    emitter.maxParticleSpeed.setTo(400, 400);
+	    emitter.gravity = 0;
+	    emitter.maxParticles = numParticles;
+	    
+	    emitter.start(true, 2000, null, numParticles);
 	}
 };
