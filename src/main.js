@@ -9,7 +9,6 @@ var npcCG, tileCG, playerCG, bulletsCG;		// collision groups
 var levelNames = ['test', 'test2'];
 var levelNum = 0;
 var map, layer, layer1;		// tilemap related
-var overlay;
 var circleTile;
 var ritualCircle = {
 	posX : 0,
@@ -23,9 +22,8 @@ function preload () {
 	game.load.tilemap('map', 'assets/tilemaps/'+levelNames[levelNum]+'.json', null, Phaser.Tilemap.TILED_JSON);
 	game.load.image('tileset', 'assets/tilesets/basictiles.png');
 	
-	// preload effects and objects
-	effects.preload();
 	objects.preload();
+	effects.preload();
 }
 
 /**
@@ -57,8 +55,8 @@ function create () {
 	layer1 = map.createLayer('layer1');
 	
 	// create effects and objects
-	effects.create();
 	objects.create();
+	effects.create();
 	
 	// enable scaling
 	game.scale.fullScreenScaleMode = Phaser.ScaleManager.EXACT_FIT;
@@ -74,6 +72,7 @@ function create () {
 		tileObjects[i].collides(bulletsCG);
 	}
 	
+	// TODO ritual thing
 	for (var i=0;i < map.width; i++) {
 		for (var j=0;j < map.height; j++) {
 			//console.log(map.getTile(i, j, 'layer1', true).index);
@@ -85,19 +84,6 @@ function create () {
 			}
 		}
 	}
-	
-	// create a new bitmap data object
-	var bmd = game.add.bitmapData(game.width, game.height);
-	
-	// draw to the canvas context like normal
-	bmd.ctx.beginPath();
-	bmd.ctx.rect(0, 0, game.width, game.height);
-	bmd.ctx.fillStyle = '#000000';
-	bmd.ctx.fill();
-	
-	// use the bitmap data as the texture for the sprite
-	overlay = game.add.sprite(0, 0, bmd);
-	overlay.alpha = 0.0;
 }
 
 function gofull() {
@@ -111,10 +97,7 @@ function gofull() {
 
 function update() {
 	var dt = game.time.elapsed;
-	overlay.alpha -= dt * 0.0005;
-	
-	// update effects and objects
-	effects.update();
+	// update objects and effects
 	objects.update();
-	
+	effects.update(dt);
 }

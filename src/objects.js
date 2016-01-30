@@ -1,6 +1,6 @@
 Objects = function() {
 	
-	var playerGrp, sheepGrp;	// sprite groupes
+	var playerGrp, sheepGrp, goatGrp;	// sprite groupes
 	var playerstate;
 	var carriedObject = null;
 	
@@ -9,7 +9,7 @@ Objects = function() {
 	this.preload = function() {
 		game.load.spritesheet('wizard', 'assets/spritesheets/wizard.png', 42, 72, 24);
 		game.load.spritesheet('sheep', 'assets/spritesheets/sheep.png', 36, 36, 15);
-		game.load.spritesheet('wizard', 'assets/spritesheets/wizard.png', 42, 72, 24);
+		game.load.spritesheet('goat', 'assets/spritesheets/goat.png', 36, 36, 15);
 		game.load.audio('ritual_tier_brennt', 'assets/audio/ritual_tier_brennt.ogg');
 	};
 	
@@ -44,7 +44,7 @@ Objects = function() {
 		// enable user input
 		cursors = game.input.keyboard.createCursorKeys();
 		
-		// add sheep
+		// add sheeps
 		sheepGrp = game.add.group();
 		map.createFromObjects('objects', 103, 'sheep', 1, true, false, sheepGrp);
 		sheepGrp.forEach(function(sheep) {
@@ -62,6 +62,26 @@ Objects = function() {
 			sheep.body.collides(playerCG, npcBumpedPlayer, this);
 			sheep.body.collides(tileCG, npcBumpedWall, this);
 			sheep.body.collides(bulletsCG, function() {effects.meh();}, this);},this
+		);
+		
+		// add goats
+		goatGrp = game.add.group();
+		map.createFromObjects('objects', 107, 'goat', 1, true, false, goatGrp);
+		goatGrp.forEach(function(goat) {
+			var goatAnimFPS = 10;
+			goat.animations.add('goat_idle', [0], goatAnimFPS, true);
+			goat.animations.add('goat_down', [9, 10, 11], goatAnimFPS, true);
+			goat.animations.add('goat_up', [6, 7, 8], goatAnimFPS, true);
+			goat.animations.add('goat_right', [3, 4, 5], goatAnimFPS, true);
+			goat.animations.add('goat_left', [0, 1, 2], goatAnimFPS, true);
+			goat.animations.add('goat_panic', [12, 13, 14], goatAnimFPS, true);
+			// enable physics for goat
+			game.physics.p2.enable(goat);
+			goat.body.fixedRotation = true;
+			goat.body.setCollisionGroup(npcCG);
+			goat.body.collides(playerCG, npcBumpedPlayer, this);
+			goat.body.collides(tileCG, npcBumpedWall, this);
+			goat.body.collides(bulletsCG, function() {var sound = game.add.audio('meh'); sound.play();}, this);}, this
 		);
 	};
 	
@@ -146,22 +166,28 @@ Objects = function() {
 		}
 		
 		if (game.input.keyboard.isDown(Phaser.Keyboard.B)) {
-			overlay.alpha = 1.0;
+			effects.doSomeEffects();
 		}
 		
 		if (carriedObject != null && game.input.keyboard.isDown(Phaser.Keyboard.Y)) {
 			carriedObject = null;
 		}
 		sheepGrp.forEach(function(sheep) { resolveAImovement(sheep, 'sheep') }, this);
+		goatGrp.forEach(function(goat) { resolveAImovement(goat, 'goat') }, this);
 	};
+	
+	
 	
 	function resolveAImovement(npc, type) {	
 		if (carriedObject === npc.body) {
 			if (type == 'sheep') {
 				npc.animations.play('sheep_panic');
 			}
-			npc.body.x = player.x + 0.01;
-			npc.body.y = player.y - 15;
+			if (type == 'goat') {
+				npc.animations.play('goat_panic');
+			}
+			npc.body.x = player.body.x + 0.01;
+			npc.body.y = player.body.y - 15;
 			return;
 		}
 		
@@ -169,18 +195,14 @@ Objects = function() {
 		if (playerstate == 'passive') {
 			//npc.body.force.x = ((game.rnd.integer() % 20) - 10) * 10;
 			//npc.body.force.y = ((game.rnd.integer() % 20) - 10) * 10;
-			var newVelo = new Phaser.Point(((game.rnd.integer() % 20) - 10) * 10, ((game.rnd.integer() % 20) - 10) * 10);
-			if (Phaser.Point.angle(new Phaser.Point(npc.body.velocity.x, npc.body.velocity.y), newVelo) > 3.15/4) {
-//				console.debug('high change');
-			} else {
-				npc.body.force.x = newVelo.x;
-				npc.body.force.y = newVelo.y;
-			}
+			var newVelo = new Phaser.Point(((game.rnd.integer() % 300) - 150), ((game.rnd.integer() % 300) - 150));
+			npc.body.force.x = newVelo.x;
+			npc.body.force.y = newVelo.y;
 		}
 		// seek
 		if (playerstate == 'angeredNPC') {
 			var maxSpeed = 100;
-			var target = new Phaser.Point(player.x, player.y);
+			var target = new Phaser.Point(player.body.x, player.body.y);
 			var seeker = new Phaser.Point(npc.body.x, npc.body.y);
 			var distNPCPlayer = Phaser.Point.normalize(Phaser.Point.subtract(target, Phaser.Point.add(seeker, new Phaser.Point(npc.body.velocity.x, npc.body.velocity.y))));
 			npc.body.force.x = distNPCPlayer.x * maxSpeed;
@@ -206,6 +228,28 @@ Objects = function() {
 					npc.animations.play('sheep_right');
 				} else {
 					npc.animations.play('sheep_idle');
+				}
+			}
+		}
+		// goat animation
+		if (type == 'goat') {
+			if (Math.abs(npc.body.velocity.y) > Math.abs(npc.body.velocity.x)) {
+				if (npc.body.velocity.y > 0) {
+					npc.animations.play('goat_down');
+				} else if (npc.body.velocity.y < 0) {
+					npc.animations.play('goat_up');
+				} else {
+					npc.animations.play('goat_idle');
+				}
+			}
+			
+			if (Math.abs(npc.body.velocity.y) < Math.abs(npc.body.velocity.x)) {
+				if (npc.body.velocity.x > 0) {
+					npc.animations.play('goat_left');
+				} else if (npc.body.velocity.x < 0) {
+					npc.animations.play('goat_right');
+				} else {
+					npc.animations.play('goat_idle');
 				}
 			}
 		}
