@@ -22,6 +22,10 @@ window.onload = function() {
 		game.load.spritesheet('particles', 'assets/spritesheets/particles.png', 18, 18);
 	    game.load.spritesheet('wizard', 'assets/spritesheets/wizard.png', 36, 72, 12);
 	    game.load.spritesheet('sheep', 'assets/spritesheets/sheep.png', 36, 36, 12);
+
+	    game.load.audio('ritual_tier_brennt', 'assets/audio/ritual_tier_brennt.ogg');
+	    game.load.audio('shoot', 'assets/audio/shoot.ogg');
+	    game.load.audio('meh', 'assets/audio/meh.ogg');
 	}
 	
 	/**
@@ -34,6 +38,7 @@ window.onload = function() {
 		
 		// start physics system
 		game.physics.startSystem(Phaser.Physics.P2JS);
+	    game.physics.p2.setImpactEvents(true);
 		
 		// register collision groups
 		npcCG = game.physics.p2.createCollisionGroup();
@@ -90,7 +95,6 @@ window.onload = function() {
 		bullets = game.add.group();
 	    bullets.enableBody = true;
 	    bullets.physicsBodyType = Phaser.Physics.P2JS;
-//	    game.physics.p2.setImpactEvents(true);
 
 	    bullets.createMultiple(10, 'particles', maxBullets);
 	    var maxBullets = 10;
@@ -101,6 +105,7 @@ window.onload = function() {
 //	        var tmpBullet = bullets.create(0, 0, 'particles', 10);
 //	        tmpBullet.body.setRectangle(40, 40);
 	        game.physics.p2.enable(tmpBullet);
+//	        tmpBullet.scale.setTo(2, 2);
 	        tmpBullet.animations.add('bullet_anim', [10, 11, 12, 13], 20, true);
 	    	tmpBullet.animations.play('bullet_anim')
 	        
@@ -145,7 +150,7 @@ window.onload = function() {
 		sheep.body.setCollisionGroup(npcCG);
 		sheep.body.collides(playerCG);
 		sheep.body.collides(tileCG);
-		sheep.body.collides(bulletsCG);
+		sheep.body.collides(bulletsCG, function (){var sound = game.add.audio('meh'); sound.play();}, null);
 		
 		// enable user input
 		cursors = game.input.keyboard.createCursorKeys();
@@ -233,7 +238,10 @@ window.onload = function() {
 
 	        bullet.reset(player.body.x, player.body.y);
 	        bullet.lifespan = 2000;
-//	        bullet.animations.play('bullet_anim');
+//	        bullet.animations.play('bullet_anim');#
+	        
+		    var music = game.add.audio('shoot');
+		    music.play();
 
 	        game.physics.arcade.moveToPointer(bullet, 300);
 	    }
@@ -252,6 +260,8 @@ window.onload = function() {
 		    emitter.start(true, lifeTime, null, numParticles);
 		    game.time.events.add(lifeTime, function(){emitter.destroy(); emitter = null;}, this);
 			
+		    var sound = game.add.audio('ritual_tier_brennt');
+		    sound.play();
 		}
 	}
 };
