@@ -5,6 +5,7 @@ window.onload = function() {
 	var map, layer, layer1;		// tilemap related
 	var player, sheep;			// sprites
 	var npcCG;					// collision groups
+	var emitter;
 	
 	/**
 	 * preload - load assets
@@ -14,6 +15,7 @@ window.onload = function() {
 		game.load.image('tileset', 'assets/tilesets/basictiles.png');
 		game.load.spritesheet('player', 'assets/spritesheets/hero.png', 36, 72);
 		game.load.spritesheet('sheep', 'assets/spritesheets/sheep.png', 36, 36);
+		game.load.spritesheet('particles', 'assets/spritesheets/particles.png', 18, 18);
 	}
 	
 	/**
@@ -87,5 +89,23 @@ window.onload = function() {
 		} else {
 			player.body.velocity.y = 0;
 		}
+		
+		if (emitter != null) {
+			emitter.forEachAlive(function(p) {
+				p.alpha = p.lifespan / emitter.lifespan;
+			});
+		}
+	}
+	
+	function particleEffectBloodExplosion(x , y, numParticles, lifeTime) {
+		emitter = game.add.emitter(x, y, numParticles);
+	    emitter.makeParticles('particles', [0, 1, 2, 3, 4, 5, 6, 7, 8], numParticles, true, true);
+//	    emitter.minParticleSpeed.setTo(-400, -400);
+//	    emitter.maxParticleSpeed.setTo(400, 400);
+	    emitter.gravity = 0;
+	    emitter.maxParticles = numParticles;
+	    
+	    emitter.start(true, lifeTime, null, numParticles);
+	    game.time.events.add(lifeTime, function(){emitter.destroy();}, this);
 	}
 };
