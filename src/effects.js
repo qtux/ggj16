@@ -47,7 +47,7 @@ var Effects = function() {
 		var emitterRain = game.add.emitter(game.world.centerX, 0, 400);
 		//emitter.angle = 5; // uncomment to set an angle for the rain.
 		emitterRain.width = game.world.width;
-		emitterRain.makeParticles('particles', [0, 1]);
+		emitterRain.makeParticles('particles', [20, 21]);
 		emitterRain.minParticleScale = 0.3;
 		emitterRain.maxParticleScale = 0.9;
 		emitterRain.setYSpeed(300, 500);
