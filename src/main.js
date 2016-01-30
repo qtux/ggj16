@@ -12,6 +12,32 @@ window.onload = function() {
 	var fireSpell;
 	var selector;
 	var spellPos;
+	var menuState;
+	var fsm; 
+	var ringSpeed, selectIdx;
+	var graphics
+	
+	
+	/**
+	 * which way to turn to get from angle a to b the fastest (math. rotation)
+	 */
+	function turnDir(a,b)
+	{
+		var g = b-a;
+		var f = a+2*Math.PI-b;
+		if (f > 2*Math.PI) f -= 2*Math.PI;
+		if (g > 2*Math.PI) g -= 2*Math.PI;
+		if (g < f) return g;
+		return -f;
+	}
+	
+	function turnDist(a,b, direction)
+	{
+		var g = b-(a+.001*direction);
+		var f = (a+.001*direction)+2*Math.PI-b;
+		if (direction < 0) return g;
+		return -f;
+	}
 	
 	/**
 	 * preload - load assets
@@ -122,16 +148,15 @@ window.onload = function() {
 	    state = 0;
 	    nSpells = 1;
 	    spellPos = 0;
+	    selectIdx = 0;
+	    ringSpeed =0;
 	    
-		fireSpell = game.add.sprite(player.body.x,player.body.y,'spells')
-		fireSpell.frameName = 'fire_spell';
-		fireSpell.pivot.y=200;
-		fireSpell.anchor.setTo(.5,.5);
+		
 		
 		//  Create a Rectangle
 		selector = new Phaser.Rectangle(player.body.x-18, player.body.y-18+200, 36, 36);
 
-    var fragmentSrc = [
+    /*var fragmentSrc = [
             "precision mediump float;",
             // Incoming texture coordinates. 
             'varying vec2 vTextureCoord;',
@@ -148,22 +173,55 @@ window.onload = function() {
             "void main( void ) {",
             // colorRGBA = (y % 2) * texel(u,v);
             //"a_tmp = texture2D(uSampler, vTextureCoord).a;";
-            "gl_FragColor = (1.- min(1.,((gl_FragCoord.y-(resolution.y-player.y))* (gl_FragCoord.y-(resolution.y-player.y))+ (gl_FragCoord.x-player.x)* (gl_FragCoord.x-player.x))/30000.)) * texture2D(uSampler, vTextureCoord);",
+            "gl_FragColor = (1.- min(1.,sqrt((gl_FragCoord.y-(resolution.y-player.y))* (gl_FragCoord.y-(resolution.y-player.y))+ (gl_FragCoord.x-player.x)* (gl_FragCoord.x-player.x))/150.)) * texture2D(uSampler, vTextureCoord);",
             "gl_FragColor.a = 0.5;",
             "}"
         ];
 
     filter = new Phaser.Filter(game, null, fragmentSrc);
     filter.setResolution(1152, 720);
-    filter.uniforms.player = { type: '2f', value: { x: player.body.x, y: player.body.x } };
+    filter.uniforms.player = { type: '2f', value: { x: player.body.x, y: player.body.x } };*/
 
     /*sprite = game.add.sprite();
     sprite.width = 800;
     sprite.height = 600;*/
 
-    game.world.filters = [ filter ];
-
-
+//  game.world.filters = [ filter ];
+		fsm = StateMachine.create({
+			initial: 'move',
+			events: [
+				{ name: 'activateSpellMenu',  from: 'move',  to: 'spellMenu' },
+				{ name: 'activateMoveMode', from: 'spellMenu', to: 'move'    }
+			]
+			
+			});
+		
+		fsm.onbeforeactivateSpellMenu = function(event, from, to) {
+				fireSpell = game.add.sprite(player.body.x,player.body.y,'spells')
+				fireSpell.frameName = 'fire_spell';
+				fireSpell.pivot.y=-200;
+				fireSpell.anchor.setTo(.5,.5);
+				
+				fireSpell.x = player.body.x;
+				fireSpell.y = player.body.y;
+				
+				selector.x = player.body.x-18;
+				selector.y = player.body.y-18+200;
+				
+				//  And display our circle on the top
+				graphics = game.add.graphics(0, 0);
+				graphics.lineStyle(2, 0xeeeeee, .7);
+				graphics.drawRect(selector.x, selector.y, selector.width, selector.height);
+				
+				overlay.alpha = .7;
+			};
+		fsm.onbeforeactivateMoveMode = function(event, from, to) {
+				fireSpell.destroy();
+				overlay.alpha = 0.;
+				graphics.destroy();
+				
+			};
+		//fsm.start();
 	}
 	
 	function gofull() {
@@ -217,39 +275,43 @@ window.onload = function() {
 		if (state == 1)
 		{
 			if (cursors.left.isDown) {
-				fireSpell.rotation += .2;
+				selectIdx -= 1;
+				if (selectIdx <0) selectIdx = nSpells-1;
+				ringSpeed = +1;
 			}
 			if (cursors.right.isDown) {
-				fireSpell.rotation -= .2;
+				selectIdx += 1;
+				if (selectIdx >= nSpells-1) selectIdx = 0;
+				ringSpeed = -1;
 			}
+			var angRange = 2*Math.PI / nSpells;
+			// rotation=0 is idx 0
+			
+			var rot_tmp = turnDist(fireSpell.rotation, angRange*selectIdx, ringSpeed);
+			console.log(rot_tmp);
+			var rot_dir = Math.sign(rot_tmp);
+			var rot_tmp2 = Math.max(Math.sqrt(Math.abs(rot_tmp)),.08) * rot_dir/10.;
+			if (Math.abs(rot_tmp) < .01) 
+			{
+				fireSpell.rotation = angRange*selectIdx;
+				ringSpeed = 0;
+			}
+			
+			if (ringSpeed != 0)	fireSpell.rotation += rot_tmp2;
 		}
 		//fireSpell.rotation -= .02;
 		
-		fireSpell.x = player.body.x;
-		fireSpell.y = player.body.y;
 		
-		selector.x = player.body.x-18;
-		selector.y = player.body.y-18+200;
 		
 		if (game.input.keyboard.isDown(Phaser.Keyboard.M))
 	    {
-			if (state == 0)
+			if (fsm.is('move'))
 			{
-
-				state = 1;
-				
-				//  And display our circle on the top
-				var graphics = game.add.graphics(0, 0);
-				graphics.lineStyle(2, 0xeeeeee, .7);
-				graphics.drawRect(selector.x, selector.y, selector.width, selector.height);
-				
-				overlay.alpha = .7;
+				fsm.activateSpellMenu();
 			}
-			if (false && state == 1)
+			else
 			{
-				fireSpell.destroy();
-				state = 0;
-				overlay.alpha = 0.;
+				fsm.activateMoveMode();
 			}
 	    }
 		
@@ -258,8 +320,8 @@ window.onload = function() {
 				p.alpha = p.lifespan / emitter.lifespan;
 			});
 		}
-		filter.uniforms.player.value = player.body;
-		filter.update();
+		//filter.uniforms.player.value = player.body;
+		//filter.update();
 	}
 	
 	function particleEffectBloodExplosion(x , y, numParticles, lifeTime) {
