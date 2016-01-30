@@ -1,5 +1,6 @@
-window.onload = function() {
 	var game = new Phaser.Game(1152, 720, Phaser.AUTO, '', { preload: preload, create: create, update: update});
+	
+	var effects = new Effects();
 	
 	// game ressources
 	var levelNames = ['test', 'test2'];
@@ -13,8 +14,6 @@ window.onload = function() {
 	var playerGrp, sheepGrp;
 	var bullets;
 	
-	var fireRate = 300;
-	var nextFire = 0;
 	var circleTile;
 	
 	var carried = null;
@@ -22,7 +21,7 @@ window.onload = function() {
 	var ritualCircle = {
 		posX : 0,
 		posY : 0
-	}
+	};
 	/**
 	 * preload - load assets
 	 */
@@ -30,19 +29,19 @@ window.onload = function() {
 		game.load.tilemap('map', 'assets/tilemaps/'+levelNames[levelNum]+'.json', null, Phaser.Tilemap.TILED_JSON);
 		game.load.image('tileset', 'assets/tilesets/basictiles.png');
 		game.load.spritesheet('particles', 'assets/spritesheets/particles.png', 18, 18);
-	    game.load.spritesheet('wizard', 'assets/spritesheets/wizard.png', 42, 72, 24);
-	    game.load.spritesheet('sheep', 'assets/spritesheets/sheep.png', 36, 36, 15);
-		playerstate = 'passive';
-	    
-	    game.load.audio('ritual_tier_brennt', 'assets/audio/ritual_tier_brennt.ogg');
-	    game.load.audio('shoot', 'assets/audio/shoot.ogg');
-	    game.load.audio('meh', 'assets/audio/meh.ogg');
+		game.load.spritesheet('wizard', 'assets/spritesheets/wizard.png', 42, 72, 24);
+		game.load.spritesheet('sheep', 'assets/spritesheets/sheep.png', 36, 36, 15);
+		
+		game.load.audio('ritual_tier_brennt', 'assets/audio/ritual_tier_brennt.ogg');
+		game.load.audio('meh', 'assets/audio/meh.ogg');
+		effects.preload();
 	}
 	
 	/**
 	 * create - generate and initialise game content
 	 */
 	function create () {
+		effects.create();
 		playerstate = 'passive';
 		// enable scaling
 		game.scale.fullScreenScaleMode = Phaser.ScaleManager.EXACT_FIT;
@@ -281,7 +280,7 @@ window.onload = function() {
 		{
 		    var sound = game.add.audio('ritual_tier_brennt');
 		    sound.play();
-			particleEffectBloodExplosion(player.body.x, player.body.y, 30, 2000);
+			effects.particleEffectBloodExplosion(player.body.x, player.body.y, 30, 2000);
 		}
 		
 		if (game.input.keyboard.isDown(Phaser.Keyboard.Q))
@@ -291,7 +290,7 @@ window.onload = function() {
 		
 		if (game.input.keyboard.isDown(Phaser.Keyboard.E))
 		{
-			fire();
+			effects.fire();
 		}
 		
 		if (game.input.keyboard.isDown(Phaser.Keyboard.B))
@@ -382,44 +381,3 @@ window.onload = function() {
 		}
 	}
 
-	function fire() {
-		if (game.time.now > nextFire && bullets.countDead() > 0)
-		{
-			nextFire = game.time.now + fireRate;
-
-			var bullet = bullets.getFirstDead();
-
-			bullet.reset(player.body.x, player.body.y);
-			bullet.lifespan = 2000;
-//			bullet.animations.play('bullet_anim');#
-			
-			var music = game.add.audio('shoot');
-			music.play();
-
-			game.physics.arcade.moveToPointer(bullet, 300);
-		}
-	}
-	
-	function particleEffectBloodExplosion(x , y, numParticles, lifeTime) {
-		if (emitter == null){
-			emitter = game.add.emitter(x, y, numParticles);
-			emitter.makeParticles('particles', [0, 1, 2, 3, 4, 5, 6, 7, 8], numParticles, true, true);
-//			emitter.minParticleSpeed.setTo(-400, -400);
-//			emitter.maxParticleSpeed.setTo(400, 400);
-			emitter.gravity = 0;
-			emitter.maxParticles = numParticles;
-			
-			emitter.start(true, lifeTime, null, numParticles);
-			game.time.events.add(lifeTime, function(){emitter.destroy(); emitter = null;}, this);
-		}
-	}
-	
-//	function freeResources(){
-//		game.world.removeAll();
-////		emitter.destroy(true, true);
-//		overlay.destroy(true, true);
-//		playerGrp.destroy(true, true);
-//		sheepGrp.destroy(true, true);
-//		bullets.destroy(true, true);
-//	}
-};
