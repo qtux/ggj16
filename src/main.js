@@ -14,8 +14,9 @@ window.onload = function() {
 		game.load.tilemap('map', 'assets/tilemaps/test.json', null, Phaser.Tilemap.TILED_JSON);
 		game.load.image('tileset', 'assets/tilesets/basictiles.png');
 		game.load.spritesheet('player', 'assets/spritesheets/hero.png', 36, 72);
-		game.load.spritesheet('sheep', 'assets/spritesheets/sheep.png', 36, 36);
+		game.load.spritesheet('sheep', 'assets/spritesheets/goat.png', 36, 36);
 		game.load.spritesheet('particles', 'assets/spritesheets/particles.png', 18, 18);
+	    game.load.spritesheet('wizard', 'assets/spritesheets/wizard.png', 36, 72, 12);
 	}
 	
 	/**
@@ -58,7 +59,14 @@ window.onload = function() {
 		}
 		
 		// add sprites
-		player = game.add.sprite(200, 200, 'player', 1);
+		player = game.add.sprite(200, 200, 'wizard', 1);
+		var playerAnimFPS = 10;
+		player.animations.add('player_idle', [0], playerAnimFPS, true);
+		player.animations.add('player_down', [0, 1, 2], playerAnimFPS, true);
+		player.animations.add('player_up', [3, 4, 5], playerAnimFPS, true);
+		player.animations.add('player_right', [6, 7, 8], playerAnimFPS, true);
+		player.animations.add('player_left', [9, 10, 11], playerAnimFPS, true);
+//		player.animations.play('player_down', 3, true);
 		//player.body.debug = true;
 		sheep = game.add.sprite(400, 200, 'sheep');
 		
@@ -93,17 +101,25 @@ window.onload = function() {
 		var speed = 300;
 		if (cursors.left.isDown) {
 			player.body.velocity.x = -speed;
+			player.animations.play('player_left');
 		} else if (cursors.right.isDown) {
 			player.body.velocity.x = speed;
+			player.animations.play('player_right');
 		} else {
 			player.body.velocity.x = 0;
 		}
 		if (cursors.up.isDown) {
 			player.body.velocity.y = -speed;
+			player.animations.play('player_up');
 		} else if (cursors.down.isDown) {
 			player.body.velocity.y = speed;
+			player.animations.play('player_down');
 		} else {
 			player.body.velocity.y = 0;
+		}
+		
+		if (player.body.velocity.x == 0 && player.body.velocity.y == 0) {
+			player.animations.play('player_idle', 3, true);
 		}
 		
 		if (emitter != null) {
