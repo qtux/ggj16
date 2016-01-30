@@ -282,7 +282,6 @@ window.onload = function() {
 		    var sound = game.add.audio('ritual_tier_brennt');
 		    sound.play();
 			particleEffectBloodExplosion(player.body.x, player.body.y, 30, 2000);
-			this.game.state.restart();
 		}
 		
 		if (game.input.keyboard.isDown(Phaser.Keyboard.Q))
