@@ -4,7 +4,7 @@ window.onload = function() {
 	// game ressources
 	var map, layer, layer1;		// tilemap related
 	var player, sheep;			// sprites
-	var npcCG;					// collision groups
+	var npcCG, tileCG, playerCG;					// collision groups
 	var emitter;
 	
 	/**
@@ -31,6 +31,15 @@ window.onload = function() {
 		
 		// register collision groups
 		npcCG = game.physics.p2.createCollisionGroup();
+		tileCG = game.physics.p2.createCollisionGroup();
+		playerCG = game.physics.p2.createCollisionGroup();
+		
+		// enable collision with world bounds
+		game.physics.p2.updateBoundsCollisionGroup();
+		// enable callbacks on collision
+		//game.physics.p2.setImpactEvents(true);
+		// set the default coefficient of restitution between colliding bodies
+		//game.physics.p2.restitution = 0.8;
 		
 		// load tile map
 		game.stage.backgroundColor = '#555555';
@@ -38,10 +47,15 @@ window.onload = function() {
 		map.addTilesetImage('basictiles', 'tileset');
 		layer = map.createLayer('layer0');
 		layer1 = map.createLayer('layer1');
-		layer.resizeWorld();
-		// set collision using the collision map
-		map.setCollision(100, true, "collision");
-		game.physics.p2.convertTilemap(map, "collision");
+		
+		// set tile collision group
+		map.setCollision(100, true, 'collision');
+		var tileObjects = game.physics.p2.convertTilemap(map, 'collision');
+		for (var i = 0; i < tileObjects.length; i++) {
+			tileObjects[i].setCollisionGroup(tileCG);
+			tileObjects[i].collides(npcCG);
+			tileObjects[i].collides(playerCG);
+		}
 		
 		// add sprites
 		player = game.add.sprite(200, 200, 'player', 1);
@@ -50,15 +64,17 @@ window.onload = function() {
 		
 		// enable physics for player
 		game.physics.p2.enable(player);
-		player.body.fixedRotation = true; // no rotation
-		player.body.collideWorldBounds = true;
-		//player.body.collides(npcCG);
+		player.body.fixedRotation = true;
+		player.body.setCollisionGroup(playerCG);
+		player.body.collides(tileCG);
+		player.body.collides(npcCG);
 		
 		// enable physics for sheep
 		game.physics.p2.enable(sheep);
+		sheep.body.fixedRotation = true;
 		sheep.body.setCollisionGroup(npcCG);
-		sheep.body.collides(player);
-		sheep.body.collideWorldBounds = true;
+		sheep.body.collides(playerCG);
+		sheep.body.collides(tileCG);
 		
 		// enable user input
 		cursors = game.input.keyboard.createCursorKeys();
