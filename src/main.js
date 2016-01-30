@@ -236,8 +236,16 @@ window.onload = function() {
 	function resolveAImovement() {
 		// random walk
 		if (playerstate == 'passive') {
-			sheep.body.force.x = ((game.rnd.integer() % 20) - 10) * 10;
-			sheep.body.force.y = ((game.rnd.integer() % 20) - 10) * 10;
+			//sheep.body.force.x = ((game.rnd.integer() % 20) - 10) * 10;
+			//sheep.body.force.y = ((game.rnd.integer() % 20) - 10) * 10;
+			var newVelo = new Phaser.Point(((game.rnd.integer() % 20) - 10) * 10, ((game.rnd.integer() % 20) - 10) * 10);
+			if (Phaser.Point.angle(new Phaser.Point(sheep.body.velocity.x, sheep.body.velocity.y), newVelo) > 3.15/4) {
+				console.debug('high change');
+			} else {
+				sheep.body.force.x = newVelo.x;
+				sheep.body.force.y = newVelo.y;
+			}
+			
 		}
 		// seek
 		if (playerstate == 'angeredSheep') {
