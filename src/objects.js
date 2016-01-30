@@ -18,30 +18,6 @@ Objects = function() {
 		
 		ritualSound = game.add.audio('ritual_tier_brennt');
 		
-		playerGrp = game.add.group();
-		map.createFromObjects('objects', 102, 'wizard', 1, true, false, playerGrp);
-		player = playerGrp.getTop();
-		var playerAnimFPS = 10;
-		player.animations.add('player_idle', [0], playerAnimFPS, true);
-		player.animations.add('player_down', [0, 1,0, 2], playerAnimFPS, true);
-		player.animations.add('player_up', [3, 4, 3, 5], playerAnimFPS, true);
-		player.animations.add('player_right', [6, 7, 6, 8], playerAnimFPS, true);
-		player.animations.add('player_left', [9, 10, 9, 11], playerAnimFPS, true);
-		player.animations.add('player_carrying_idle', [12], playerAnimFPS, true);
-		player.animations.add('player_carrying_down', [12, 13, 12, 14], playerAnimFPS, true);
-		player.animations.add('player_carrying_up', [15, 16, 15, 17], playerAnimFPS, true);
-		player.animations.add('player_carrying_right', [18, 19, 18, 20], playerAnimFPS, true);
-		player.animations.add('player_carrying_left', [21, 22, 21, 23], playerAnimFPS, true);
-		//player.body.debug = true;
-		
-		// enable physics for player
-		game.physics.p2.enable(player);
-		player.body.setRectangle(42, 36, 0, 18);
-		player.body.fixedRotation = true;
-		player.body.setCollisionGroup(playerCG);
-		player.body.collides(tileCG);
-		player.body.collides(npcCG);
-		
 		// enable user input
 		cursors = game.input.keyboard.createCursorKeys();
 		
@@ -84,6 +60,30 @@ Objects = function() {
 			goat.body.collides(tileCG, npcBumpedWall, this);
 			goat.body.collides(bulletsCG, function() {var sound = game.add.audio('meh'); sound.play();}, this);}, this
 		);
+		
+		playerGrp = game.add.group();
+		map.createFromObjects('objects', 102, 'wizard', 1, true, false, playerGrp);
+		player = playerGrp.getTop();
+		var playerAnimFPS = 10;
+		player.animations.add('player_idle', [0], playerAnimFPS, true);
+		player.animations.add('player_down', [0, 1,0, 2], playerAnimFPS, true);
+		player.animations.add('player_up', [3, 4, 3, 5], playerAnimFPS, true);
+		player.animations.add('player_right', [6, 7, 6, 8], playerAnimFPS, true);
+		player.animations.add('player_left', [9, 10, 9, 11], playerAnimFPS, true);
+		player.animations.add('player_carrying_idle', [12], playerAnimFPS, true);
+		player.animations.add('player_carrying_down', [12, 13, 12, 14], playerAnimFPS, true);
+		player.animations.add('player_carrying_up', [15, 16, 15, 17], playerAnimFPS, true);
+		player.animations.add('player_carrying_right', [18, 19, 18, 20], playerAnimFPS, true);
+		player.animations.add('player_carrying_left', [21, 22, 21, 23], playerAnimFPS, true);
+		//player.body.debug = true;
+		
+		// enable physics for player
+		game.physics.p2.enable(player);
+		player.body.setRectangle(42, 36, 0, 18);
+		player.body.fixedRotation = true;
+		player.body.setCollisionGroup(playerCG);
+		player.body.collides(tileCG);
+		player.body.collides(npcCG);
 	};
 	
 	this.update = function() {
