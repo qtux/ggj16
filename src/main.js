@@ -19,7 +19,7 @@ window.onload = function() {
 	var switchTimer;
 	var switchTimer2;
 	var rot_tmp;
-	
+	var spellSprites;
 	
 	/**
 	 * which way to turn to get from angle a to b the fastest (math. rotation)
@@ -155,12 +155,13 @@ window.onload = function() {
 	    
 	    // set state of player for "regular" game play
 	    state = 0;
-	    nSpells = 2;
+	    nSpells = 3;
 	    spellPos = 0;
 	    selectIdx = 0;
 	    ringSpeed =0;
 	    switchTimer = game.time.now-5000;
 		
+		spellSprites = [];
 		
 		//  Create a Rectangle
 		selector = new Phaser.Rectangle(player.body.x-18, player.body.y-18+200, 36, 36);
@@ -208,28 +209,29 @@ window.onload = function() {
 		fsm.onbeforeactivateSpellMenu = function(event, from, to) {
 				player.body.velocity.x = 0.;
 				player.body.velocity.y = 0.;
-				fireSpell = game.add.sprite(player.body.x,player.body.y,'spells')
-				fireSpell.frameName = 'fire_spell';
-				fireSpell.pivot.y=-200;
-				fireSpell.anchor.setTo(.5,.5);
 				
-				fireSpell.x = player.body.x;
-				fireSpell.y = player.body.y;
+				spellSprites.push(game.add.sprite(player.body.x,player.body.y,'spells'))
+				spellSprites.push(game.add.sprite(player.body.x,player.body.y,'spells'))
+				spellSprites.push(game.add.sprite(player.body.x,player.body.y,'spells'))
+				spellSprites[0].frameName = 'fire_spell';
+				spellSprites[1].frameName = 'poison_spell';
+				spellSprites[2].frameName = 'arcane_spell';
 				
+				for (var i = 0 ; i < spellSprites.length ; i++)
+				{
+					spellSprites[i].pivot.y=-200;
+					spellSprites[i].anchor.setTo(.5,.5);
 				
-				poisonSpell = game.add.sprite(player.body.x,player.body.y,'spells')
-				poisonSpell.frameName = 'poison_spell';
-				poisonSpell.pivot.y=-200;
-				poisonSpell.anchor.setTo(.5,.5);
+					spellSprites[i].x = player.body.x;
+					spellSprites[i].y = player.body.y;
 				
-				poisonSpell.x = player.body.x;
-				poisonSpell.y = player.body.y;
-				poisonSpell.rotation = Math.PI;
+					spellSprites[i].rotation = 2.*Math.PI / nSpells * i;
+				}
 				
 				selector.x = player.body.x-18;
 				selector.y = player.body.y-18+200;
 				
-				//  And display our circle on the top
+				//  And display our rect on the top
 				graphics = game.add.graphics(0, 0);
 				graphics.lineStyle(2, 0xeeeeee, .7);
 				graphics.drawRect(selector.x, selector.y, selector.width, selector.height);
@@ -238,7 +240,11 @@ window.onload = function() {
 				switchTimer2 = game.time.now;
 			};
 		fsm.onbeforeactivateMoveMode = function(event, from, to) {
-				fireSpell.destroy();
+				for (var i = spellSprites.length-1; i >=0; i--)
+				{
+					spellSprites[i].destroy();
+					shellSprites.pop();
+				}	
 				overlay.alpha = 0.;
 				graphics.destroy();
 				
@@ -300,17 +306,17 @@ window.onload = function() {
 			if (cursors.left.isDown && Math.abs(game.time.now - switchTimer2) > 800) {
 				selectIdx -= 1;
 				if (selectIdx <0) selectIdx = nSpells-1;
-				ringSpeed = +1;
+				ringSpeed = -1;
 				switchTimer2 = game.time.now;
-				rot_tmp = turnDist(fireSpell.rotation, angRange*selectIdx, ringSpeed);
+				rot_tmp = turnDist(spellSprites[0].rotation, angRange*(selectIdx-1), ringSpeed);
 				console.log(rot_tmp);
 			}
 			if (cursors.right.isDown && Math.abs(game.time.now - switchTimer2) > 800) {
 				selectIdx += 1;
 				if (selectIdx >= nSpells) selectIdx = 0;
-				ringSpeed = -1;
+				ringSpeed = +1;
 				switchTimer2 = game.time.now;
-				rot_tmp = turnDist(fireSpell.rotation, angRange*selectIdx, ringSpeed);
+				rot_tmp = turnDist(spellSprites[0].rotation, angRange*selectIdx, ringSpeed);
 				console.log(rot_tmp);
 			}
 			
@@ -322,15 +328,19 @@ window.onload = function() {
 			var rot_tmp2 = rot_dir * .08;
 			if ( Math.abs(rot_tmp) < .1)
 			{
-				fireSpell.rotation = angRange*selectIdx;
-				poisonSpell.rotation = angRange*selectIdx + angRange;
+				for (var i = 0; i < spellSprites.length; i++)
+				{
+					spellSprites[i].rotation = angRange*selectIdx + angRange * i;
+				}
 				ringSpeed = 0;
 			}
 			
 			if (ringSpeed != 0)	
 			{
-				fireSpell.rotation += rot_tmp2;
-				poisonSpell.rotation += rot_tmp2;
+				for (var i = 0; i < spellSprites.length; i++)
+				{
+					spellSprites[i].rotation += rot_tmp2;
+				}
 				rot_tmp -= rot_tmp2;
 			}
 		}
