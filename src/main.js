@@ -262,6 +262,8 @@ window.onload = function() {
 		
 		if (game.input.keyboard.isDown(Phaser.Keyboard.R))
 		{
+		    var sound = game.add.audio('ritual_tier_brennt');
+		    sound.play();
 			particleEffectBloodExplosion(player.body.x, player.body.y, 30, 2000);
 		}
 		
@@ -388,9 +390,6 @@ window.onload = function() {
 			
 			emitter.start(true, lifeTime, null, numParticles);
 			game.time.events.add(lifeTime, function(){emitter.destroy(); emitter = null;}, this);
-			
-			var sound = game.add.audio('ritual_tier_brennt');
-			sound.play();
 		}
 	}
 };
