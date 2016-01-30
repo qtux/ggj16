@@ -2,6 +2,8 @@ window.onload = function() {
 	var game = new Phaser.Game(1152, 720, Phaser.AUTO, '', { preload: preload, create: create, update: update});
 	
 	// game ressources
+	var levelNames = ['test', 'test2'];
+	var levelNum = 0;
 	var map, layer, layer1;		// tilemap related
 	var player, sheep, bulletSprite;			// sprites
 	var npcCG, tileCG, playerCG, bulletsCG;					// collision groups
@@ -25,7 +27,7 @@ window.onload = function() {
 	 * preload - load assets
 	 */
 	function preload () {
-		game.load.tilemap('map', 'assets/tilemaps/test.json', null, Phaser.Tilemap.TILED_JSON);
+		game.load.tilemap('map', 'assets/tilemaps/'+levelNames[levelNum]+'.json', null, Phaser.Tilemap.TILED_JSON);
 		game.load.image('tileset', 'assets/tilesets/basictiles.png');
 		game.load.spritesheet('particles', 'assets/spritesheets/particles.png', 18, 18);
 	    game.load.spritesheet('wizard', 'assets/spritesheets/wizard.png', 42, 72, 24);
@@ -260,11 +262,27 @@ window.onload = function() {
 			}
 		}
 		
+		if (game.input.keyboard.isDown(Phaser.Keyboard.N)) {
+			if (levelNum + 1 < levelNames.length){
+				levelNum += 1;
+			}
+			this.game.state.restart();	
+		}
+		
+		if (game.input.keyboard.isDown(Phaser.Keyboard.P)) {
+			if (levelNum > 0){
+				levelNum -= 1;
+			}
+			this.game.state.restart();
+
+		}
+		
 		if (game.input.keyboard.isDown(Phaser.Keyboard.R))
 		{
 		    var sound = game.add.audio('ritual_tier_brennt');
 		    sound.play();
 			particleEffectBloodExplosion(player.body.x, player.body.y, 30, 2000);
+			this.game.state.restart();
 		}
 		
 		if (game.input.keyboard.isDown(Phaser.Keyboard.Q))
@@ -392,4 +410,13 @@ window.onload = function() {
 			game.time.events.add(lifeTime, function(){emitter.destroy(); emitter = null;}, this);
 		}
 	}
+	
+//	function freeResources(){
+//		game.world.removeAll();
+////		emitter.destroy(true, true);
+//		overlay.destroy(true, true);
+//		playerGrp.destroy(true, true);
+//		sheepGrp.destroy(true, true);
+//		bullets.destroy(true, true);
+//	}
 };
