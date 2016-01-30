@@ -21,9 +21,14 @@ window.onload = function() {
 		game.load.tilemap('map', 'assets/tilemaps/test.json', null, Phaser.Tilemap.TILED_JSON);
 		game.load.image('tileset', 'assets/tilesets/basictiles.png');
 		game.load.spritesheet('particles', 'assets/spritesheets/particles.png', 18, 18);
-		game.load.spritesheet('wizard', 'assets/spritesheets/wizard.png', 36, 72, 12);
-		game.load.spritesheet('sheep', 'assets/spritesheets/sheep.png', 36, 36, 12);
+	    game.load.spritesheet('wizard', 'assets/spritesheets/wizard.png', 36, 72, 12);
+	    game.load.spritesheet('sheep', 'assets/spritesheets/sheep.png', 36, 36, 12);
 		playerstate = 'passive';
+	    
+	    game.load.audio('ritual_tier_brennt', 'assets/audio/ritual_tier_brennt.ogg');
+	    game.load.audio('shoot', 'assets/audio/shoot.ogg');
+	    game.load.audio('meh', 'assets/audio/meh.ogg');
+
 	}
 	
 	/**
@@ -36,6 +41,7 @@ window.onload = function() {
 		
 		// start physics system
 		game.physics.startSystem(Phaser.Physics.P2JS);
+	    game.physics.p2.setImpactEvents(true);
 		
 		// register collision groups
 		npcCG = game.physics.p2.createCollisionGroup();
@@ -101,40 +107,39 @@ window.onload = function() {
 			sheep.body.setCollisionGroup(npcCG);
 			sheep.body.collides(playerCG, npcBumpedPlayer, this);
 			sheep.body.collides(tileCG, npcBumpedWall, this);
-			sheep.body.collides(bulletsCG);
-		}, this);
+			sheep.body.collides(bulletsCG, function() {var sound = game.add.audio('meh'); sound.play();}, this);}, this);
 		
 		// bullets
 		bullets = game.add.group();
-		bullets.enableBody = true;
-		bullets.physicsBodyType = Phaser.Physics.P2JS;
-		
-		bullets.createMultiple(10, 'particles', maxBullets);
-		var maxBullets = 10;
-		for (var i = 0; i < bullets.children.length; i++)
-		{
-			var tmpBullet = bullets.children[i];
-//			tmpBullet.lifespan = 1000;
-//			var tmpBullet = bullets.create(0, 0, 'particles', 10);
-//			tmpBullet.body.setRectangle(40, 40);
-			game.physics.p2.enable(tmpBullet);
-			tmpBullet.animations.add('bullet_anim', [10, 11, 12, 13], 20, true);
-			tmpBullet.animations.play('bullet_anim')
-			
-			tmpBullet.body.setCollisionGroup(bulletsCG);
-			tmpBullet.body.collides(tileCG);
-			tmpBullet.body.collides(npcCG);
-		}
-		
-//		bullets.callAll('animations.add', 'animations', 'bullet_anim', [10, 11, 12, 13], 1, true, false);
-//		bullets.callAll('play', 'animations', 'bullet_anim');
-		
-//		for (var i in bullets) {
-//			console.log(typeof(bullets.getAt(i)));
-////			tmpBullet = game.add.sprite(100, 0, 'particles', 1);
-//			bullets.getAt(i).animations.add('bullet_anim', [10, 11, 12, 13], 20, true);
-//			tmpBullet.animations.play('bullet_anim')
-//		}
+	    bullets.enableBody = true;
+	    bullets.physicsBodyType = Phaser.Physics.P2JS;
+	    bullets.createMultiple(10, 'particles', maxBullets);
+	    var maxBullets = 10;
+	    for (var i = 0; i < bullets.children.length; i++)
+	    {
+	    	var tmpBullet = bullets.children[i];
+//	    	tmpBullet.lifespan = 1000;
+//	        var tmpBullet = bullets.create(0, 0, 'particles', 10);
+//	        tmpBullet.body.setRectangle(40, 40);
+	        game.physics.p2.enable(tmpBullet);
+//	        tmpBullet.scale.setTo(2, 2);
+	        tmpBullet.animations.add('bullet_anim', [10, 11, 12, 13], 20, true);
+	    	tmpBullet.animations.play('bullet_anim')
+	        
+	        tmpBullet.body.setCollisionGroup(bulletsCG);
+	        tmpBullet.body.collides(tileCG);
+	        tmpBullet.body.collides(npcCG);
+	    }
+	    
+//	    bullets.callAll('animations.add', 'animations', 'bullet_anim', [10, 11, 12, 13], 1, true, false);
+//	    bullets.callAll('play', 'animations', 'bullet_anim');
+	    
+//	    for (var i in bullets) {
+//	    	console.log(typeof(bullets.getAt(i)));
+////	    	tmpBullet = game.add.sprite(100, 0, 'particles', 1);
+//	    	bullets.getAt(i).animations.add('bullet_anim', [10, 11, 12, 13], 20, true);
+//	    	tmpBullet.animations.play('bullet_anim')
+//	    }
 
 		bullets.setAll('checkWorldBounds', true);
 		bullets.setAll('outOfBoundsKill', true);
@@ -279,19 +284,21 @@ window.onload = function() {
 	}
 
 	function fire() {
-		if (game.time.now > nextFire && bullets.countDead() > 0)
-		{
-			nextFire = game.time.now + fireRate;
-			
-			var bullet = bullets.getFirstDead();
-			
-			bullet.reset(player.body.x, player.body.y);
-			bullet.lifespan = 2000;
-//			bullet.animations.play('bullet_anim');
-			
-			game.physics.arcade.moveToPointer(bullet, 300);
-		}
-		
+	    if (game.time.now > nextFire && bullets.countDead() > 0)
+	    {
+	        nextFire = game.time.now + fireRate;
+
+	        var bullet = bullets.getFirstDead();
+
+	        bullet.reset(player.body.x, player.body.y);
+	        bullet.lifespan = 2000;
+//	        bullet.animations.play('bullet_anim');#
+	        
+		    var music = game.add.audio('shoot');
+		    music.play();
+
+	        game.physics.arcade.moveToPointer(bullet, 300);
+	    }
 	}
 	
 	function particleEffectBloodExplosion(x , y, numParticles, lifeTime) {
@@ -306,6 +313,8 @@ window.onload = function() {
 			emitter.start(true, lifeTime, null, numParticles);
 			game.time.events.add(lifeTime, function(){emitter.destroy(); emitter = null;}, this);
 			
+		    var sound = game.add.audio('ritual_tier_brennt');
+		    sound.play();
 		}
 	}
 };
