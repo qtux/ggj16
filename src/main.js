@@ -7,6 +7,11 @@ window.onload = function() {
 	var npcCG, tileCG, playerCG;					// collision groups
 	var emitter;
 	var overlay;
+	var state;
+	var nSpells;
+	var fireSpell;
+	var selector;
+	var spellPos;
 	
 	/**
 	 * preload - load assets
@@ -14,10 +19,14 @@ window.onload = function() {
 	function preload () {
 		game.load.tilemap('map', 'assets/tilemaps/test.json', null, Phaser.Tilemap.TILED_JSON);
 		game.load.image('tileset', 'assets/tilesets/basictiles.png');
+		game.load.atlas('spells', 'assets/spritesheets/spells.png','assets/spritesheets/spells.json');
 		game.load.spritesheet('player', 'assets/spritesheets/hero.png', 36, 72);
 		game.load.spritesheet('particles', 'assets/spritesheets/particles.png', 18, 18);
 	    game.load.spritesheet('wizard', 'assets/spritesheets/wizard.png', 36, 72, 12);
 	    game.load.spritesheet('sheep', 'assets/spritesheets/sheep.png', 36, 36, 12);
+	    
+		game.load.script('filterX', 'https://cdn.rawgit.com/photonstorm/phaser/master/filters/BlurX.js');
+		game.load.script('filterY', 'https://cdn.rawgit.com/photonstorm/phaser/master/filters/BlurY.js');
 	}
 	
 	/**
@@ -108,6 +117,53 @@ window.onload = function() {
 	    // use the bitmap data as the texture for the sprite
 	    overlay = game.add.sprite(0, 0, bmd);
 	    overlay.alpha = 0.0;
+	    
+	    // set state of player for "regular" game play
+	    state = 0;
+	    nSpells = 1;
+	    spellPos = 0;
+	    
+		fireSpell = game.add.sprite(player.body.x,player.body.y,'spells')
+		fireSpell.frameName = 'fire_spell';
+		fireSpell.pivot.y=200;
+		fireSpell.anchor.setTo(.5,.5);
+		
+		//  Create a Rectangle
+		selector = new Phaser.Rectangle(player.body.x-18, player.body.y-18+200, 36, 36);
+
+    var fragmentSrc = [
+            "precision mediump float;",
+            // Incoming texture coordinates. 
+            'varying vec2 vTextureCoord;',
+            // Incoming vertex color
+            'varying vec4 vColor;',
+            // Sampler for a) sprite image or b) rendertarget in case of game.world.filter
+            'uniform sampler2D uSampler;',
+
+            "uniform vec2      resolution;",
+            "uniform float     time;",
+            "uniform vec2      mouse;",
+            "uniform vec2      player;",
+
+            "void main( void ) {",
+            // colorRGBA = (y % 2) * texel(u,v);
+            //"a_tmp = texture2D(uSampler, vTextureCoord).a;";
+            "gl_FragColor = (1.- min(1.,((gl_FragCoord.y-(resolution.y-player.y))* (gl_FragCoord.y-(resolution.y-player.y))+ (gl_FragCoord.x-player.x)* (gl_FragCoord.x-player.x))/30000.)) * texture2D(uSampler, vTextureCoord);",
+            "gl_FragColor.a = 0.5;",
+            "}"
+        ];
+
+    filter = new Phaser.Filter(game, null, fragmentSrc);
+    filter.setResolution(1152, 720);
+    filter.uniforms.player = { type: '2f', value: { x: player.body.x, y: player.body.x } };
+
+    /*sprite = game.add.sprite();
+    sprite.width = 800;
+    sprite.height = 600;*/
+
+    game.world.filters = [ filter ];
+
+
 	}
 	
 	function gofull() {
@@ -121,40 +177,80 @@ window.onload = function() {
 	
 	function update() {
 		var dt = game.time.elapsed;
-		overlay.alpha -= dt * 0.0005;
-		
-		var speed = 300;
-		if (cursors.left.isDown) {
-			player.body.velocity.x = -speed;
-			player.animations.play('player_left');
-		} else if (cursors.right.isDown) {
-			player.body.velocity.x = speed;
-			player.animations.play('player_right');
-		} else {
-			player.body.velocity.x = 0;
+		if (state ==0){
+			overlay.alpha -= dt * 0.0005;
+			
+			var speed = 300;
+			if (cursors.left.isDown) {
+				player.body.velocity.x = -speed;
+				player.animations.play('player_left');
+			} else if (cursors.right.isDown) {
+				player.body.velocity.x = speed;
+				player.animations.play('player_right');
+			} else {
+				player.body.velocity.x = 0;
+			}
+			if (cursors.up.isDown) {
+				player.body.velocity.y = -speed;
+				player.animations.play('player_up');
+			} else if (cursors.down.isDown) {
+				player.body.velocity.y = speed;
+				player.animations.play('player_down');
+			} else {
+				player.body.velocity.y = 0;
+			}
+			
+			if (player.body.velocity.x == 0 && player.body.velocity.y == 0) {
+				player.animations.play('player_idle', 3, true);
+			}
+			
+			if (game.input.keyboard.isDown(Phaser.Keyboard.E))
+			{
+				particleEffectBloodExplosion(player.body.x, player.body.y, 30, 2000);
+			}
+			
+			if (game.input.keyboard.isDown(Phaser.Keyboard.B))
+			{
+				overlay.alpha = 1.0;
+			}
 		}
-		if (cursors.up.isDown) {
-			player.body.velocity.y = -speed;
-			player.animations.play('player_up');
-		} else if (cursors.down.isDown) {
-			player.body.velocity.y = speed;
-			player.animations.play('player_down');
-		} else {
-			player.body.velocity.y = 0;
+		if (state == 1)
+		{
+			if (cursors.left.isDown) {
+				fireSpell.rotation += .2;
+			}
+			if (cursors.right.isDown) {
+				fireSpell.rotation -= .2;
+			}
 		}
+		//fireSpell.rotation -= .02;
 		
-		if (player.body.velocity.x == 0 && player.body.velocity.y == 0) {
-			player.animations.play('player_idle', 3, true);
-		}
+		fireSpell.x = player.body.x;
+		fireSpell.y = player.body.y;
 		
-		if (game.input.keyboard.isDown(Phaser.Keyboard.E))
+		selector.x = player.body.x-18;
+		selector.y = player.body.y-18+200;
+		
+		if (game.input.keyboard.isDown(Phaser.Keyboard.M))
 	    {
-			particleEffectBloodExplosion(player.body.x, player.body.y, 30, 2000);
-	    }
-		
-		if (game.input.keyboard.isDown(Phaser.Keyboard.B))
-	    {
-		    overlay.alpha = 1.0;
+			if (state == 0)
+			{
+
+				state = 1;
+				
+				//  And display our circle on the top
+				var graphics = game.add.graphics(0, 0);
+				graphics.lineStyle(2, 0xeeeeee, .7);
+				graphics.drawRect(selector.x, selector.y, selector.width, selector.height);
+				
+				overlay.alpha = .7;
+			}
+			if (false && state == 1)
+			{
+				fireSpell.destroy();
+				state = 0;
+				overlay.alpha = 0.;
+			}
 	    }
 		
 		if (emitter != null) {
@@ -162,6 +258,8 @@ window.onload = function() {
 				p.alpha = p.lifespan / emitter.lifespan;
 			});
 		}
+		filter.uniforms.player.value = player.body;
+		filter.update();
 	}
 	
 	function particleEffectBloodExplosion(x , y, numParticles, lifeTime) {
