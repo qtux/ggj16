@@ -263,7 +263,7 @@ window.onload = function() {
 		sheepGrp.forEach(function(sheep) { resolveAImovement(sheep) }, this);
 	}
 	
-	function resolveAImovement(npc) {
+	function resolveAImovement(npc) {		
 		// random walk
 		if (playerstate == 'passive') {
 			//npc.body.force.x = ((game.rnd.integer() % 20) - 10) * 10;
@@ -282,8 +282,29 @@ window.onload = function() {
 			var target = new Phaser.Point(player.body.x, player.body.y);
 			var seeker = new Phaser.Point(npc.body.x, npc.body.y);
 			var distNPCPlayer = Phaser.Point.normalize(Phaser.Point.subtract(target, Phaser.Point.add(seeker, new Phaser.Point(npc.body.velocity.x, npc.body.velocity.y))));
-			npc.body.velocity.x = distNPCPlayer.x * maxSpeed;
-			npc.body.velocity.y = distNPCPlayer.y * maxSpeed;
+			npc.body.force.x = distNPCPlayer.x * maxSpeed;
+			npc.body.force.y = distNPCPlayer.y * maxSpeed;
+		}
+		
+		// sheep animation
+		if (Math.abs(npc.body.velocity.y) > Math.abs(npc.body.velocity.x)) {
+			if (npc.body.velocity.y > 0) {
+				npc.animations.play('sheep_down');
+			} else if (npc.body.velocity.y < 0) {
+				npc.animations.play('sheep_up');
+			} else {
+				npc.animations.play('sheep_idle');
+			}
+		}
+		
+		if (Math.abs(npc.body.velocity.y) < Math.abs(npc.body.velocity.x)) {
+			if (npc.body.velocity.x > 0) {
+				npc.animations.play('sheep_left');
+			} else if (npc.body.velocity.x < 0) {
+				npc.animations.play('sheep_right');
+			} else {
+				npc.animations.play('sheep_idle');
+			}
 		}
 	}
 	
@@ -293,8 +314,6 @@ window.onload = function() {
 	}
 	
 	function npcBumpedPlayer(npcBody, playerBody) {
-		npcBody.velocity.x = 0;
-		npcBody.velocity.x = 0;
 		playerstate = 'passive';
 	}
 
