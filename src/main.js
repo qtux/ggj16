@@ -106,63 +106,63 @@ window.onload = function() {
 		
 		// bullets
 		bullets = game.add.group();
-	    bullets.enableBody = true;
-	    bullets.physicsBodyType = Phaser.Physics.P2JS;
+		bullets.enableBody = true;
+		bullets.physicsBodyType = Phaser.Physics.P2JS;
 		
-	    bullets.createMultiple(10, 'particles', maxBullets);
-	    var maxBullets = 10;
-	    for (var i = 0; i < bullets.children.length; i++)
-	    {
-	    	var tmpBullet = bullets.children[i];
-//	    	tmpBullet.lifespan = 1000;
-//	        var tmpBullet = bullets.create(0, 0, 'particles', 10);
-//	        tmpBullet.body.setRectangle(40, 40);
-	        game.physics.p2.enable(tmpBullet);
-	        tmpBullet.animations.add('bullet_anim', [10, 11, 12, 13], 20, true);
-	    	tmpBullet.animations.play('bullet_anim')
-	        
-	        tmpBullet.body.setCollisionGroup(bulletsCG);
-	        tmpBullet.body.collides(tileCG);
-	        tmpBullet.body.collides(npcCG);
-	    }
-	    
-//	    bullets.callAll('animations.add', 'animations', 'bullet_anim', [10, 11, 12, 13], 1, true, false);
-//	    bullets.callAll('play', 'animations', 'bullet_anim');
-	    
-//	    for (var i in bullets) {
-//	    	console.log(typeof(bullets.getAt(i)));
-////	    	tmpBullet = game.add.sprite(100, 0, 'particles', 1);
-//	    	bullets.getAt(i).animations.add('bullet_anim', [10, 11, 12, 13], 20, true);
-//	    	tmpBullet.animations.play('bullet_anim')
-//	    }
+		bullets.createMultiple(10, 'particles', maxBullets);
+		var maxBullets = 10;
+		for (var i = 0; i < bullets.children.length; i++)
+		{
+			var tmpBullet = bullets.children[i];
+//			tmpBullet.lifespan = 1000;
+//			var tmpBullet = bullets.create(0, 0, 'particles', 10);
+//			tmpBullet.body.setRectangle(40, 40);
+			game.physics.p2.enable(tmpBullet);
+			tmpBullet.animations.add('bullet_anim', [10, 11, 12, 13], 20, true);
+			tmpBullet.animations.play('bullet_anim')
+			
+			tmpBullet.body.setCollisionGroup(bulletsCG);
+			tmpBullet.body.collides(tileCG);
+			tmpBullet.body.collides(npcCG);
+		}
+		
+//		bullets.callAll('animations.add', 'animations', 'bullet_anim', [10, 11, 12, 13], 1, true, false);
+//		bullets.callAll('play', 'animations', 'bullet_anim');
+		
+//		for (var i in bullets) {
+//			console.log(typeof(bullets.getAt(i)));
+////			tmpBullet = game.add.sprite(100, 0, 'particles', 1);
+//			bullets.getAt(i).animations.add('bullet_anim', [10, 11, 12, 13], 20, true);
+//			tmpBullet.animations.play('bullet_anim')
+//		}
 
-	    bullets.setAll('checkWorldBounds', true);
-	    bullets.setAll('outOfBoundsKill', true);
-	    
-//	    bulletSprite = game.add.sprite(400, 300, 'particles', 10);
-//	    bulletSprite.animations.add('bullet_anim', [10, 11, 12, 13], 20, true);
-//	    bulletSprite.animations.play('bullet_anim');
-//	    bulletSprite.anchor.set(0.5);
+		bullets.setAll('checkWorldBounds', true);
+		bullets.setAll('outOfBoundsKill', true);
+		
+//		bulletSprite = game.add.sprite(400, 300, 'particles', 10);
+//		bulletSprite.animations.add('bullet_anim', [10, 11, 12, 13], 20, true);
+//		bulletSprite.animations.play('bullet_anim');
+//		bulletSprite.anchor.set(0.5);
 
-//	    game.physics.enable(bulletSprite, Phaser.Physics.P2JS);
+//		game.physics.enable(bulletSprite, Phaser.Physics.P2JS);
 
-//	    bulletSprite.body.allowRotation = false;
+//		bulletSprite.body.allowRotation = false;
 		
 		// enable user input
 		cursors = game.input.keyboard.createCursorKeys();
 
-	    // create a new bitmap data object
-	    var bmd = game.add.bitmapData(game.width, game.height);
+		// create a new bitmap data object
+		var bmd = game.add.bitmapData(game.width, game.height);
 
-	    // draw to the canvas context like normal
-	    bmd.ctx.beginPath();
-	    bmd.ctx.rect(0, 0, game.width, game.height);
-	    bmd.ctx.fillStyle = '#000000';
-	    bmd.ctx.fill();
+		// draw to the canvas context like normal
+		bmd.ctx.beginPath();
+		bmd.ctx.rect(0, 0, game.width, game.height);
+		bmd.ctx.fillStyle = '#000000';
+		bmd.ctx.fill();
 
-	    // use the bitmap data as the texture for the sprite
-	    overlay = game.add.sprite(0, 0, bmd);
-	    overlay.alpha = 0.0;
+		// use the bitmap data as the texture for the sprite
+		overlay = game.add.sprite(0, 0, bmd);
+		overlay.alpha = 0.0;
 	}
 	
 	function gofull() {
@@ -203,24 +203,24 @@ window.onload = function() {
 		}
 		
 		if (game.input.keyboard.isDown(Phaser.Keyboard.R))
-	    {
+		{
 			particleEffectBloodExplosion(player.body.x, player.body.y, 30, 2000);
-	    }
-	    
-	    if (game.input.keyboard.isDown(Phaser.Keyboard.Q))
-	    {
+		}
+		
+		if (game.input.keyboard.isDown(Phaser.Keyboard.Q))
+		{
 			playerstate = 'angeredNPC';
-	    }
+		}
 		
 		if (game.input.keyboard.isDown(Phaser.Keyboard.E))
-	    {
+		{
 			fire();
-	    }
+		}
 		
 		if (game.input.keyboard.isDown(Phaser.Keyboard.B))
-	    {
-		    overlay.alpha = 1.0;
-	    }
+		{
+			overlay.alpha = 1.0;
+		}
 		
 		if (emitter != null) {
 			emitter.forEachAlive(function(p) {
@@ -229,7 +229,6 @@ window.onload = function() {
 		}
 		
 		sheepGrp.forEach(function(sheep) { resolveAImovement(sheep) }, this);
-		
 	}
 	
 	function resolveAImovement(npc) {
@@ -244,7 +243,6 @@ window.onload = function() {
 				npc.body.force.x = newVelo.x;
 				npc.body.force.y = newVelo.y;
 			}
-			
 		}
 		// seek
 		if (playerstate == 'angeredNPC') {
@@ -269,33 +267,32 @@ window.onload = function() {
 	}
 
 	function fire() {
-
-	    if (game.time.now > nextFire && bullets.countDead() > 0)
-	    {
-	        nextFire = game.time.now + fireRate;
-
-	        var bullet = bullets.getFirstDead();
-
-	        bullet.reset(player.body.x, player.body.y);
-	        bullet.lifespan = 2000;
-//	        bullet.animations.play('bullet_anim');
-
-	        game.physics.arcade.moveToPointer(bullet, 300);
-	    }
-
+		if (game.time.now > nextFire && bullets.countDead() > 0)
+		{
+			nextFire = game.time.now + fireRate;
+			
+			var bullet = bullets.getFirstDead();
+			
+			bullet.reset(player.body.x, player.body.y);
+			bullet.lifespan = 2000;
+//			bullet.animations.play('bullet_anim');
+			
+			game.physics.arcade.moveToPointer(bullet, 300);
+		}
+		
 	}
 	
 	function particleEffectBloodExplosion(x , y, numParticles, lifeTime) {
 		if (emitter == null){
 			emitter = game.add.emitter(x, y, numParticles);
-		    emitter.makeParticles('particles', [0, 1, 2, 3, 4, 5, 6, 7, 8], numParticles, true, true);
-//		    emitter.minParticleSpeed.setTo(-400, -400);
-//		    emitter.maxParticleSpeed.setTo(400, 400);
-		    emitter.gravity = 0;
-		    emitter.maxParticles = numParticles;
-		    
-		    emitter.start(true, lifeTime, null, numParticles);
-		    game.time.events.add(lifeTime, function(){emitter.destroy(); emitter = null;}, this);
+			emitter.makeParticles('particles', [0, 1, 2, 3, 4, 5, 6, 7, 8], numParticles, true, true);
+//			emitter.minParticleSpeed.setTo(-400, -400);
+//			emitter.maxParticleSpeed.setTo(400, 400);
+			emitter.gravity = 0;
+			emitter.maxParticles = numParticles;
+			
+			emitter.start(true, lifeTime, null, numParticles);
+			game.time.events.add(lifeTime, function(){emitter.destroy(); emitter = null;}, this);
 			
 		}
 	}
