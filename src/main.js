@@ -3,11 +3,16 @@ window.onload = function() {
 	
 	// game ressources
 	var map, layer, layer1;		// tilemap related
-	var player, sheep;			// sprites
-	var npcCG, tileCG, playerCG;					// collision groups
+	var player, sheep, bulletSprite;			// sprites
+	var npcCG, tileCG, playerCG, bulletsCG;					// collision groups
 	var emitter;
 	var overlay;
 	var playerstate;
+	var playerGrpplayerGrp;
+	var bullets;
+
+	var fireRate = 300;
+	var nextFire = 0;
 	
 	/**
 	 * preload - load assets
@@ -15,7 +20,6 @@ window.onload = function() {
 	function preload () {
 		game.load.tilemap('map', 'assets/tilemaps/test.json', null, Phaser.Tilemap.TILED_JSON);
 		game.load.image('tileset', 'assets/tilesets/basictiles.png');
-		game.load.spritesheet('player', 'assets/spritesheets/hero.png', 36, 72);
 		game.load.spritesheet('particles', 'assets/spritesheets/particles.png', 18, 18);
 	    game.load.spritesheet('wizard', 'assets/spritesheets/wizard.png', 36, 72, 12);
 	    game.load.spritesheet('sheep', 'assets/spritesheets/sheep.png', 36, 36, 12);
@@ -38,6 +42,7 @@ window.onload = function() {
 		npcCG = game.physics.p2.createCollisionGroup();
 		tileCG = game.physics.p2.createCollisionGroup();
 		playerCG = game.physics.p2.createCollisionGroup();
+		bulletsCG = game.physics.p2.createCollisionGroup();
 		
 		// enable collision with world bounds
 		game.physics.p2.updateBoundsCollisionGroup();
@@ -60,27 +65,75 @@ window.onload = function() {
 			tileObjects[i].setCollisionGroup(tileCG);
 			tileObjects[i].collides(npcCG);
 			tileObjects[i].collides(playerCG);
+			tileObjects[i].collides(bulletsCG);
 		}
 		
 		// add sprites
-		player = game.add.sprite(200, 200, 'wizard', 1);
+		playerGrp = game.add.group();
+		map.createFromObjects('objects', 102, 'wizard', 1, true, false, playerGrp);
+		player = playerGrp.getTop();
 		var playerAnimFPS = 10;
 		player.animations.add('player_idle', [0], playerAnimFPS, true);
-		player.animations.add('player_down', [0, 1, 2], playerAnimFPS, true);
-		player.animations.add('player_up', [3, 4, 5], playerAnimFPS, true);
-		player.animations.add('player_right', [6, 7, 8], playerAnimFPS, true);
-		player.animations.add('player_left', [9, 10, 11], playerAnimFPS, true);
+		player.animations.add('player_down', [0, 1,0, 2], playerAnimFPS, true);
+		player.animations.add('player_up', [3, 4, 3, 5], playerAnimFPS, true);
+		player.animations.add('player_right', [6, 7, 6, 8], playerAnimFPS, true);
+		player.animations.add('player_left', [9, 10, 9, 11], playerAnimFPS, true);
 
 		sheep = game.add.sprite(400, 300, 'sheep');
-		var playerAnimFPS = 10;
-		sheep.animations.add('sheep_idle', [0], playerAnimFPS, true);
-		sheep.animations.add('sheep_down', [9, 10, 11], playerAnimFPS, true);
-		sheep.animations.add('sheep_up', [6, 7, 8], playerAnimFPS, true);
-		sheep.animations.add('sheep_right', [3, 4, 5], playerAnimFPS, true);
-		sheep.animations.add('sheep_left', [0, 1, 2], playerAnimFPS, true);
+		var sheepAnimFPS = 10;
+		sheep.animations.add('sheep_idle', [0], sheepAnimFPS, true);
+		sheep.animations.add('sheep_down', [9, 10, 11], sheepAnimFPS, true);
+		sheep.animations.add('sheep_up', [6, 7, 8], sheepAnimFPS, true);
+		sheep.animations.add('sheep_right', [3, 4, 5], sheepAnimFPS, true);
+		sheep.animations.add('sheep_left', [0, 1, 2], sheepAnimFPS, true);
 		
 		//player.body.debug = true;
 
+		// bullets
+		bullets = game.add.group();
+	    bullets.enableBody = true;
+	    bullets.physicsBodyType = Phaser.Physics.P2JS;
+//	    game.physics.p2.setImpactEvents(true);
+
+	    bullets.createMultiple(10, 'particles', maxBullets);
+	    var maxBullets = 10;
+	    for (var i = 0; i < bullets.children.length; i++)
+	    {
+	    	var tmpBullet = bullets.children[i];
+//	    	tmpBullet.lifespan = 1000;
+//	        var tmpBullet = bullets.create(0, 0, 'particles', 10);
+//	        tmpBullet.body.setRectangle(40, 40);
+	        game.physics.p2.enable(tmpBullet);
+	        tmpBullet.animations.add('bullet_anim', [10, 11, 12, 13], 20, true);
+	    	tmpBullet.animations.play('bullet_anim')
+	        
+	        tmpBullet.body.setCollisionGroup(bulletsCG);
+	        tmpBullet.body.collides(tileCG);
+	        tmpBullet.body.collides(npcCG);
+	    }
+	    
+//	    bullets.callAll('animations.add', 'animations', 'bullet_anim', [10, 11, 12, 13], 1, true, false);
+//	    bullets.callAll('play', 'animations', 'bullet_anim');
+	    
+//	    for (var i in bullets) {
+//	    	console.log(typeof(bullets.getAt(i)));
+////	    	tmpBullet = game.add.sprite(100, 0, 'particles', 1);
+//	    	bullets.getAt(i).animations.add('bullet_anim', [10, 11, 12, 13], 20, true);
+//	    	tmpBullet.animations.play('bullet_anim')
+//	    }
+
+	    bullets.setAll('checkWorldBounds', true);
+	    bullets.setAll('outOfBoundsKill', true);
+	    
+//	    bulletSprite = game.add.sprite(400, 300, 'particles', 10);
+//	    bulletSprite.animations.add('bullet_anim', [10, 11, 12, 13], 20, true);
+//	    bulletSprite.animations.play('bullet_anim');
+//	    bulletSprite.anchor.set(0.5);
+
+//	    game.physics.enable(bulletSprite, Phaser.Physics.P2JS);
+
+//	    bulletSprite.body.allowRotation = false;
+		
 		
 		// enable physics for player
 		game.physics.p2.enable(player);
@@ -95,6 +148,7 @@ window.onload = function() {
 		sheep.body.setCollisionGroup(npcCG);
 		sheep.body.collides(playerCG, sheepBumpedPlayer, this);
 		sheep.body.collides(tileCG, sheepBumpedWall, this);
+		sheep.body.collides(bulletsCG);
 		
 		// enable user input
 		cursors = game.input.keyboard.createCursorKeys();
@@ -127,19 +181,19 @@ window.onload = function() {
 		overlay.alpha -= dt * 0.0005;
 		
 		var speed = 300;
-		if (cursors.left.isDown) {
+		if (game.input.keyboard.isDown(Phaser.Keyboard.A)) {
 			player.body.velocity.x = -speed;
 			player.animations.play('player_left');
-		} else if (cursors.right.isDown) {
+		} else if (game.input.keyboard.isDown(Phaser.Keyboard.D)) {
 			player.body.velocity.x = speed;
 			player.animations.play('player_right');
 		} else {
 			player.body.velocity.x = 0;
 		}
-		if (cursors.up.isDown) {
+		if (game.input.keyboard.isDown(Phaser.Keyboard.W)) {
 			player.body.velocity.y = -speed;
 			player.animations.play('player_up');
-		} else if (cursors.down.isDown) {
+		} else if (game.input.keyboard.isDown(Phaser.Keyboard.S)) {
 			player.body.velocity.y = speed;
 			player.animations.play('player_down');
 		} else {
@@ -150,7 +204,7 @@ window.onload = function() {
 			player.animations.play('player_idle', 3, true);
 		}
 		
-		if (game.input.keyboard.isDown(Phaser.Keyboard.E))
+		if (game.input.keyboard.isDown(Phaser.Keyboard.R))
 	    {
 			particleEffectBloodExplosion(player.body.x, player.body.y, 30, 2000);
 	    }
@@ -158,6 +212,11 @@ window.onload = function() {
 	    if (game.input.keyboard.isDown(Phaser.Keyboard.Q))
 	    {
 			playerstate = 'angeredSheep';
+	    }
+		
+		if (game.input.keyboard.isDown(Phaser.Keyboard.E))
+	    {
+			fire();
 	    }
 		
 		if (game.input.keyboard.isDown(Phaser.Keyboard.B))
@@ -185,7 +244,7 @@ window.onload = function() {
 			var maxSpeed = 100;
 			var target = new Phaser.Point(player.body.x, player.body.y);
 			var seeker = new Phaser.Point(sheep.body.x, sheep.body.y);
-			var distSheepPlayer = Phaser.Point.normalize(Phaser.Point.subtract(Phaser.Point.add(target, new Phaser.Point(player.body.velocity.x, player.body.velocity.y)), seeker));
+			var distSheepPlayer = Phaser.Point.normalize(Phaser.Point.subtract(target, Phaser.Point.add(seeker, new Phaser.Point(sheep.body.velocity.x, sheep.body.velocity.y))));
 			sheep.body.velocity.x = distSheepPlayer.x * maxSpeed;
 			sheep.body.velocity.y = distSheepPlayer.y * maxSpeed;
 		}
@@ -197,9 +256,27 @@ window.onload = function() {
 	}
 	
 	function sheepBumpedPlayer() {
+		sheep.body.velocity.x = 0;
+		sheep.body.velocity.x = 0;
 		playerstate = 'passive';
 	}
 
+	function fire() {
+
+	    if (game.time.now > nextFire && bullets.countDead() > 0)
+	    {
+	        nextFire = game.time.now + fireRate;
+
+	        var bullet = bullets.getFirstDead();
+
+	        bullet.reset(player.body.x, player.body.y);
+	        bullet.lifespan = 2000;
+//	        bullet.animations.play('bullet_anim');
+
+	        game.physics.arcade.moveToPointer(bullet, 300);
+	    }
+
+	}
 	
 	function particleEffectBloodExplosion(x , y, numParticles, lifeTime) {
 		if (emitter == null){
