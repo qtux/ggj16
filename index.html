@@ -1,10 +1,19 @@
 <!doctype html>
 <html>
 	<head>
+		<!-- avoid caching (not working?)
+		<meta http-equiv="pragma" content="no-cache">
+		<meta http-equiv="expires" content="-1">
+		-->
 		<meta charset="UTF-8"/>
 		<title>phaser test</title>
 		<script src="phaser/build/phaser.js"></script>
-		<script src="./src/main.js" type="text/javascript"></script>
+		<!-- prevent caching (development version only) -->
+		<script>document.write('<script src="./src/main.js?dev=' + Math.floor(Math.random() * 100) + '"\><\/script>');</script>
+		<!-- alternative loading
+		<script src="./src/main.js"></script>
+		<script>document.write('<script src="./src/main.js?nocache=' + (new Date()).getTime() + '"\><\/script>');</script>
+		-->
 	</head>
 	<body>
 		
