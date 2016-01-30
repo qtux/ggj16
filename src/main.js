@@ -40,6 +40,7 @@ window.onload = function() {
 		//Controls
 		cursors = game.input.keyboard.createCursorKeys();
 		//player.body.debug = true;
+
 		
 		// scaling
 		game.scale.fullScreenScaleMode = Phaser.ScaleManager.EXACT_FIT;
@@ -74,9 +75,11 @@ window.onload = function() {
 			player.body.velocity.y = 0;
 		}
 		
-		emitter.forEachAlive(function(p) {
-			p.alpha = p.lifespan / emitter.lifespan;
-		});
+		if (emitter != null) {
+			emitter.forEachAlive(function(p) {
+				p.alpha = p.lifespan / emitter.lifespan;
+			});
+		}
 	}
 	
 	function particleEffectBloodExplosion(x , y, numParticles, lifeTime) {
