@@ -2,6 +2,8 @@ window.onload = function() {
 	var game = new Phaser.Game(1152, 720, Phaser.AUTO, '', { preload: preload, create: create, update: update});
 	var map;
 	var layer;
+	var layer1;
+	//var layer2;
 	var player;
 	
 	function preload () {
@@ -19,6 +21,8 @@ window.onload = function() {
 		map = game.add.tilemap('map');
 		map.addTilesetImage('basictiles', 'tileset');
 		layer = map.createLayer('layer0');
+		layer1 = map.createLayer('layer1');
+		//layer2 = map.createLayer('layer2');
 		layer.resizeWorld();
 		
 		// add player sprite
