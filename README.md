@@ -11,5 +11,8 @@ This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareA
 # Etherpad
 https://etherpad.wikimedia.org/p/ggj16GoatMagic
 
+#Website (live-Version des Spiels):
+http://qtux.github.io/ggj16/
+
 # Authors
 
