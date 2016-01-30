@@ -33,12 +33,8 @@ window.onload = function() {
 		game.load.spritesheet('particles', 'assets/spritesheets/particles.png', 18, 18);
 	    game.load.spritesheet('wizard', 'assets/spritesheets/wizard.png', 42, 72, 24);
 	    game.load.spritesheet('sheep', 'assets/spritesheets/sheep.png', 36, 36, 15);
-<<<<<<< HEAD
-	    playerstate = 'passive';
-=======
 	    game.load.spritesheet('goat', 'assets/spritesheets/goat.png', 36, 36, 15);
 		playerstate = 'passive';
->>>>>>> d4636d0a14bab67e5a78500ada92bd9d8470a218
 	    
 	    game.load.audio('ritual_tier_brennt', 'assets/audio/ritual_tier_brennt.ogg');
 	    game.load.audio('shoot', 'assets/audio/shoot.ogg');
