@@ -105,10 +105,10 @@ window.onload = function() {
 			game.physics.p2.enable(sheep);
 			sheep.body.fixedRotation = true;
 			sheep.body.setCollisionGroup(npcCG);
-			sheep.body.collides(playerCG, sheepBumpedPlayer, this);
-			sheep.body.collides(tileCG, sheepBumpedWall, this);
+			sheep.body.collides(playerCG, npcBumpedPlayer, this);
+			sheep.body.collides(tileCG, npcBumpedWall, this);
 			sheep.body.collides(bulletsCG);
-		}, this, true);
+		}, this);
 		
 		// bullets
 		bullets = game.add.group();
@@ -142,33 +142,33 @@ window.onload = function() {
 //	    	tmpBullet.animations.play('bullet_anim')
 //	    }
 
-	    bullets.setAll('checkWorldBounds', true);
-	    bullets.setAll('outOfBoundsKill', true);
-	    
-//	    bulletSprite = game.add.sprite(400, 300, 'particles', 10);
-//	    bulletSprite.animations.add('bullet_anim', [10, 11, 12, 13], 20, true);
-//	    bulletSprite.animations.play('bullet_anim');
-//	    bulletSprite.anchor.set(0.5);
+		bullets.setAll('checkWorldBounds', true);
+		bullets.setAll('outOfBoundsKill', true);
+		
+//		bulletSprite = game.add.sprite(400, 300, 'particles', 10);
+//		bulletSprite.animations.add('bullet_anim', [10, 11, 12, 13], 20, true);
+//		bulletSprite.animations.play('bullet_anim');
+//		bulletSprite.anchor.set(0.5);
 
-//	    game.physics.enable(bulletSprite, Phaser.Physics.P2JS);
+//		game.physics.enable(bulletSprite, Phaser.Physics.P2JS);
 
-//	    bulletSprite.body.allowRotation = false;
+//		bulletSprite.body.allowRotation = false;
 		
 		// enable user input
 		cursors = game.input.keyboard.createCursorKeys();
 
-	    // create a new bitmap data object
-	    var bmd = game.add.bitmapData(game.width, game.height);
+		// create a new bitmap data object
+		var bmd = game.add.bitmapData(game.width, game.height);
 
-	    // draw to the canvas context like normal
-	    bmd.ctx.beginPath();
-	    bmd.ctx.rect(0, 0, game.width, game.height);
-	    bmd.ctx.fillStyle = '#000000';
-	    bmd.ctx.fill();
+		// draw to the canvas context like normal
+		bmd.ctx.beginPath();
+		bmd.ctx.rect(0, 0, game.width, game.height);
+		bmd.ctx.fillStyle = '#000000';
+		bmd.ctx.fill();
 
-	    // use the bitmap data as the texture for the sprite
-	    overlay = game.add.sprite(0, 0, bmd);
-	    overlay.alpha = 0.0;
+		// use the bitmap data as the texture for the sprite
+		overlay = game.add.sprite(0, 0, bmd);
+		overlay.alpha = 0.0;
 	}
 	
 	function gofull() {
@@ -209,24 +209,24 @@ window.onload = function() {
 		}
 		
 		if (game.input.keyboard.isDown(Phaser.Keyboard.R))
-	    {
+		{
 			particleEffectBloodExplosion(player.body.x, player.body.y, 30, 2000);
-	    }
-	    
-	    if (game.input.keyboard.isDown(Phaser.Keyboard.Q))
-	    {
-			playerstate = 'angeredSheep';
-	    }
+		}
+		
+		if (game.input.keyboard.isDown(Phaser.Keyboard.Q))
+		{
+			playerstate = 'angeredNPC';
+		}
 		
 		if (game.input.keyboard.isDown(Phaser.Keyboard.E))
-	    {
+		{
 			fire();
-	    }
+		}
 		
 		if (game.input.keyboard.isDown(Phaser.Keyboard.B))
-	    {
-		    overlay.alpha = 1.0;
-	    }
+		{
+			overlay.alpha = 1.0;
+		}
 		
 		if (emitter != null) {
 			emitter.forEachAlive(function(p) {
@@ -234,39 +234,45 @@ window.onload = function() {
 			});
 		}
 		
-		resolveAImovement();
+		sheepGrp.forEach(function(sheep) { resolveAImovement(sheep) }, this);
 	}
 	
-	function resolveAImovement() {
+	function resolveAImovement(npc) {
 		// random walk
 		if (playerstate == 'passive') {
-			sheep.body.force.x = ((game.rnd.integer() % 20) - 10) * 10;
-			sheep.body.force.y = ((game.rnd.integer() % 20) - 10) * 10;
+			//npc.body.force.x = ((game.rnd.integer() % 20) - 10) * 10;
+			//npc.body.force.y = ((game.rnd.integer() % 20) - 10) * 10;
+			var newVelo = new Phaser.Point(((game.rnd.integer() % 20) - 10) * 10, ((game.rnd.integer() % 20) - 10) * 10);
+			if (Phaser.Point.angle(new Phaser.Point(npc.body.velocity.x, npc.body.velocity.y), newVelo) > 3.15/4) {
+				console.debug('high change');
+			} else {
+				npc.body.force.x = newVelo.x;
+				npc.body.force.y = newVelo.y;
+			}
 		}
 		// seek
-		if (playerstate == 'angeredSheep') {
+		if (playerstate == 'angeredNPC') {
 			var maxSpeed = 100;
 			var target = new Phaser.Point(player.body.x, player.body.y);
-			var seeker = new Phaser.Point(sheep.body.x, sheep.body.y);
-			var distSheepPlayer = Phaser.Point.normalize(Phaser.Point.subtract(target, Phaser.Point.add(seeker, new Phaser.Point(sheep.body.velocity.x, sheep.body.velocity.y))));
-			sheep.body.velocity.x = distSheepPlayer.x * maxSpeed;
-			sheep.body.velocity.y = distSheepPlayer.y * maxSpeed;
+			var seeker = new Phaser.Point(npc.body.x, npc.body.y);
+			var distNPCPlayer = Phaser.Point.normalize(Phaser.Point.subtract(target, Phaser.Point.add(seeker, new Phaser.Point(npc.body.velocity.x, npc.body.velocity.y))));
+			npc.body.velocity.x = distNPCPlayer.x * maxSpeed;
+			npc.body.velocity.y = distNPCPlayer.y * maxSpeed;
 		}
 	}
 	
-	function sheepBumpedWall() {
-		sheep.body.velocity.x = -sheep.body.velocity.x;
-		sheep.body.velocity.y = -sheep.body.velocity.y;
+	function npcBumpedWall(npcBody, wallBody) {
+		npcBody.velocity.x = -npcBody.velocity.x;
+		npcBody.velocity.y = -npcBody.velocity.y;
 	}
 	
-	function sheepBumpedPlayer() {
-		sheep.body.velocity.x = 0;
-		sheep.body.velocity.x = 0;
+	function npcBumpedPlayer(npcBody, playerBody) {
+		npcBody.velocity.x = 0;
+		npcBody.velocity.x = 0;
 		playerstate = 'passive';
 	}
 
 	function fire() {
-
 	    if (game.time.now > nextFire && bullets.countDead() > 0)
 	    {
 	        nextFire = game.time.now + fireRate;
@@ -282,20 +288,19 @@ window.onload = function() {
 
 	        game.physics.arcade.moveToPointer(bullet, 300);
 	    }
-
 	}
 	
 	function particleEffectBloodExplosion(x , y, numParticles, lifeTime) {
 		if (emitter == null){
 			emitter = game.add.emitter(x, y, numParticles);
-		    emitter.makeParticles('particles', [0, 1, 2, 3, 4, 5, 6, 7, 8], numParticles, true, true);
-//		    emitter.minParticleSpeed.setTo(-400, -400);
-//		    emitter.maxParticleSpeed.setTo(400, 400);
-		    emitter.gravity = 0;
-		    emitter.maxParticles = numParticles;
-		    
-		    emitter.start(true, lifeTime, null, numParticles);
-		    game.time.events.add(lifeTime, function(){emitter.destroy(); emitter = null;}, this);
+			emitter.makeParticles('particles', [0, 1, 2, 3, 4, 5, 6, 7, 8], numParticles, true, true);
+//			emitter.minParticleSpeed.setTo(-400, -400);
+//			emitter.maxParticleSpeed.setTo(400, 400);
+			emitter.gravity = 0;
+			emitter.maxParticles = numParticles;
+			
+			emitter.start(true, lifeTime, null, numParticles);
+			game.time.events.add(lifeTime, function(){emitter.destroy(); emitter = null;}, this);
 			
 		    var sound = game.add.audio('ritual_tier_brennt');
 		    sound.play();
