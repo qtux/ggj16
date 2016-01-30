@@ -12,7 +12,8 @@ window.onload = function() {
 	var playerstate;
 	var playerGrp, sheepGrp, goatGrp;
 	var bullets;
-	var lightningTime = 0;
+	var lightningTimeMax = 100;
+	var lightningTime = lightningTimeMax;
 	
 	var fireRate = 300;
 	var nextFire = 0;
@@ -33,12 +34,8 @@ window.onload = function() {
 		game.load.spritesheet('particles', 'assets/spritesheets/particles.png', 18, 18);
 	    game.load.spritesheet('wizard', 'assets/spritesheets/wizard.png', 42, 72, 24);
 	    game.load.spritesheet('sheep', 'assets/spritesheets/sheep.png', 36, 36, 15);
-<<<<<<< HEAD
-	    playerstate = 'passive';
-=======
 	    game.load.spritesheet('goat', 'assets/spritesheets/goat.png', 36, 36, 15);
 		playerstate = 'passive';
->>>>>>> d4636d0a14bab67e5a78500ada92bd9d8470a218
 	    
 	    game.load.audio('ritual_tier_brennt', 'assets/audio/ritual_tier_brennt.ogg');
 	    game.load.audio('shoot', 'assets/audio/shoot.ogg');
@@ -242,8 +239,9 @@ window.onload = function() {
 	
 	function update() {
 		var dt = game.time.elapsed;
-		overlay.alpha -= dt * 0.0005;
-		if (overlay.alpha > 0.8){
+		lightningTime += dt;
+		overlay.alpha -= dt * 0.001;
+		if (lightningTime < lightningTimeMax / 3.0 || lightningTime > lightningTimeMax * 2.0 / 3.0){
 			overlay.tint = 0xFFFFFF;
 		} else{
 			overlay.tint = 0x000000;
@@ -337,6 +335,7 @@ window.onload = function() {
 		if (game.input.keyboard.isDown(Phaser.Keyboard.B))
 		{
 			overlay.alpha = 1.0;
+			lightningTime = 0;
 		}
 		
 		if (carried != null && game.input.keyboard.isDown(Phaser.Keyboard.Y))
