@@ -7,6 +7,7 @@ window.onload = function() {
 	var npcCG, tileCG, playerCG, bulletsCG;					// collision groups
 	var emitter;
 	var overlay;
+	var playerstate;
 	var playerGrp, sheepGrp;
 	var bullets;
 	
@@ -22,6 +23,7 @@ window.onload = function() {
 		game.load.spritesheet('particles', 'assets/spritesheets/particles.png', 18, 18);
 		game.load.spritesheet('wizard', 'assets/spritesheets/wizard.png', 36, 72, 12);
 		game.load.spritesheet('sheep', 'assets/spritesheets/sheep.png', 36, 36, 12);
+		playerstate = 'passive';
 	}
 	
 	/**
@@ -97,8 +99,8 @@ window.onload = function() {
 			game.physics.p2.enable(sheep);
 			sheep.body.fixedRotation = true;
 			sheep.body.setCollisionGroup(npcCG);
-			sheep.body.collides(playerCG);
-			sheep.body.collides(tileCG);
+			sheep.body.collides(playerCG, sheepBumpedPlayer, this);
+			sheep.body.collides(tileCG, sheepBumpedWall, this);
 			sheep.body.collides(bulletsCG);
 		}, this, true);
 		
@@ -204,6 +206,11 @@ window.onload = function() {
 	    {
 			particleEffectBloodExplosion(player.body.x, player.body.y, 30, 2000);
 	    }
+	    
+	    if (game.input.keyboard.isDown(Phaser.Keyboard.Q))
+	    {
+			playerstate = 'angeredSheep';
+	    }
 		
 		if (game.input.keyboard.isDown(Phaser.Keyboard.E))
 	    {
@@ -220,8 +227,38 @@ window.onload = function() {
 				p.alpha = p.lifespan / emitter.lifespan;
 			});
 		}
+		
+		resolveAImovement();
 	}
 	
+	function resolveAImovement() {
+		// random walk
+		if (playerstate == 'passive') {
+			sheep.body.force.x = ((game.rnd.integer() % 20) - 10) * 10;
+			sheep.body.force.y = ((game.rnd.integer() % 20) - 10) * 10;
+		}
+		// seek
+		if (playerstate == 'angeredSheep') {
+			var maxSpeed = 100;
+			var target = new Phaser.Point(player.body.x, player.body.y);
+			var seeker = new Phaser.Point(sheep.body.x, sheep.body.y);
+			var distSheepPlayer = Phaser.Point.normalize(Phaser.Point.subtract(target, Phaser.Point.add(seeker, new Phaser.Point(sheep.body.velocity.x, sheep.body.velocity.y))));
+			sheep.body.velocity.x = distSheepPlayer.x * maxSpeed;
+			sheep.body.velocity.y = distSheepPlayer.y * maxSpeed;
+		}
+	}
+	
+	function sheepBumpedWall() {
+		sheep.body.velocity.x = -sheep.body.velocity.x;
+		sheep.body.velocity.y = -sheep.body.velocity.y;
+	}
+	
+	function sheepBumpedPlayer() {
+		sheep.body.velocity.x = 0;
+		sheep.body.velocity.x = 0;
+		playerstate = 'passive';
+	}
+
 	function fire() {
 
 	    if (game.time.now > nextFire && bullets.countDead() > 0)
