@@ -8,9 +8,9 @@ window.onload = function() {
 	var emitter;
 	var overlay;
 	var playerstate;
-	var playerGrpplayerGrp;
+	var playerGrp, sheepGrp;
 	var bullets;
-
+	
 	var fireRate = 300;
 	var nextFire = 0;
 	
@@ -21,10 +21,9 @@ window.onload = function() {
 		game.load.tilemap('map', 'assets/tilemaps/test.json', null, Phaser.Tilemap.TILED_JSON);
 		game.load.image('tileset', 'assets/tilesets/basictiles.png');
 		game.load.spritesheet('particles', 'assets/spritesheets/particles.png', 18, 18);
-	    game.load.spritesheet('wizard', 'assets/spritesheets/wizard.png', 36, 72, 12);
-	    game.load.spritesheet('sheep', 'assets/spritesheets/sheep.png', 36, 36, 12);
-	    
-	    playerstate = 'passive';
+		game.load.spritesheet('wizard', 'assets/spritesheets/wizard.png', 36, 72, 12);
+		game.load.spritesheet('sheep', 'assets/spritesheets/sheep.png', 36, 36, 12);
+		playerstate = 'passive';
 	}
 	
 	/**
@@ -78,23 +77,38 @@ window.onload = function() {
 		player.animations.add('player_up', [3, 4, 3, 5], playerAnimFPS, true);
 		player.animations.add('player_right', [6, 7, 6, 8], playerAnimFPS, true);
 		player.animations.add('player_left', [9, 10, 9, 11], playerAnimFPS, true);
-
-		sheep = game.add.sprite(400, 300, 'sheep');
-		var sheepAnimFPS = 10;
-		sheep.animations.add('sheep_idle', [0], sheepAnimFPS, true);
-		sheep.animations.add('sheep_down', [9, 10, 11], sheepAnimFPS, true);
-		sheep.animations.add('sheep_up', [6, 7, 8], sheepAnimFPS, true);
-		sheep.animations.add('sheep_right', [3, 4, 5], sheepAnimFPS, true);
-		sheep.animations.add('sheep_left', [0, 1, 2], sheepAnimFPS, true);
-		
 		//player.body.debug = true;
-
+		
+		// enable physics for player
+		game.physics.p2.enable(player);
+		player.body.fixedRotation = true;
+		player.body.setCollisionGroup(playerCG);
+		player.body.collides(tileCG);
+		player.body.collides(npcCG);
+		
+		sheepGrp = game.add.group();
+		map.createFromObjects('objects', 103, 'sheep', 1, true, false, sheepGrp);
+		sheepGrp.forEach(function(sheep) {
+			var sheepAnimFPS = 10;
+			sheep.animations.add('sheep_idle', [0], sheepAnimFPS, true);
+			sheep.animations.add('sheep_down', [9, 10, 11], sheepAnimFPS, true);
+			sheep.animations.add('sheep_up', [6, 7, 8], sheepAnimFPS, true);
+			sheep.animations.add('sheep_right', [3, 4, 5], sheepAnimFPS, true);
+			sheep.animations.add('sheep_left', [0, 1, 2], sheepAnimFPS, true);
+			// enable physics for sheep
+			game.physics.p2.enable(sheep);
+			sheep.body.fixedRotation = true;
+			sheep.body.setCollisionGroup(npcCG);
+			sheep.body.collides(playerCG, sheepBumpedPlayer, this);
+			sheep.body.collides(tileCG, sheepBumpedWall, this);
+			sheep.body.collides(bulletsCG);
+		}, this, true);
+		
 		// bullets
 		bullets = game.add.group();
 	    bullets.enableBody = true;
 	    bullets.physicsBodyType = Phaser.Physics.P2JS;
-//	    game.physics.p2.setImpactEvents(true);
-
+		
 	    bullets.createMultiple(10, 'particles', maxBullets);
 	    var maxBullets = 10;
 	    for (var i = 0; i < bullets.children.length; i++)
@@ -133,22 +147,6 @@ window.onload = function() {
 //	    game.physics.enable(bulletSprite, Phaser.Physics.P2JS);
 
 //	    bulletSprite.body.allowRotation = false;
-		
-		
-		// enable physics for player
-		game.physics.p2.enable(player);
-		player.body.fixedRotation = true;
-		player.body.setCollisionGroup(playerCG);
-		player.body.collides(tileCG);
-		player.body.collides(npcCG);
-		
-		// enable physics for sheep
-		game.physics.p2.enable(sheep);
-		sheep.body.fixedRotation = true;
-		sheep.body.setCollisionGroup(npcCG);
-		sheep.body.collides(playerCG, sheepBumpedPlayer, this);
-		sheep.body.collides(tileCG, sheepBumpedWall, this);
-		sheep.body.collides(bulletsCG);
 		
 		// enable user input
 		cursors = game.input.keyboard.createCursorKeys();
