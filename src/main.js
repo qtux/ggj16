@@ -12,6 +12,7 @@ window.onload = function() {
 	var playerstate;
 	var playerGrp, sheepGrp, goatGrp;
 	var bullets;
+	var lightningTime = 0;
 	
 	var fireRate = 300;
 	var nextFire = 0;
@@ -32,8 +33,12 @@ window.onload = function() {
 		game.load.spritesheet('particles', 'assets/spritesheets/particles.png', 18, 18);
 	    game.load.spritesheet('wizard', 'assets/spritesheets/wizard.png', 42, 72, 24);
 	    game.load.spritesheet('sheep', 'assets/spritesheets/sheep.png', 36, 36, 15);
+<<<<<<< HEAD
+	    playerstate = 'passive';
+=======
 	    game.load.spritesheet('goat', 'assets/spritesheets/goat.png', 36, 36, 15);
 		playerstate = 'passive';
+>>>>>>> d4636d0a14bab67e5a78500ada92bd9d8470a218
 	    
 	    game.load.audio('ritual_tier_brennt', 'assets/audio/ritual_tier_brennt.ogg');
 	    game.load.audio('shoot', 'assets/audio/shoot.ogg');
@@ -201,15 +206,26 @@ window.onload = function() {
 		// enable user input
 		cursors = game.input.keyboard.createCursorKeys();
 
+		// rain
+		var emitterRain = game.add.emitter(game.world.centerX, 0, 400);
+//		emitter.angle = 5; // uncomment to set an angle for the rain.
+		emitterRain.width = game.world.width;
+		emitterRain.makeParticles('particles', [20, 21]);
+		emitterRain.minParticleScale = 0.3;
+		emitterRain.maxParticleScale = 0.9;
+		emitterRain.setYSpeed(300, 500);
+		emitterRain.setXSpeed(-5, 5);
+		emitterRain.minRotation = 0;
+		emitterRain.maxRotation = 0;
+		emitterRain.start(false, 1600, 5, 0);
+		
 		// create a new bitmap data object
 		var bmd = game.add.bitmapData(game.width, game.height);
-
 		// draw to the canvas context like normal
 		bmd.ctx.beginPath();
 		bmd.ctx.rect(0, 0, game.width, game.height);
-		bmd.ctx.fillStyle = '#000000';
+		bmd.ctx.fillStyle = '#FFFFFF';
 		bmd.ctx.fill();
-
 		// use the bitmap data as the texture for the sprite
 		overlay = game.add.sprite(0, 0, bmd);
 		overlay.alpha = 0.0;
@@ -227,6 +243,12 @@ window.onload = function() {
 	function update() {
 		var dt = game.time.elapsed;
 		overlay.alpha -= dt * 0.0005;
+		if (overlay.alpha > 0.8){
+			overlay.tint = 0xFFFFFF;
+		} else{
+			overlay.tint = 0x000000;
+		}
+
 		
 		var tmpX = player.x / 36;
 		var tmpY = player.y / 36;
