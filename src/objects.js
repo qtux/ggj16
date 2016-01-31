@@ -18,6 +18,10 @@ Objects = function() {
 		game.load.spritesheet('goat', 'assets/spritesheets/goat.png', 36, 36, 15);
 		game.load.spritesheet('worm', 'assets/spritesheets/worm.png', 36, 36, 8);
 		game.load.spritesheet('bucket', 'assets/tilesets/objecttiles.png', 36, 36, 20);
+		game.load.spritesheet('runestone', 'assets/tilesets/objecttiles.png', 36, 36, 20);
+		game.load.spritesheet('spikes', 'assets/tilesets/objecttiles.png', 36, 36, 20);
+		game.load.spritesheet('questionmark', 'assets/tilesets/objecttiles.png', 36, 36, 20);
+		game.load.spritesheet('exclamationmark', 'assets/tilesets/objecttiles.png', 36, 36, 20);
 		game.load.audio('ritual_tier_brennt', 'assets/audio/ritual_tier_brennt.ogg');
 	};
 
@@ -122,6 +126,7 @@ Objects = function() {
 		// static item group
 		staticGrp = game.add.group();
 		map.createFromObjects('objects', 106, 'bucket', 5, true, false, staticGrp);
+		map.createFromObjects('objects', 110, 'spikes', 9, true, false, staticGrp);
 
 		// player group
 		playerGrp = game.add.group();
