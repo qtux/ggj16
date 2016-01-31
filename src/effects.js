@@ -64,12 +64,10 @@ var Effects = function() {
 	
 	// sounds
 	var shootSnd;
-	var mehSnd;
 	
 	this.preload = function() {
 		game.load.spritesheet('particles', 'assets/spritesheets/particles.png', 18, 18);
 		game.load.audio('shoot', 'assets/audio/shoot.ogg');
-		game.load.audio('meh', 'assets/audio/meh.ogg');
 	};
 	
 	this.toggleLight = function() {
@@ -94,7 +92,6 @@ var Effects = function() {
 	this.create = function() {
 		switchTimer3 = game.time.now;
 		shootSnd = game.add.audio('shoot');
-		mehSnd = game.add.audio('meh');
 		
 		// initialise bullets
 		bullets = game.add.group();
@@ -142,12 +139,6 @@ var Effects = function() {
 		overlay.alpha = 0.0;
 	};
 	
-	this.meh = function() {
-		mehSnd.play();
-	};
-	
-
-	
 	this.fire = function(x, y) {
 		if (game.time.now > nextFire && bullets.countDead() > 0) {
 			nextFire = game.time.now + FIRE_RATE;
@@ -169,6 +160,20 @@ var Effects = function() {
 			emitter.maxParticles = numParticles;
 			
 			emitter.start(true, lifeTime, null, numParticles);
+			game.time.events.add(lifeTime, function(){emitter.destroy(); emitter = null;}, this);
+		}
+	};
+	
+	this.particleEffectBleeding = function(x , y, numParticles, lifeTime) {
+		if (emitter == null){
+			emitter = game.add.emitter(x, y, numParticles);
+			emitter.makeParticles('particles', [0, 1, 2, 3, 4, 5, 6, 7, 8], numParticles, true, true);
+			emitter.minParticleSpeed.setTo(-100, -100);
+			emitter.maxParticleSpeed.setTo(100, -10);
+			emitter.gravity = 50;
+			emitter.maxParticles = numParticles;
+			
+			emitter.start(false, lifeTime, null, numParticles);
 			game.time.events.add(lifeTime, function(){emitter.destroy(); emitter = null;}, this);
 		}
 	};
