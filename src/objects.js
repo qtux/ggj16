@@ -309,17 +309,16 @@ Objects = function() {
 			effects.doSomeEffects();
 		}
 
-		if (carriedObject != null
-				&& game.input.keyboard.isDown(Phaser.Keyboard.Y)) {
+		if (carriedObject != null && game.input.keyboard.isDown(Phaser.Keyboard.Y)) {
 			carriedObject = null;
 		}
 		
-		sheepGrp.forEach(function(sheep) { resolveAImovement(sheep, 'sheep') }, this);
-		goatGrp.forEach(function(goat) { resolveAImovement(goat, 'goat') }, this);
-		wormGrp.forEach(function(worm) { resolveAImovement(worm, 'worm') }, this);
-		deadheadGrp.forEach(function(deadhead) { resolveAImovement(deadhead, 'deadhead') }, this);
-		parrotGrp.forEach(function(parrot) { resolveAImovement(parrot, 'parrot') }, this);
-		staticGrp.forEach(function(static) { resolveStatics(static) }, this);
+		sheepGrp.forEach(function(obj) { resolveAImovement(obj, 'sheep') }, this);
+		goatGrp.forEach(function(obj) { resolveAImovement(obj, 'goat') }, this);
+		wormGrp.forEach(function(obj) { resolveAImovement(obj, 'worm') }, this);
+		deadheadGrp.forEach(function(obj) { resolveAImovement(obj, 'deadhead') }, this);
+		parrotGrp.forEach(function(obj) { resolveAImovement(obj, 'parrot') }, this);
+		staticGrp.forEach(function(obj) { resolveStatics(obj) }, this);
 	};
 	
 	this.stopPlayer = function() {
