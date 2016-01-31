@@ -3,7 +3,7 @@
 Cute Sacrifice, a game about cute animals used in brutal rituals.
 Beware of their revenge!
 
-![Ingame Screenshot](screenshots/12.png?raw=true "Ingame Screenshot")
+![Ingame Screenshot](screenshots/screenshot_11.png?raw=true "Ingame Screenshot")
 
 Developed during the Global Game Jame 2016 by
 * Annemarie Mattmann
