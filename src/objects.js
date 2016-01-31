@@ -16,6 +16,10 @@ Objects = function() {
 		'ritual_fika'
 	];
 	
+	this.resetPlayerTint = function() {
+		player.tint = "0xFFFFFF";
+	}
+	
 	var ritualSound, splashSnd, crushsnd;
 	
 	this.preload = function() {
@@ -374,6 +378,8 @@ Objects = function() {
 		if (carriedObject === npc.body) {
 			if (type == 'deadhead') {
 				player.damage(1);
+				player.tint = 0xDD0000;
+				game.time.events.add(Phaser.Timer.SECOND * .4, this.resetPlayerTint, this);
 				playerBody.sprite.snd.play();
 				return;
 			}
@@ -437,6 +443,8 @@ Objects = function() {
 	function npcBumpedPlayer(npcBody, playerBody) {
 		if (playerstate == 'angeredNPC') {
 			player.damage(1);
+			player.tint = 0xDD0000;
+			game.time.events.add(Phaser.Timer.SECOND * .4, this.resetPlayerTint, this);
 			playerBody.sprite.snd.play();
 		}
 		playerstate = 'passive';
@@ -448,6 +456,8 @@ Objects = function() {
 	
 	function caughtPlayer(npcBody, playerBody) {
 		player.damage(1);
+		player.tint = 0xDD0000;
+		game.time.events.add(Phaser.Timer.SECOND * .4, this.resetPlayerTint, this);
 		playerBody.sprite.snd.play();
 	};
 	
