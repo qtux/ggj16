@@ -132,7 +132,7 @@ var Effects = function() {
 		// draw to the canvas context like normal
 		bmd.ctx.beginPath();
 		bmd.ctx.rect(0, 0, game.width, game.height);
-		bmd.ctx.fillStyle = '#000000';
+		bmd.ctx.fillStyle = '#FFFFFF';
 		bmd.ctx.fill();
 		
 		// use the bitmap data as the texture for the sprite
@@ -217,5 +217,8 @@ var Effects = function() {
 	
 	this.setOverlay = function(val) {
 		overlay.alpha = val;
+	};
+	this.setOverlayColor = function(val) {
+		overlay.tint = val;
 	};
 };

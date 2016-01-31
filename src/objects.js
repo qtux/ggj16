@@ -297,7 +297,7 @@ Objects = function() {
 		if (game.input.keyboard.isDown(Phaser.Keyboard.R) && !locked) {
 			locked = true;
 			var tmpInd = Math.floor(Math.random()*ritualSounds.length);
-			console.log(tmpInd);
+			//console.log(tmpInd);
 			ritualSound = game.add.audio(ritualSounds[tmpInd]);
 			ritualSound.play();
 			effects.particleEffectBloodExplosion(player.body.x, player.body.y, 30, 2000);
@@ -519,12 +519,12 @@ Objects = function() {
 				}
 			}
 		}
-	}
+	};
 
 	function npcBumpedWall(npcBody, wallBody) {
 		npcBody.velocity.x = -npcBody.velocity.x;
 		npcBody.velocity.y = -npcBody.velocity.y;
-	}
+	};
 
 	function npcBumpedPlayer(npcBody, playerBody) {
 		playerstate = 'passive';
@@ -532,5 +532,12 @@ Objects = function() {
 				&& game.input.keyboard.isDown(Phaser.Keyboard.X)) {
 			carriedObject = npcBody;
 		}
-	}
+	};
+	
+	this.playRitualSoundRnd = function () {
+		var tmpInd = Math.floor(Math.random()*ritualSounds.length);
+		//console.log(tmpInd);
+		ritualSound = game.add.audio(ritualSounds[tmpInd]);
+		ritualSound.play();
+	};
 };
