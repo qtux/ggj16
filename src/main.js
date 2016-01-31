@@ -254,14 +254,14 @@ function gofull() {
 function updateRequirementSprites()
 {
 	var tmpPos = 0;
-	console.log(levelReq.sprites.length);
+//	console.log(levelReq.sprites.length);
 	
 	for (i in levelReq.sprites)
 	{
 		levelReq.sprites[i].kill();
-//		levelReq.sprites[i].destroy();
+		levelReq.sprites[i].destroy();
 	}
-	console.log("after: " + levelReq.sprites.length);
+//	console.log("after: " + levelReq.sprites.length);
 	
 	for (var i=0; i<levelReq.numFire; i++)
 	{
@@ -308,13 +308,10 @@ function updateRequirementSprites()
 		}
 	}
 
-//	numFire : 1,
-//	numPoison : 0,
-//	numArcane : 0,
-//	numGoat : 1,
-//	numSheep : 0,
-//	numParrot : 0,
-//	numWorm : 0	
+	// next level?
+	if (tmpPos == 0){
+		objects.opendoor();
+	}
 }
 
 function setLevelRequirements(theLevelNum)
@@ -496,13 +493,13 @@ function update() {
 				{
 					levelReq.numFire--;
 				}
-			} else if (selectIdx == 1)
+			} else if (selectIdx == 2)
 			{
 				if (levelReq.numPoison > 0)
 				{
 					levelReq.numPoison--;
 				}
-			} else if (selectIdx == 2)
+			} else if (selectIdx == 1)
 			{
 				if (levelReq.numArcane > 0)
 				{
