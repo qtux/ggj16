@@ -6,6 +6,15 @@ Objects = function() {
 	var carriedObject = null;
 //	this.carriedObject = carriedObject;
 	
+	var ritualSounds = [
+			'ritual_tier_brennt',
+			'ritual_kanelbullar',
+			'ritual_mörkret',
+			'ritual_öppna_fönstret',
+			'ritual_ostfralla',
+			'ritual_fika'
+			];
+	
 	var ritualSound;
 
 	this.getCarriedObject = function (){
@@ -13,6 +22,7 @@ Objects = function() {
 	};
 	
 	this.preload = function() {
+
 		game.load.spritesheet('wizard', 'assets/spritesheets/wizard.png', 42, 72, 24);
 		game.load.spritesheet('sheep', 'assets/spritesheets/sheep.png', 36, 36, 15);
 		game.load.spritesheet('goat', 'assets/spritesheets/goat.png', 36, 36, 15);
@@ -30,6 +40,11 @@ Objects = function() {
 		game.load.spritesheet('questionmark', 'assets/tilesets/objecttiles.png', 36, 36, 20);
 		game.load.spritesheet('exclamationmark', 'assets/tilesets/objecttiles.png', 36, 36, 20);
 		game.load.audio('ritual_tier_brennt', 'assets/audio/ritual_tier_brennt.ogg');
+		game.load.audio('ritual_kanelbullar', 'assets/audio/kanelbullar.ogg');
+		game.load.audio('ritual_mörkret', 'assets/audio/moerkret.ogg');
+		game.load.audio('ritual_öppna_fönstret', 'assets/audio/oeppna_foenstret.ogg');
+		game.load.audio('ritual_ostfralla', 'assets/audio/ostfralla.ogg');
+		game.load.audio('ritual_fika', 'assets/audio/fika.ogg');
 	};
 
 	this.stopPlayer = function() {
@@ -48,8 +63,6 @@ Objects = function() {
 
 	this.create = function() {
 		playerstate = 'passive';
-
-		ritualSound = game.add.audio('ritual_tier_brennt');
 
 		// enable user input
 		cursors = game.input.keyboard.createCursorKeys();
@@ -251,9 +264,11 @@ Objects = function() {
 		}
 
 		if (game.input.keyboard.isDown(Phaser.Keyboard.R)) {
+			var tmpInd = Math.floor(Math.random()*ritualSounds.length);
+			console.log(tmpInd);
+			ritualSound = game.add.audio(ritualSounds[tmpInd]);
 			ritualSound.play();
-			effects.particleEffectBloodExplosion(player.body.x, player.body.y,
-					30, 2000);
+			effects.particleEffectBloodExplosion(player.body.x, player.body.y, 30, 2000);
 		}
 
 		if (game.input.keyboard.isDown(Phaser.Keyboard.Q)) {
