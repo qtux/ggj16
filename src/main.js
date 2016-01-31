@@ -104,8 +104,11 @@ function create () {
 		tileObjects[i].collides(playerCG);
 		tileObjects[i].collides(bulletsCG);
 	}
+	
 	var polygon = game.physics.p2.convertCollisionObjects(map, 'objectsCollision', true);   
+	console.log(typeof(polygon) + ", " + polygon.length);
 	for(var i in polygon) {
+		console.log(polygon[i]);
 		polygon[i].setCollisionGroup(tileCG);
 		polygon[i].collides(npcCG);
 		polygon[i].collides(playerCG);
@@ -202,6 +205,17 @@ function gofull() {
 
 function update() {
 	var dt = game.time.elapsed;
+	
+	var tmpX = player.x / 36;
+	var tmpY = player.y / 36;
+	var playerRitualDist = Math.sqrt((ritualCircle.posX - tmpX)
+			* (ritualCircle.posX - tmpX) + (ritualCircle.posY - tmpY)
+			* (ritualCircle.posY - tmpY));
+
+//	if (playerRitualDist < 2) {
+//		effects.particleEffectBloodExplosion(player.x, player.y, 10, 300);
+//	}
+	
 	// update objects and effects
 	if (fsm.is('move')){
 		objects.update();
@@ -210,7 +224,7 @@ function update() {
 	if (fsm.is('spellMenu'))
 	{
 		var angRange = 2*Math.PI / nSpells;
-		if (cursors.left.isDown && Math.abs(game.time.now - switchTimer2) > 800) {
+		if (game.input.keyboard.isDown(Phaser.Keyboard.A) && Math.abs(game.time.now - switchTimer2) > 500) {
 			selectIdx -= 1;
 			if (selectIdx <0) selectIdx = nSpells-1;
 			ringSpeed = -1;
@@ -218,7 +232,7 @@ function update() {
 			rot_tmp = turnDist(spellSprites[0].rotation, angRange*(selectIdx-1), ringSpeed);
 			console.log(rot_tmp);
 		}
-		if (cursors.right.isDown && Math.abs(game.time.now - switchTimer2) > 800) {
+		if (game.input.keyboard.isDown(Phaser.Keyboard.D) && Math.abs(game.time.now - switchTimer2) > 500) {
 			selectIdx += 1;
 			if (selectIdx >= nSpells) selectIdx = 0;
 			ringSpeed = +1;
@@ -251,13 +265,16 @@ function update() {
 			rot_tmp -= rot_tmp2;
 		}
 	}
+
 	
 	if (game.input.keyboard.isDown(Phaser.Keyboard.L))
 	{
 		effects.toggleLight();
 	}
 	
-	if (game.input.keyboard.isDown(Phaser.Keyboard.M)  && Math.abs(game.time.now - switchTimer) > 2000)
+
+
+	if ((objects.getCarriedObject() != null) && (playerRitualDist < 2) && game.input.keyboard.isDown(Phaser.Keyboard.M)  && Math.abs(game.time.now - switchTimer) > 200)
 	{
 		switchTimer = game.time.now;
 		if (fsm.is('move'))
