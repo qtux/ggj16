@@ -7,6 +7,7 @@ Objects = function() {
 	var carriedObject = null;
 	var lockThrow = false;
 	
+	
 	var ritualSounds = [
 		'ritual_tier_brennt',
 		'ritual_kanelbullar',
@@ -18,6 +19,7 @@ Objects = function() {
 	
 	this.resetPlayerTint = function() {
 		player.tint = "0xFFFFFF";
+		playerImmune = false;
 	}
 	
 	var ritualSound, splashSnd, crushsnd;
@@ -63,6 +65,7 @@ Objects = function() {
 	};
 	
 	this.create = function() {
+		playerImmune = false;
 		// sounds
 		splashSnd = game.add.audio('splash');
 		crushsnd = game.add.audio('crack');
@@ -85,10 +88,23 @@ Objects = function() {
 		map.createFromObjects('objects', 112, 'questionmark', 11, true, false, staticGrp);
 		map.createFromObjects('objects', 113, 'exclamationmark', 12, true, false, staticGrp);
 		
+
+		/*dmgGrp = game.add.group();
+		map.createFromObjects('objects', 110, 'spikes', 9, true, false, dmgGrp);
+		dmgGrp.forEach(function(spike) {
+			game.physics.p2.enable(spike);
+			spike.body.fixedRotation = true;
+			spike.body.setCollisionGroup(dmgObjCG);
+			spike.body.collides(playerCG, playerHitsDmgObj, this);
+			
+		}, this);*/
+		
+
 		//doors
 		doorsGrp = game.add.group();
 		map.createFromObjects('objects', 118, 'door', 17, true, false, doorsGrp);
 		map.createFromObjects('objects', 119, 'opendoor', 0, true, false, doorsGrp);
+
 		
 		// add worms
 		wormGrp = game.add.group();
@@ -231,12 +247,14 @@ Objects = function() {
 		player.body.setCollisionGroup(playerCG);
 		player.body.collides(tileCG);
 		player.body.collides(npcCG);
+		//player.body.collides(dmgObjCG);
 	};
 	
 	this.update = function() {
 		// if player dies
 		if (!player.alive) {
 			effects.particleEffectBloodExplosion(player.body.x, player.body.y, 20, 2000);
+			playerImmune = false;
 			game.state.restart();
 		}
 		
@@ -380,8 +398,28 @@ Objects = function() {
 			static.y = player.body.y - 40;
 			return;
 		}
-		if (Phaser.Rectangle.intersects(player, static) && game.input.keyboard.isDown(Phaser.Keyboard.F)) {
-			carriedObject = static;
+		if (Phaser.Rectangle.intersects(player, static))
+		{
+			var key;
+			if ("sprite" in static) {
+				key = keystatic.sprite.key;
+			} else {
+				key = static.key;
+			}
+			if (key == 'spikes')
+			{
+				if (!playerImmune) 
+				{
+					objects.playerHitsDmgObj();
+					playerImmune = true;
+				
+				}
+			}
+			else{
+				if ( game.input.keyboard.isDown(Phaser.Keyboard.F)) {
+					carriedObject = static;
+				}
+			}
 		}
 	}
 	
@@ -471,6 +509,13 @@ Objects = function() {
 		player.tint = 0xDD0000;
 		game.time.events.add(Phaser.Timer.SECOND * .4, this.resetPlayerTint, this);
 		playerBody.sprite.snd.play();
+	};
+	
+	this.playerHitsDmgObj = function() {
+		player.damage(1);
+		player.tint = 0xDD0000;
+		game.time.events.add(Phaser.Timer.SECOND * .4, this.resetPlayerTint, this);
+		player.snd.play();
 	};
 	
 	function hitByBullet(npcBody, bulletBody) {
