@@ -45,17 +45,20 @@
          "y":0
         }, 
         {
+         "draworder":"topdown",
          "height":20,
          "name":"objects",
          "objects":[
                 {
                  "gid":102,
                  "height":36,
+                 "id":1,
                  "name":"",
                  "properties":
                     {
                      "type":"playerstart"
                     },
+                 "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":36,
@@ -65,11 +68,13 @@
                 {
                  "gid":103,
                  "height":0,
+                 "id":2,
                  "name":"",
                  "properties":
                     {
 
                     },
+                 "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":0,
@@ -79,16 +84,50 @@
                 {
                  "gid":103,
                  "height":0,
+                 "id":3,
                  "name":"",
                  "properties":
                     {
 
                     },
+                 "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":0,
                  "x":216,
                  "y":432
+                }, 
+                {
+                 "gid":115,
+                 "height":36,
+                 "id":4,
+                 "name":"",
+                 "properties":
+                    {
+
+                    },
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":36,
+                 "x":180,
+                 "y":180
+                }, 
+                {
+                 "gid":115,
+                 "height":36,
+                 "id":5,
+                 "name":"",
+                 "properties":
+                    {
+
+                    },
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":36,
+                 "x":432,
+                 "y":468
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -98,6 +137,7 @@
          "y":0
         }, 
         {
+         "draworder":"topdown",
          "height":20,
          "name":"objectsCollision",
          "objects":[],
@@ -108,14 +148,17 @@
          "x":0,
          "y":0
         }],
+ "nextobjectid":6,
  "orientation":"orthogonal",
  "properties":
     {
 
     },
+ "renderorder":"right-down",
  "tileheight":36,
  "tilesets":[
         {
+         "columns":10,
          "firstgid":1,
          "image":"..\/tilesets\/basictiles.png",
          "imageheight":360,
@@ -127,10 +170,12 @@
 
             },
          "spacing":0,
+         "tilecount":100,
          "tileheight":36,
          "tilewidth":36
         }, 
         {
+         "columns":10,
          "firstgid":101,
          "image":"..\/tilesets\/objecttiles.png",
          "imageheight":360,
@@ -142,6 +187,7 @@
 
             },
          "spacing":0,
+         "tilecount":100,
          "tileheight":36,
          "tilewidth":36
         }],
