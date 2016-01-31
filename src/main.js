@@ -17,6 +17,8 @@ var ritualCircle = {
 	posY : 0
 };
 
+var bgm;
+
 var nSpells;
 var selector;
 var spellPos;
@@ -67,6 +69,7 @@ function preload () {
 	game.load.tilemap('map', 'assets/tilemaps/'+levelNames[levelNum]+'.json', null, Phaser.Tilemap.TILED_JSON);
 	game.load.image('tileset', 'assets/tilesets/basictiles.png');
 	game.load.atlas('spells', 'assets/spritesheets/spells.png','assets/spritesheets/spells.json');
+	game.load.audio('bgm', 'assets/audio/background.ogg');
 	
 	objects.preload();
 	effects.preload();
@@ -76,6 +79,10 @@ function preload () {
  * create - generate and initialise game content
  */
 function create () {
+	// background music
+	bgm = game.add.audio('bgm');
+	bgm.play('', 0, 1, true);
+	
 	setLevelRequirements(levelNum);
 	
 	// start physics system
