@@ -38,12 +38,10 @@ var Effects = function() {
 	
 	// sounds
 	var shootSnd;
-	var mehSnd;
 	
 	this.preload = function() {
 		game.load.spritesheet('particles', 'assets/spritesheets/particles.png', 18, 18);
 		game.load.audio('shoot', 'assets/audio/shoot.ogg');
-		game.load.audio('meh', 'assets/audio/meh.ogg');
 	};
 	
 	this.toggleLight = function() {
@@ -68,7 +66,6 @@ var Effects = function() {
 	this.create = function() {
 		switchTimer3 = game.time.now;
 		shootSnd = game.add.audio('shoot');
-		mehSnd = game.add.audio('meh');
 		
 		// initialise bullets
 		bullets = game.add.group();
@@ -115,12 +112,6 @@ var Effects = function() {
 		overlay = game.add.sprite(0, 0, bmd);
 		overlay.alpha = 0.0;
 	};
-	
-	this.meh = function() {
-		mehSnd.play();
-	};
-	
-
 	
 	this.fire = function(x, y) {
 		if (game.time.now > nextFire && bullets.countDead() > 0) {

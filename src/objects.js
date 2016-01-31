@@ -16,6 +16,9 @@ Objects = function() {
 			];
 	
 	var ritualSound;
+	var mehSnd;
+	var wormSnd;
+	var skullSnd;
 
 	this.getCarriedObject = function (){
 		return carriedObject;
@@ -39,34 +42,32 @@ Objects = function() {
 		game.load.spritesheet('runestone', 'assets/tilesets/objecttiles.png', 36, 36, 20);
 		game.load.spritesheet('questionmark', 'assets/tilesets/objecttiles.png', 36, 36, 20);
 		game.load.spritesheet('exclamationmark', 'assets/tilesets/objecttiles.png', 36, 36, 20);
+		
+		// rituals
 		game.load.audio('ritual_tier_brennt', 'assets/audio/ritual_tier_brennt.ogg');
 		game.load.audio('ritual_kanelbullar', 'assets/audio/kanelbullar.ogg');
 		game.load.audio('ritual_mörkret', 'assets/audio/moerkret.ogg');
 		game.load.audio('ritual_öppna_fönstret', 'assets/audio/oeppna_foenstret.ogg');
 		game.load.audio('ritual_ostfralla', 'assets/audio/ostfralla.ogg');
 		game.load.audio('ritual_fika', 'assets/audio/fika.ogg');
+		
+		// animals
+		game.load.audio('meh', 'assets/audio/meh.ogg');
+		game.load.audio('worm', 'assets/audio/worm.ogg');
+		game.load.audio('skull', 'assets/audio/skull.ogg');
 	};
-
-	this.stopPlayer = function() {
-		player.body.velocity.x = 0.;
-		player.body.velocity.y = 0.;
-	};
-
-	this.getPlayerX = function() {
-		return player.body.x;
-		console.log(typeof(player.body));
-	};
-
-	this.getPlayerY = function() {
-		return player.body.y;
-	};
-
+	
 	this.create = function() {
+		// sounds
+		mehSnd = game.add.audio('meh');
+		wormSnd = game.add.audio('worm');
+		skullSnd = game.add.audio('skull');
+		
 		playerstate = 'passive';
-
+		
 		// enable user input
 		cursors = game.input.keyboard.createCursorKeys();
-
+		
 		// add sheeps
 		sheepGrp = game.add.group();
 		map.createFromObjects('objects', 103, 'sheep', 1, true, false, sheepGrp);
@@ -85,7 +86,7 @@ Objects = function() {
 			sheep.body.collides(playerCG, npcBumpedPlayer, this);
 			sheep.body.collides(tileCG, npcBumpedWall, this);
 			sheep.body.collides(bulletsCG, function() {
-				effects.meh();
+				mehSnd.play();
 			}, this);
 		}, this);
 
@@ -106,7 +107,7 @@ Objects = function() {
 			worm.body.collides(playerCG, npcBumpedPlayer, this);
 			worm.body.collides(tileCG, npcBumpedWall, this);
 			worm.body.collides(bulletsCG, function() {
-				effects.meh();
+				wormSnd.play();
 			}, this);
 		}, this);
 
@@ -129,8 +130,7 @@ Objects = function() {
 			goat.body.collides(playerCG, npcBumpedPlayer, this);
 			goat.body.collides(tileCG, npcBumpedWall, this);
 			goat.body.collides(bulletsCG, function() {
-				var sound = game.add.audio('meh');
-				sound.play();
+				mehSnd.play();
 			}, this);
 		}, this);
 		
@@ -151,7 +151,7 @@ Objects = function() {
 			deadhead.body.collides(playerCG, npcBumpedPlayer, this);
 			deadhead.body.collides(tileCG, npcBumpedWall, this);
 			deadhead.body.collides(bulletsCG, function() {
-				effects.meh();
+				skullSnd.play();
 			}, this);
 		}, this);
 
@@ -287,14 +287,28 @@ Objects = function() {
 				&& game.input.keyboard.isDown(Phaser.Keyboard.Y)) {
 			carriedObject = null;
 		}
-
+		
 		sheepGrp.forEach(function(sheep) { resolveAImovement(sheep, 'sheep') }, this);
 		goatGrp.forEach(function(goat) { resolveAImovement(goat, 'goat') }, this);
 		wormGrp.forEach(function(worm) { resolveAImovement(worm, 'worm') }, this);
 		deadheadGrp.forEach(function(deadhead) { resolveAImovement(deadhead, 'deadhead') }, this);
 		staticGrp.forEach(function(static) { resolveStatics(static) }, this);
 	};
-
+	
+	this.stopPlayer = function() {
+		player.body.velocity.x = 0.;
+		player.body.velocity.y = 0.;
+	};
+	
+	this.getPlayerX = function() {
+		return player.body.x;
+		console.log(typeof(player.body));
+	};
+	
+	this.getPlayerY = function() {
+		return player.body.y;
+	};
+	
 	this.getPlayer = function() {
 		return player;
 	};
