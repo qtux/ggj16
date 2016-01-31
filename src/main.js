@@ -4,7 +4,8 @@ var effects = new Effects();
 var objects = new Objects();
 var cursors;
 var player;
-var npcCG, tileCG, playerCG, bulletsCG, ritualResultCG;		// collision groups
+var playerImmune = false;
+var npcCG, tileCG, playerCG, bulletsCG, ritualResultCG;		// collision groups (not used: dmgObjCG)
 
 // TODO local variables
 var levelNames = ['level00', 'level01', 'level02', 'level03', 'level04'];
@@ -87,6 +88,7 @@ function create () {
 	playerCG = game.physics.p2.createCollisionGroup();
 	bulletsCG = game.physics.p2.createCollisionGroup();
 	ritualResultCG = game.physics.p2.createCollisionGroup();
+	//dmgObjCG = game.physics.p2.createCollisionGroup();
 	
 	// enable collision with world bounds
 	game.physics.p2.updateBoundsCollisionGroup();
