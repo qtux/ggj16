@@ -529,19 +529,33 @@ function update() {
 			{
 				effects.doStartRain();
 				// color the goat
-				tmpObj.sprite.tint = 0xff0000;
+				if (key == "goat" || key == "sheep" || key == "worm" || key == "parrot") {
+					tmpObj.sprite.tint = 0xff0000;
+				} else {
+					tmpObj.tint = 0xff0000;
+				}
 				objects.playRitualSoundRnd();
 				
 //				fsm.activateMoveMode();
 			}
 			
 			// ritual kill
-			if (selectIdx == 0) // && key == "goat")
+			if (selectIdx == 0 && key != "key")
 			{
 //				fsm.activateMoveMode();
 				effects.doSomeEffects();
 				tmpObj.emitter = effects.particleEffectBleeding(tmpSprite.x + tmpSprite.width / 2., tmpSprite.y + tmpSprite.height / 2., 20, 1000);
 				tmpObj.ritualized = true;
+				
+				objects.playRitualSoundRnd();
+			}
+			
+			// ritual kill
+			if (selectIdx == 0 && key == "questionmark")
+			{
+//				fsm.activateMoveMode();
+				effects.doSomeEffects();
+				objects.changeToSth(tmpObj);
 				
 				objects.playRitualSoundRnd();
 			}

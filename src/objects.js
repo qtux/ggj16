@@ -255,6 +255,7 @@ Objects = function() {
 		if (!player.alive) {
 			effects.particleEffectBloodExplosion(player.body.x, player.body.y, 20, 2000);
 			playerImmune = false;
+			carrierObject = null;
 			game.state.restart();
 		}
 		
@@ -306,6 +307,7 @@ Objects = function() {
 			if (levelNum + 1 < levelNames.length) {
 				levelNum += 1;
 			}
+			carrierObject = null;
 			game.state.restart();
 		}
 
@@ -313,6 +315,7 @@ Objects = function() {
 			if (levelNum > 0) {
 				levelNum -= 1;
 			}
+			carrierObject = null;
 			game.state.restart();
 		}
 
@@ -368,9 +371,10 @@ Objects = function() {
 		deadheadGrp.forEach(function(obj) { resolveAImovement(obj, 'deadhead') }, this);
 		parrotGrp.forEach(function(obj) { resolveAImovement(obj, 'parrot') }, this);
 		staticGrp.forEach(function(obj) { resolveStatics(obj) }, this);
-		doorsGrp.forEach(function(obj) { if (obj.name == 'openDoor' && Phaser.Rectangle.intersects(player, obj)) { if (levelNum + 1 < levelNames.length) {
+		doorsGrp.forEach(function(obj) { if (obj.name == 'openDoor' && Phaser.Rectangle.intersects(player, obj) || carriedObject != null && Phaser.Rectangle.intersects(player, obj) && carriedObject.name == 'key') { if (levelNum + 1 < levelNames.length) {
 				levelNum += 1;
 			}
+			carrierObject = null;
 			game.state.restart(); }}, this);
 	};
 	
@@ -607,6 +611,23 @@ Objects = function() {
 	
 	this.opendoor = function () {
 		doorsGrp.forEach(function(obj) { opendoors(obj); }, this);
+	};
+	
+	this.changeToSth = function (tmpObj) {
+		var xPos = tmpObj.x;
+		var yPos = tmpObj.y;
+		
+		tmpObj.kill();
+		if (tmpObj.group) {
+			tmpObj.group.remove(tmpObj);
+		} else if (tmpObj.parent) {
+			tmpObj.parent.removeChild(tmpObj);
+		}
+		var od = game.add.sprite(xPos, yPos, 'key');
+		staticGrp.add(od);
+		od.moveDown();		// alter z depth so the door is behind the player
+		carriedObject = od;
+		od.name = 'key';
 	};
 	
 	
