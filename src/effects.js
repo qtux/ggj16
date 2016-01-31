@@ -6,7 +6,7 @@ var Effects = function() {
 	var nextFire = 0;
 	var bulletSprite;
 	var bullets;
-	var emitter;
+	var emitter, emitterBloodExplosion;
 	var lightningTimeMax = 100;
 	var lightningTime = lightningTimeMax;
 	var overlay;
@@ -152,21 +152,21 @@ var Effects = function() {
 	};
 	
 	this.particleEffectBloodExplosion = function(x , y, numParticles, lifeTime) {
-		if (emitter == null){
-			emitter = game.add.emitter(x, y, numParticles);
-			emitter.makeParticles('particles', [0, 1, 2, 3, 4, 5, 6, 7, 8], numParticles, true, true);
+		if (emitterBloodExplosion == null){
+			emitterBloodExplosion = game.add.emitter(x, y, numParticles);
+			emitterBloodExplosion.makeParticles('particles', [0, 1, 2, 3, 4, 5, 6, 7, 8], numParticles, true, true);
 			//emitter.minParticleSpeed.setTo(-400, -400);
 			//emitter.maxParticleSpeed.setTo(400, 400);
-			emitter.gravity = 0;
-			emitter.maxParticles = numParticles;
+			emitterBloodExplosion.gravity = 0;
+			emitterBloodExplosion.maxParticles = numParticles;
 			
-			emitter.start(true, lifeTime, null, numParticles);
-			game.time.events.add(lifeTime, function(){emitter.destroy(); emitter = null;}, this);
+			emitterBloodExplosion.start(true, lifeTime, null, numParticles);
+			game.time.events.add(lifeTime, function(){emitterBloodExplosion.destroy(); emitterBloodExplosion = null;}, this);
 		}
 	};
 	
-	this.particleEffectBleeding = function(x , y, numParticles, lifeTime) {
-		if (emitter == null){
+	this.particleEffectBleeding = function(x , y, numParticles, pLifetime) {
+//		if (emitter == null){
 			emitter = game.add.emitter(x, y, numParticles);
 			emitter.makeParticles('particles', [0, 1, 2, 3, 4, 5, 6, 7, 8], numParticles, true, true);
 			emitter.minParticleSpeed.setTo(-100, -100);
@@ -174,9 +174,10 @@ var Effects = function() {
 			emitter.gravity = 50;
 			emitter.maxParticles = numParticles;
 			
-			emitter.start(false, lifeTime, null, numParticles);
-			game.time.events.add(lifeTime, function(){emitter.destroy(); emitter = null;}, this);
-		}
+			emitter.start(false, pLifetime, 100);
+			return emitter;
+//			game.time.events.add(lifeTime, function(){emitter.destroy(); emitter = null;}, this);
+//		}
 	};
 	
 	this.update = function(dt) {
@@ -187,6 +188,13 @@ var Effects = function() {
 		} else{
 			overlay.tint = 0x000000;
 		}
+		
+		if (emitterBloodExplosion != null) {
+			emitterBloodExplosion.forEachAlive(function(p) {
+				p.alpha = p.lifespan / emitterBloodExplosion.lifespan;
+			});
+		}
+		
 		if (emitter != null) {
 			emitter.forEachAlive(function(p) {
 				p.alpha = p.lifespan / emitter.lifespan;
@@ -194,7 +202,7 @@ var Effects = function() {
 		}
 		if (lightActive)
 		{
-			console.log(typeof(filter.uniforms.player.value));
+//			console.log(typeof(filter.uniforms.player.value));
 			/*filter.uniforms.player.value.x = objects.getPlayer().body.x;
 			filter.uniforms.player.value.y = objects.getPlayer().body.y;*/
 			filter.uniforms.player.value = objects.getPlayer().body;
