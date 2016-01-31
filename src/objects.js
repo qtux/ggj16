@@ -121,7 +121,7 @@ Objects = function() {
 			worm.animations.add('left', [ 2, 3 ], wormAnimFPS, true);
 			worm.animations.add('panic', [ 0 ], wormAnimFPS, true);
 			// set health
-			worm.health = 1;
+			worm.health = 2;
 			worm.snd = game.add.audio('worm');
 			// enable physics for sheep
 			game.physics.p2.enable(worm);
@@ -419,10 +419,13 @@ Objects = function() {
 	};
 	
 	function hitByBullet(npcBody, bulletBody) {
+		if (!bulletBody.sprite.alive) {
+			return;
+		}
 		bulletBody.sprite.kill();
 		effects.particleEffectBloodExplosion(npcBody.x, npcBody.y, 20, 500);
 		npcSprite = npcBody.sprite;
-		npcBody.sprite.damage(0.5);
+		npcBody.sprite.damage(1);
 		if (!npcSprite.alive) {
 			crushsnd.play();
 			if (npcSprite.group) {
@@ -436,11 +439,14 @@ Objects = function() {
 	}
 
 	function collideWithBullet(npcBody, bulletBody) {
+		if (!bulletBody.sprite.alive) {
+			return;
+		}
 		bulletBody.sprite.kill();
 		playerstate = 'angeredNPC';
 		effects.particleEffectBloodExplosion(npcBody.x, npcBody.y, 20, 500);
 		npcSprite = npcBody.sprite;
-		npcBody.sprite.damage(0.5);
+		npcBody.sprite.damage(1);
 		if (!npcSprite.alive) {
 			splashSnd.play();
 			if (npcSprite.group) {
