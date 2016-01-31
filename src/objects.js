@@ -1,6 +1,7 @@
 Objects = function() {
+	
+	var playerGrp, sheepGrp, goatGrp, wormGrp, staticGrp;	// sprite groupes
 
-	var playerGrp, sheepGrp, goatGrp, wormGrp; // sprite groupes
 	var playerstate;
 	var carriedObject = null;
 //	this.carriedObject = carriedObject;
@@ -12,16 +13,21 @@ Objects = function() {
 	};
 	
 	this.preload = function() {
-		game.load.spritesheet('wizard', 'assets/spritesheets/wizard.png', 42,
-				72, 24);
-		game.load.spritesheet('sheep', 'assets/spritesheets/sheep.png', 36, 36,
-				15);
-		game.load.spritesheet('goat', 'assets/spritesheets/goat.png', 36, 36,
-				15);
-		game.load
-				.spritesheet('worm', 'assets/spritesheets/worm.png', 36, 36, 8);
-		game.load.audio('ritual_tier_brennt',
-				'assets/audio/ritual_tier_brennt.ogg');
+		game.load.spritesheet('wizard', 'assets/spritesheets/wizard.png', 42, 72, 24);
+		game.load.spritesheet('sheep', 'assets/spritesheets/sheep.png', 36, 36, 15);
+		game.load.spritesheet('goat', 'assets/spritesheets/goat.png', 36, 36, 15);
+		game.load.spritesheet('worm', 'assets/spritesheets/worm.png', 36, 36, 8);
+		game.load.spritesheet('key', 'assets/tilesets/objecttiles.png', 36, 36, 20);
+		game.load.spritesheet('pearl', 'assets/tilesets/objecttiles.png', 36, 36, 20);
+		game.load.spritesheet('torch', 'assets/tilesets/objecttiles.png', 36, 36, 20);
+		game.load.spritesheet('bucket', 'assets/tilesets/objecttiles.png', 36, 36, 20);
+		game.load.spritesheet('book', 'assets/tilesets/objecttiles.png', 36, 36, 20);
+		game.load.spritesheet('abyss', 'assets/tilesets/objecttiles.png', 36, 36, 20);
+		game.load.spritesheet('spikes', 'assets/tilesets/objecttiles.png', 36, 36, 20);
+		game.load.spritesheet('runestone', 'assets/tilesets/objecttiles.png', 36, 36, 20);
+		game.load.spritesheet('questionmark', 'assets/tilesets/objecttiles.png', 36, 36, 20);
+		game.load.spritesheet('exclamationmark', 'assets/tilesets/objecttiles.png', 36, 36, 20);
+		game.load.audio('ritual_tier_brennt', 'assets/audio/ritual_tier_brennt.ogg');
 	};
 
 	this.stopPlayer = function() {
@@ -122,6 +128,20 @@ Objects = function() {
 			}, this);
 		}, this);
 
+		// static item group
+		staticGrp = game.add.group();
+		map.createFromObjects('objects', 101, 'key', 0, true, false, staticGrp);
+		map.createFromObjects('objects', 104, 'pearl', 3, true, false, staticGrp);
+		map.createFromObjects('objects', 105, 'torch', 4, true, false, staticGrp);
+		map.createFromObjects('objects', 106, 'bucket', 5, true, false, staticGrp);
+		map.createFromObjects('objects', 108, 'book', 7, true, false, staticGrp);
+		map.createFromObjects('objects', 109, 'abyss', 8, true, false, staticGrp);
+		map.createFromObjects('objects', 110, 'spikes', 9, true, false, staticGrp);
+		map.createFromObjects('objects', 111, 'runestone', 10, true, false, staticGrp);
+		map.createFromObjects('objects', 112, 'questionmark', 11, true, false, staticGrp);
+		map.createFromObjects('objects', 113, 'exclamationmark', 12, true, false, staticGrp);
+
+		// player group
 		playerGrp = game.add.group();
 		map.createFromObjects('objects', 102, 'wizard', 1, true, false,
 				playerGrp);
@@ -238,23 +258,28 @@ Objects = function() {
 				&& game.input.keyboard.isDown(Phaser.Keyboard.Y)) {
 			carriedObject = null;
 		}
-		sheepGrp.forEach(function(sheep) {
-			resolveAImovement(sheep, 'sheep')
-		}, this);
-		goatGrp.forEach(function(goat) {
-			resolveAImovement(goat, 'goat')
-		}, this);
-		wormGrp.forEach(function(worm) {
-			resolveAImovement(worm, 'worm')
-		}, this);
+
+		sheepGrp.forEach(function(sheep) { resolveAImovement(sheep, 'sheep') }, this);
+		goatGrp.forEach(function(goat) { resolveAImovement(goat, 'goat') }, this);
+		wormGrp.forEach(function(worm) { resolveAImovement(worm, 'worm') }, this);
+		staticGrp.forEach(function(static) { resolveStatics(static) }, this);
 	};
 
-	
 	this.getPlayer = function() {
 		return player;
 	};
 	
-
+	function resolveStatics(static) {
+		if (carriedObject === static) {
+			static.x = player.body.x - 17;
+			static.y = player.body.y - 40;
+			return;
+		}
+		if (Phaser.Rectangle.intersects(player, static) && game.input.keyboard.isDown(Phaser.Keyboard.X)) {
+			carriedObject = static;
+		}
+	}
+	
 	function resolveAImovement(npc, type) {
 		if (carriedObject === npc.body) {
 			if (type == 'sheep') {
