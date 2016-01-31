@@ -1,35 +1,21 @@
 Objects = function() {
 	
 	var playerGrp, sheepGrp, parrotGrp, goatGrp, wormGrp, staticGrp, deadheadGrp;	// sprite groupes
-
+	
 	var playerstate;
 	var locked;
 	var carriedObject = null;
-//	this.carriedObject = carriedObject;
 	
 	var ritualSounds = [
-			'ritual_tier_brennt',
-			'ritual_kanelbullar',
-			'ritual_mörkret',
-			'ritual_öppna_fönstret',
-			'ritual_ostfralla',
-			'ritual_fika'
-			];
+		'ritual_tier_brennt',
+		'ritual_kanelbullar',
+		'ritual_mörkret',
+		'ritual_öppna_fönstret',
+		'ritual_ostfralla',
+		'ritual_fika'
+	];
 	
 	var ritualSound, mehSnd, wormSnd, skullSnd, goatSnd, parrotSnd;
-	
-	this.getCarriedObject = function (){
-		if (carriedObject)
-		{
-			/*if ("sprite" in carriedObject) 
-			{
-				console.log(carriedObject.sprite.key);
-			}else{
-				console.log(carriedObject.key);
-			}*/
-		}
-		return carriedObject;
-	};
 	
 	this.preload = function() {
 		// object spritesheets
@@ -419,6 +405,17 @@ Objects = function() {
 				&& game.input.keyboard.isDown(Phaser.Keyboard.X)) {
 			carriedObject = npcBody;
 		}
+	};
+	
+	this.getCarriedObject = function (){
+		if (carriedObject) {
+			/*if ("sprite" in carriedObject) {
+				console.log(carriedObject.sprite.key);
+			} else {
+				console.log(carriedObject.key);
+			}*/
+		}
+		return carriedObject;
 	};
 	
 	this.playRitualSoundRnd = function () {
