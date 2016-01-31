@@ -511,16 +511,17 @@ function update() {
 			}
 			
 			// rituals go here
-			if (selectIdx == 2 && key == "goat")
+			if (selectIdx == 2) // && key == "goat")
 			{
-				objects.opendoor();
+				//objects.opendoor();
+				objects.setPlayerState('angeredNPC');
 				objects.playRitualSoundRnd();
 				
 //				fsm.activateMoveMode();
 			}
 			
 			// rituals blood rain
-			if (selectIdx == 1 && key == "goat")
+			if (selectIdx == 1) // && key == "goat")
 			{
 				effects.doStartRain();
 				// color the goat
@@ -531,7 +532,7 @@ function update() {
 			}
 			
 			// ritual kill
-			if (selectIdx == 0 && key == "goat")
+			if (selectIdx == 0) // && key == "goat")
 			{
 //				fsm.activateMoveMode();
 				effects.doSomeEffects();
@@ -542,15 +543,15 @@ function update() {
 			}
 			
 			// ritual kill
-			if (selectIdx == 0 && key == "worm")
-			{
+			//if (selectIdx == 0 && key == "worm")
+			//{
 //				fsm.activateMoveMode();
-				effects.doSomeEffects();
+	/*			effects.doSomeEffects();
 				tmpObj.emitter = effects.particleEffectBleeding(tmpSprite.x + tmpSprite.width / 2., tmpSprite.y + tmpSprite.height / 2., 20, 1000);
 				tmpObj.ritualized = true;
 				
 				objects.playRitualSoundRnd();
-			}
+			}*/
 			updateRequirementSprites();
 			fsm.activateMoveMode();	
 		}

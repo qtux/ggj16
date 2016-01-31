@@ -608,4 +608,6 @@ Objects = function() {
 		doorsGrp.forEach(function(obj) { opendoors(obj); }, this);
 	};
 	
+	
+	this.setPlayerState = function(nStat) {playerstate=nStat;};
 };
