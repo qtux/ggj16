@@ -17,9 +17,14 @@ Objects = function() {
 		game.load.spritesheet('sheep', 'assets/spritesheets/sheep.png', 36, 36, 15);
 		game.load.spritesheet('goat', 'assets/spritesheets/goat.png', 36, 36, 15);
 		game.load.spritesheet('worm', 'assets/spritesheets/worm.png', 36, 36, 8);
+		game.load.spritesheet('key', 'assets/tilesets/objecttiles.png', 36, 36, 20);
+		game.load.spritesheet('pearl', 'assets/tilesets/objecttiles.png', 36, 36, 20);
+		game.load.spritesheet('torch', 'assets/tilesets/objecttiles.png', 36, 36, 20);
 		game.load.spritesheet('bucket', 'assets/tilesets/objecttiles.png', 36, 36, 20);
-		game.load.spritesheet('runestone', 'assets/tilesets/objecttiles.png', 36, 36, 20);
+		game.load.spritesheet('book', 'assets/tilesets/objecttiles.png', 36, 36, 20);
+		game.load.spritesheet('abyss', 'assets/tilesets/objecttiles.png', 36, 36, 20);
 		game.load.spritesheet('spikes', 'assets/tilesets/objecttiles.png', 36, 36, 20);
+		game.load.spritesheet('runestone', 'assets/tilesets/objecttiles.png', 36, 36, 20);
 		game.load.spritesheet('questionmark', 'assets/tilesets/objecttiles.png', 36, 36, 20);
 		game.load.spritesheet('exclamationmark', 'assets/tilesets/objecttiles.png', 36, 36, 20);
 		game.load.audio('ritual_tier_brennt', 'assets/audio/ritual_tier_brennt.ogg');
@@ -125,8 +130,16 @@ Objects = function() {
 
 		// static item group
 		staticGrp = game.add.group();
+		map.createFromObjects('objects', 101, 'key', 0, true, false, staticGrp);
+		map.createFromObjects('objects', 104, 'pearl', 3, true, false, staticGrp);
+		map.createFromObjects('objects', 105, 'torch', 4, true, false, staticGrp);
 		map.createFromObjects('objects', 106, 'bucket', 5, true, false, staticGrp);
+		map.createFromObjects('objects', 108, 'book', 7, true, false, staticGrp);
+		map.createFromObjects('objects', 109, 'abyss', 8, true, false, staticGrp);
 		map.createFromObjects('objects', 110, 'spikes', 9, true, false, staticGrp);
+		map.createFromObjects('objects', 111, 'runestone', 10, true, false, staticGrp);
+		map.createFromObjects('objects', 112, 'questionmark', 11, true, false, staticGrp);
+		map.createFromObjects('objects', 113, 'exclamationmark', 12, true, false, staticGrp);
 
 		// player group
 		playerGrp = game.add.group();
