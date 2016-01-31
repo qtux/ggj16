@@ -10,11 +10,11 @@ var Effects = function() {
 	var lightningTimeMax = 100;
 	var lightningTime = lightningTimeMax;
 	var overlay;
-	var filter;
+	var filter, lightFilter;
 	var switchTimer3; 
 	var emitterRain;
 	
-	/*var fragmentSrc = [
+	var lightShader = [
 			"precision mediump float;",
 			// Incoming texture coordinates. 
 			'varying vec2 vTextureCoord;',
@@ -32,9 +32,10 @@ var Effects = function() {
 			// colorRGBA = (y % 2) * texel(u,v);
 			//"a_tmp = texture2D(uSampler, vTextureCoord).a;";
 			"gl_FragColor = (1.- min(1.,sqrt((gl_FragCoord.y-(resolution.y-player.y))* (gl_FragCoord.y-(resolution.y-player.y))+ (gl_FragCoord.x-player.x)* (gl_FragCoord.x-player.x))/150.)) * texture2D(uSampler, vTextureCoord);",
+			//"gl_FragColor = (1.- min(1.,sqrt((gl_FragCoord.y-(resolution.y-player.y))* (gl_FragCoord.y-(resolution.y-player.y))+ (gl_FragCoord.x-player.x)* (gl_FragCoord.x-player.x))/150.)) * vColor;",
 			"gl_FragColor.a = 0.5;",
 			"}"
-		];*/
+		];
 	
 	var fragmentSrc = [
 			"precision mediump float;",
@@ -48,12 +49,13 @@ var Effects = function() {
 			"uniform vec2      resolution;",
 			"uniform float     time;",
 			"uniform vec2      mouse;",
-			"uniform vec2      player;",
+			//"uniform vec2      player;",
 
 			"void main( void ) {",
 			// colorRGBA = (y % 2) * texel(u,v);
 			//"a_tmp = texture2D(uSampler, vTextureCoord).a;";
 			"vec4 colTmp = texture2D(uSampler, vTextureCoord);",
+			//"vec4 colTmp = vColor;",
 			"const vec3 refCol = vec3(146./255., 39./255., 143./255.);",
 			"float colDiff = length(colTmp.rgb - refCol);",
 			"if (colDiff < .02) colTmp.a = abs(sin((gl_FragCoord.y/10.+time)));",
@@ -62,6 +64,7 @@ var Effects = function() {
 			"}"
 		];
 	var lightActive = false;
+	var glowActive = false;
 	
 	// sounds
 	var shootSnd;
@@ -71,24 +74,64 @@ var Effects = function() {
 		game.load.audio('shoot', 'assets/audio/shoot.ogg');
 	};
 	
-	this.toggleLight = function() {
+	this.toggleGlow = function() {
 		if (  game.time.now- switchTimer3>200)
 		{
-			if (lightActive)
+			if (glowActive)
 			{
-				lightActive = !lightActive;
-				game.world.filters = null;
+				glowActive = !glowActive;
+				
+				var delIdx = -1;
+				for (var i = 0; i < game.world.filters.length; i++)
+				{
+					if (game.world.filters[i] == filter) delIdx = i;
+				}
+				if (delIdx > -1) game.world.filters.splice(delIdx,1);
+				if (game.world.filters.length == 0) game.world.filters = null;
 				filter.destroy();
 			}else{
-				lightActive = !lightActive;
+				glowActive = !glowActive;
 				filter = new Phaser.Filter(game, null, fragmentSrc);
 				filter.setResolution(1152, 720);
-				filter.uniforms.player = { type: '2f', value: { x: objects.getPlayer().body.x, y: objects.getPlayer().body.y } };
-				game.world.filters = [ filter ];
+				//filter.uniforms.player = { type: '2f', value: { x: objects.getPlayer().body.x, y: objects.getPlayer().body.y } };
+				
+				if (!game.world.filters || game.world.filters.length == 0) 
+					game.world.filters = [ filter ];
+				else
+					game.world.filters.push(filter);
+				
+				//game.world.filters = [ filter ];
 			}
 			switchTimer3 = game.time.now;
 		}
 	}
+	
+	
+	this.toggleLight = function () {
+		if (lightActive)
+		{
+			lightActive = !lightActive;
+			var delIdx = -1;
+			for (var i = 0; i < overlay.filters.length; i++)
+			{
+				if (overlay.filters[i] == lightFilter) delIdx = i;
+			}
+			if (delIdx > -1) overlay.filters.splice(delIdx,1);
+			if (overlay.filters.length == 0) overlay.filters = null;
+			lightFilter.destroy();
+		} else {
+			lightActive = !lightActive;
+			lightFilter = new Phaser.Filter(game, null, lightShader);
+			lightFilter.setResolution(1152, 720);
+			lightFilter.uniforms.player = { type: '2f', value: { x: objects.getPlayer().body.x, y: objects.getPlayer().body.y } };
+			
+			if (!overlay.filters || overlay.filters.length == 0) 
+				overlay.filters = [ lightFilter ];
+			else
+				overlay.filters.push(lightFilter);
+		}
+	}
+	
 	
 	this.create = function() {
 		switchTimer3 = game.time.now;
@@ -202,10 +245,16 @@ var Effects = function() {
 		}
 		if (lightActive)
 		{
-//			console.log(typeof(filter.uniforms.player.value));
+
+			//console.log(typeof(filter.uniforms.player.value));
+
 			/*filter.uniforms.player.value.x = objects.getPlayer().body.x;
 			filter.uniforms.player.value.y = objects.getPlayer().body.y;*/
-			filter.uniforms.player.value = objects.getPlayer().body;
+			lightFilter.uniforms.player.value = objects.getPlayer().body;
+			lightFilter.update();
+		}
+		if (glowActive)
+		{
 			filter.update();
 		}
 	};

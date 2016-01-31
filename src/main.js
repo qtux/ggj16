@@ -160,15 +160,19 @@ function create () {
 			objects.getPlayer().body.reset(objects.getPlayer().body.x,objects.getPlayer().body.y);
 			objects.getCarriedSprite().body.reset(objects.getCarriedSprite().body.x,objects.getCarriedSprite().body.y);*/
 			objects.getPlayer().body.enabled=false;
-			objects.getCarriedSprite().body.enabled=false;
+			if (objects.getCarriedSprite().body != null) {
+				objects.getCarriedSprite().body.enabled=false;
+			}
 
 			
 
 			//objects.getPlayer().body.immovable = true;
 			objects.getPlayer().body.velocity.x = 0;
 			objects.getPlayer().body.velocity.y = 0;
-			objects.getCarriedSprite().body.velocity.x = 0;
-			objects.getCarriedSprite().body.velocity.y = 0;
+			if (objects.getCarriedSprite().body != null) {
+				objects.getCarriedSprite().body.velocity.x = 0;
+				objects.getCarriedSprite().body.velocity.y = 0;
+			}
 			
 			//console.log(objects.getCarriedSprite());
 			//objects.getCarriedSprite().immovable = true;
@@ -211,7 +215,9 @@ function create () {
 				spellSprites.pop();
 			}	
 			objects.getPlayer().body.enabled=true;
-			objects.getCarriedSprite().body.enabled=true;
+			if (objects.getCarriedSprite().body != null) {
+				objects.getCarriedSprite().body.enabled=true;
+			}
 			//objects.getCarriedSprite().immovable = false;
 			//objects.getPlayer().body.immovable = false;
 			effects.setOverlay(0.);
@@ -263,8 +269,10 @@ function update() {
 	{
 		objects.getPlayer().body.velocity.x = 0;
 		objects.getPlayer().body.velocity.y = 0;
-		objects.getCarriedSprite().body.velocity.x = 0;
-		objects.getCarriedSprite().body.velocity.y = 0;
+		if (objects.getCarriedSprite().body != null) {
+			objects.getCarriedSprite().body.velocity.x = 0;
+			objects.getCarriedSprite().body.velocity.y = 0;
+		}
 		
 		//console.log(objects.getPlayer().body);
 		var angRange = 2*Math.PI / nSpells;
@@ -345,12 +353,16 @@ function update() {
 	}
 
 	
-	//if (game.input.keyboard.isDown(Phaser.Keyboard.L))
+	if (game.input.keyboard.isDown(Phaser.Keyboard.L))
+	{
+		effects.toggleLight();
+	}
+	
 	if (playerRitualDist<2)
 	{
 		if (!animState) 
 		{
-			effects.toggleLight();
+			effects.toggleGlow();
 			animState = true;
 		}
 	}
@@ -358,7 +370,7 @@ function update() {
 	{
 		if (animState) 
 		{
-			effects.toggleLight();
+			effects.toggleGlow();
 			animState = false;
 		}
 	}

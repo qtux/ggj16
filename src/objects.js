@@ -16,6 +16,10 @@ Objects = function() {
 		'ritual_fika'
 	];
 	
+	this.resetPlayerTint = function() {
+		player.tint = "0xFFFFFF";
+	}
+	
 	var ritualSound, splashSnd, crushsnd;
 	
 	this.preload = function() {
@@ -65,51 +69,18 @@ Objects = function() {
 		// enable user input
 		cursors = game.input.keyboard.createCursorKeys();
 		
-		// add sheeps
-		sheepGrp = game.add.group();
-		map.createFromObjects('objects', 103, 'sheep', 1, true, false, sheepGrp);
-		sheepGrp.forEach(function(sheep) {
-			var sheepAnimFPS = 10;
-			sheep.animations.add('idle', [ 0 ], sheepAnimFPS, true);
-			sheep.animations.add('down', [ 9, 10, 11 ], sheepAnimFPS, true);
-			sheep.animations.add('up', [ 6, 7, 8 ], sheepAnimFPS, true);
-			sheep.animations.add('right', [ 0, 1, 2 ], sheepAnimFPS, true);
-			sheep.animations.add('left', [ 3, 4, 5 ], sheepAnimFPS, true);
-			sheep.animations.add('panic', [ 12, 13, 14 ], sheepAnimFPS, true);
-			// set health
-			sheep.health = 3;
-			sheep.snd = game.add.audio('meh');
-			// enable physics for sheep
-			game.physics.p2.enable(sheep);
-			sheep.body.fixedRotation = true;
-			sheep.body.setCollisionGroup(npcCG);
-			sheep.body.collides(playerCG, npcBumpedPlayer, this);
-			sheep.body.collides(tileCG, npcBumpedWall, this);
-			sheep.body.collides(bulletsCG, collideWithBullet, this);
-		}, this);
-		
-		// add parrot
-		parrotGrp = game.add.group();
-		map.createFromObjects('objects', 117, 'parrot', 0, true, false, parrotGrp);
-		parrotGrp.forEach(function(parrot) {
-			var parrotAnimFPS = 10;
-			parrot.animations.add('idle', [ 0 ], parrotAnimFPS, true);
-			parrot.animations.add('down', [ 10, 11, 12 ], parrotAnimFPS, true);
-			parrot.animations.add('up', [ 8, 9 ], parrotAnimFPS, true);
-			parrot.animations.add('right', [ 0, 1, 2, 3 ], parrotAnimFPS, true);
-			parrot.animations.add('left', [ 4, 5, 6, 7 ], parrotAnimFPS, true);
-			parrot.animations.add('panic', [ 13, 14 ], parrotAnimFPS, true);
-			// set health
-			parrot.health = 2;
-			parrot.snd = game.add.audio('parrot');
-			// enable physics for parrot
-			game.physics.p2.enable(parrot);
-			parrot.body.fixedRotation = true;
-			parrot.body.setCollisionGroup(npcCG);
-			parrot.body.collides(playerCG, npcBumpedPlayer, this);
-			parrot.body.collides(tileCG, npcBumpedWall, this);
-			parrot.body.collides(bulletsCG, collideWithBullet, this);
-		}, this);
+		// static item group
+		staticGrp = game.add.group();
+		map.createFromObjects('objects', 101, 'key', 0, true, false, staticGrp);
+		map.createFromObjects('objects', 104, 'pearl', 3, true, false, staticGrp);
+		map.createFromObjects('objects', 105, 'torch', 4, true, false, staticGrp);
+		map.createFromObjects('objects', 106, 'bucket', 5, true, false, staticGrp);
+		map.createFromObjects('objects', 108, 'book', 7, true, false, staticGrp);
+		map.createFromObjects('objects', 109, 'abyss', 8, true, false, staticGrp);
+		map.createFromObjects('objects', 110, 'spikes', 9, true, false, staticGrp);
+		map.createFromObjects('objects', 111, 'runestone', 10, true, false, staticGrp);
+		map.createFromObjects('objects', 112, 'questionmark', 11, true, false, staticGrp);
+		map.createFromObjects('objects', 113, 'exclamationmark', 12, true, false, staticGrp);
 		
 		// add worms
 		wormGrp = game.add.group();
@@ -131,6 +102,29 @@ Objects = function() {
 			worm.body.collides(playerCG, npcBumpedPlayer, this);
 			worm.body.collides(tileCG, npcBumpedWall, this);
 			worm.body.collides(bulletsCG, collideWithBullet, this);
+		}, this);
+		
+		// add sheeps
+		sheepGrp = game.add.group();
+		map.createFromObjects('objects', 103, 'sheep', 1, true, false, sheepGrp);
+		sheepGrp.forEach(function(sheep) {
+			var sheepAnimFPS = 10;
+			sheep.animations.add('idle', [ 0 ], sheepAnimFPS, true);
+			sheep.animations.add('down', [ 9, 10, 11 ], sheepAnimFPS, true);
+			sheep.animations.add('up', [ 6, 7, 8 ], sheepAnimFPS, true);
+			sheep.animations.add('right', [ 0, 1, 2 ], sheepAnimFPS, true);
+			sheep.animations.add('left', [ 3, 4, 5 ], sheepAnimFPS, true);
+			sheep.animations.add('panic', [ 12, 13, 14 ], sheepAnimFPS, true);
+			// set health
+			sheep.health = 3;
+			sheep.snd = game.add.audio('meh');
+			// enable physics for sheep
+			game.physics.p2.enable(sheep);
+			sheep.body.fixedRotation = true;
+			sheep.body.setCollisionGroup(npcCG);
+			sheep.body.collides(playerCG, npcBumpedPlayer, this);
+			sheep.body.collides(tileCG, npcBumpedWall, this);
+			sheep.body.collides(bulletsCG, collideWithBullet, this);
 		}, this);
 
 		// add goats
@@ -156,6 +150,29 @@ Objects = function() {
 			goat.body.collides(bulletsCG, collideWithBullet, this);
 		}, this);
 		
+		// add parrot
+		parrotGrp = game.add.group();
+		map.createFromObjects('objects', 117, 'parrot', 0, true, false, parrotGrp);
+		parrotGrp.forEach(function(parrot) {
+			var parrotAnimFPS = 10;
+			parrot.animations.add('idle', [ 0 ], parrotAnimFPS, true);
+			parrot.animations.add('down', [ 10, 11, 12 ], parrotAnimFPS, true);
+			parrot.animations.add('up', [ 8, 9 ], parrotAnimFPS, true);
+			parrot.animations.add('right', [ 0, 1, 2, 3 ], parrotAnimFPS, true);
+			parrot.animations.add('left', [ 4, 5, 6, 7 ], parrotAnimFPS, true);
+			parrot.animations.add('panic', [ 13, 14 ], parrotAnimFPS, true);
+			// set health
+			parrot.health = 2;
+			parrot.snd = game.add.audio('parrot');
+			// enable physics for parrot
+			game.physics.p2.enable(parrot);
+			parrot.body.fixedRotation = true;
+			parrot.body.setCollisionGroup(npcCG);
+			parrot.body.collides(playerCG, npcBumpedPlayer, this);
+			parrot.body.collides(tileCG, npcBumpedWall, this);
+			parrot.body.collides(bulletsCG, collideWithBullet, this);
+		}, this);
+		
 		// add deadhead
 		deadheadGrp = game.add.group();
 		map.createFromObjects('objects', 115, 'deadhead', 0, true, false, deadheadGrp);
@@ -177,19 +194,6 @@ Objects = function() {
 			deadhead.body.collides(tileCG, npcBumpedWall, this);
 			deadhead.body.collides(bulletsCG, hitByBullet, this);
 		}, this);
-		
-		// static item group
-		staticGrp = game.add.group();
-		map.createFromObjects('objects', 101, 'key', 0, true, false, staticGrp);
-		map.createFromObjects('objects', 104, 'pearl', 3, true, false, staticGrp);
-		map.createFromObjects('objects', 105, 'torch', 4, true, false, staticGrp);
-		map.createFromObjects('objects', 106, 'bucket', 5, true, false, staticGrp);
-		map.createFromObjects('objects', 108, 'book', 7, true, false, staticGrp);
-		map.createFromObjects('objects', 109, 'abyss', 8, true, false, staticGrp);
-		map.createFromObjects('objects', 110, 'spikes', 9, true, false, staticGrp);
-		map.createFromObjects('objects', 111, 'runestone', 10, true, false, staticGrp);
-		map.createFromObjects('objects', 112, 'questionmark', 11, true, false, staticGrp);
-		map.createFromObjects('objects', 113, 'exclamationmark', 12, true, false, staticGrp);
 		
 		// player group
 		playerGrp = game.add.group();
@@ -374,6 +378,8 @@ Objects = function() {
 		if (carriedObject === npc.body) {
 			if (type == 'deadhead') {
 				player.damage(1);
+				player.tint = 0xDD0000;
+				game.time.events.add(Phaser.Timer.SECOND * .4, this.resetPlayerTint, this);
 				playerBody.sprite.snd.play();
 				return;
 			}
@@ -437,6 +443,8 @@ Objects = function() {
 	function npcBumpedPlayer(npcBody, playerBody) {
 		if (playerstate == 'angeredNPC') {
 			player.damage(1);
+			player.tint = 0xDD0000;
+			game.time.events.add(Phaser.Timer.SECOND * .4, this.resetPlayerTint, this);
 			playerBody.sprite.snd.play();
 		}
 		playerstate = 'passive';
@@ -448,6 +456,8 @@ Objects = function() {
 	
 	function caughtPlayer(npcBody, playerBody) {
 		player.damage(1);
+		player.tint = 0xDD0000;
+		game.time.events.add(Phaser.Timer.SECOND * .4, this.resetPlayerTint, this);
 		playerBody.sprite.snd.play();
 	};
 	
