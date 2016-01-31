@@ -1,6 +1,6 @@
 Objects = function() {
 	
-	var playerGrp, sheepGrp, goatGrp, wormGrp;	// sprite groupes
+	var playerGrp, sheepGrp, goatGrp, wormGrp, staticGrp;	// sprite groupes
 	var playerstate;
 	var carriedObject = null;
 	
@@ -11,6 +11,7 @@ Objects = function() {
 		game.load.spritesheet('sheep', 'assets/spritesheets/sheep.png', 36, 36, 15);
 		game.load.spritesheet('goat', 'assets/spritesheets/goat.png', 36, 36, 15);
 		game.load.spritesheet('worm', 'assets/spritesheets/worm.png', 36, 36, 8);
+		game.load.spritesheet('bucket', 'assets/tilesets/objecttiles.png', 36, 36, 20);
 		game.load.audio('ritual_tier_brennt', 'assets/audio/ritual_tier_brennt.ogg');
 	};
 	
@@ -94,6 +95,11 @@ Objects = function() {
 			goat.body.collides(bulletsCG, function() {var sound = game.add.audio('meh'); sound.play();}, this);}, this
 		);
 		
+		// static item group
+		staticGrp = game.add.group();
+		map.createFromObjects('objects', 106, 'bucket', 5, true, false, staticGrp);
+		
+		// player group
 		playerGrp = game.add.group();
 		map.createFromObjects('objects', 102, 'wizard', 1, true, false, playerGrp);
 		player = playerGrp.getTop();
@@ -209,9 +215,19 @@ Objects = function() {
 		sheepGrp.forEach(function(sheep) { resolveAImovement(sheep, 'sheep') }, this);
 		goatGrp.forEach(function(goat) { resolveAImovement(goat, 'goat') }, this);
 		wormGrp.forEach(function(worm) { resolveAImovement(worm, 'worm') }, this);
+		staticGrp.forEach(function(static) { resolveStatics(static) }, this);
 	};
 	
-	
+	function resolveStatics(static) {
+		if (carriedObject === static) {
+			static.x = player.body.x - 17;
+			static.y = player.body.y - 40;
+			return;
+		}
+		if (Phaser.Rectangle.intersects(player, static) && game.input.keyboard.isDown(Phaser.Keyboard.X)) {
+			carriedObject = static;
+		}
+	}
 	
 	function resolveAImovement(npc, type) {	
 		if (carriedObject === npc.body) {
