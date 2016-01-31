@@ -421,7 +421,7 @@ function update() {
 			ringSpeed = -1;
 			switchTimer2 = game.time.now;
 			rot_tmp = turnDist(spellSprites[0].rotation, angRange*(selectIdx-1), ringSpeed);
-			console.log(rot_tmp);
+			//console.log(rot_tmp);
 		}
 		if (game.input.keyboard.isDown(Phaser.Keyboard.D) && Math.abs(game.time.now - switchTimer2) > 500) {
 			selectIdx += 1;
@@ -429,7 +429,7 @@ function update() {
 			ringSpeed = +1;
 			switchTimer2 = game.time.now;
 			rot_tmp = turnDist(spellSprites[0].rotation, angRange*selectIdx, ringSpeed);
-			console.log(rot_tmp);
+			//console.log(rot_tmp);
 		}
 		
 		// rotation=0 is idx 0

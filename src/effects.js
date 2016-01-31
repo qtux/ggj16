@@ -121,6 +121,8 @@ var Effects = function() {
 			lightFilter.destroy();
 		} else {
 			lightActive = !lightActive;
+			effects.setOverlayColor(0x000000);
+			effects.setOverlay(1);
 			lightFilter = new Phaser.Filter(game, null, lightShader);
 			lightFilter.setResolution(1152, 720);
 			lightFilter.uniforms.player = { type: '2f', value: { x: objects.getPlayer().body.x, y: objects.getPlayer().body.y } };
