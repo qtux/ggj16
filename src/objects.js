@@ -106,8 +106,8 @@ Objects = function() {
 		parrotGrp.forEach(function(parrot) {
 			var parrotAnimFPS = 10;
 			parrot.animations.add('idle', [ 0 ], parrotAnimFPS, true);
-			parrot.animations.add('down', [ 8, 9 ], parrotAnimFPS, true);
-			parrot.animations.add('up', [ 10, 11, 12 ], parrotAnimFPS, true);
+			parrot.animations.add('down', [ 10, 11, 12 ], parrotAnimFPS, true);
+			parrot.animations.add('up', [ 8, 9 ], parrotAnimFPS, true);
 			parrot.animations.add('right', [ 0, 1, 2, 3 ], parrotAnimFPS, true);
 			parrot.animations.add('left', [ 4, 5, 6, 7 ], parrotAnimFPS, true);
 			parrot.animations.add('panic', [ 13, 14 ], parrotAnimFPS, true);
