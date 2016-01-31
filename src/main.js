@@ -1,5 +1,5 @@
 // global variables
-var game = new Phaser.Game(1152, 720, Phaser.AUTO, '', { preload: preload, create: create, update: update, shutdown: shutdown});
+var game = new Phaser.Game(1152, 752, Phaser.AUTO, '', { preload: preload, create: create, update: update, shutdown: shutdown});
 var effects = new Effects();
 var objects = new Objects();
 var cursors;
@@ -18,6 +18,7 @@ var ritualCircle = {
 };
 
 var bgm;
+var text;
 
 var nSpells;
 var selector;
@@ -250,6 +251,10 @@ function create () {
 		};
 		
 		updateRequirementSprites();
+		
+	// create help text
+	var style = { font: "22px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: 1152, align: "center" };
+	text = game.add.text(20, 725, "Use W/A/S/D to steer, E to shoot, F to lift entities, Y to release entities and M to do the ritual inside the ritual field.", style);
 }
 
 function gofull() {
