@@ -3,6 +3,7 @@ Objects = function() {
 	var playerGrp, sheepGrp, goatGrp, wormGrp, staticGrp, deadheadGrp;	// sprite groupes
 
 	var playerstate;
+	var locked;
 	var carriedObject = null;
 //	this.carriedObject = carriedObject;
 	
@@ -262,14 +263,19 @@ Objects = function() {
 			game.state.restart();
 		}
 
-		if (game.input.keyboard.isDown(Phaser.Keyboard.R)) {
+		if (game.input.keyboard.isDown(Phaser.Keyboard.R) && !locked) {
+			locked = true;
 			var tmpInd = Math.floor(Math.random()*ritualSounds.length);
 			console.log(tmpInd);
 			ritualSound = game.add.audio(ritualSounds[tmpInd]);
 			ritualSound.play();
 			effects.particleEffectBloodExplosion(player.body.x, player.body.y, 30, 2000);
 		}
-
+		
+		if (!game.input.keyboard.isDown(Phaser.Keyboard.R)) {
+			locked = false;
+		}
+		
 		if (game.input.keyboard.isDown(Phaser.Keyboard.Q)) {
 			playerstate = 'angeredNPC';
 		}
