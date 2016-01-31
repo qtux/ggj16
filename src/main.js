@@ -105,15 +105,13 @@ function create () {
 		tileObjects[i].collides(bulletsCG);
 	}
 	
-	var polygon = game.physics.p2.convertCollisionObjects(map, 'objectsCollision', true);   
-	console.log(typeof(polygon) + ", " + polygon.length);
+	/*var polygon = game.physics.p2.convertCollisionObjects(map, 'objectsCollision', true);   
 	for(var i in polygon) {
-		console.log(polygon[i]);
 		polygon[i].setCollisionGroup(tileCG);
 		polygon[i].collides(npcCG);
 		polygon[i].collides(playerCG);
 		polygon[i].collides(bulletsCG);
-	}
+	}*/
 	
 	// TODO ritual thing
 	for (var i=0;i < map.width; i++) {
@@ -205,6 +203,17 @@ function gofull() {
 
 function update() {
 	var dt = game.time.elapsed;
+	
+	var tmpX = player.x / 36;
+	var tmpY = player.y / 36;
+	var playerRitualDist = Math.sqrt((ritualCircle.posX - tmpX)
+			* (ritualCircle.posX - tmpX) + (ritualCircle.posY - tmpY)
+			* (ritualCircle.posY - tmpY));
+
+//	if (playerRitualDist < 2) {
+//		effects.particleEffectBloodExplosion(player.x, player.y, 10, 300);
+//	}
+	
 	// update objects and effects
 	if (fsm.is('move')){
 		objects.update();
@@ -254,8 +263,16 @@ function update() {
 			rot_tmp -= rot_tmp2;
 		}
 	}
+
 	
-	if (game.input.keyboard.isDown(Phaser.Keyboard.M)  && Math.abs(game.time.now - switchTimer) > 200)
+	if (game.input.keyboard.isDown(Phaser.Keyboard.L))
+	{
+		effects.toggleLight();
+	}
+	
+
+
+	if ((objects.getCarriedObject() != null) && (playerRitualDist < 2) && game.input.keyboard.isDown(Phaser.Keyboard.M)  && Math.abs(game.time.now - switchTimer) > 200)
 	{
 		switchTimer = game.time.now;
 		if (fsm.is('move'))
