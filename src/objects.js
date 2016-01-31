@@ -88,7 +88,7 @@ Objects = function() {
 		map.createFromObjects('objects', 111, 'runestone', 10, true, false, staticGrp);
 		map.createFromObjects('objects', 112, 'questionmark', 11, true, false, staticGrp);
 		map.createFromObjects('objects', 113, 'exclamationmark', 12, true, false, staticGrp);
-		map.createFromObjects('objects', 119, 'chest', 18, true, false, staticGrp);
+		map.createFromObjects('objects', 120, 'chest', 19, true, false, staticGrp);
 		
 
 		/*dmgGrp = game.add.group();
