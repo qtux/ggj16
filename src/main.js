@@ -183,7 +183,7 @@ function create () {
 			for (var i = spellSprites.length-1; i >=0; i--)
 			{
 				spellSprites[i].destroy();
-				shellSprites.pop();
+				spellSprites.pop();
 			}	
 			effects.setOverlay(0.);
 			graphics.destroy();
@@ -250,6 +250,11 @@ function update() {
 			}
 			rot_tmp -= rot_tmp2;
 		}
+	}
+	
+	if (game.input.keyboard.isDown(Phaser.Keyboard.L))
+	{
+		effects.toggleLight();
 	}
 	
 	if (game.input.keyboard.isDown(Phaser.Keyboard.M)  && Math.abs(game.time.now - switchTimer) > 2000)

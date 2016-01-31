@@ -20,6 +20,7 @@ Objects = function() {
 	
 	this.getPlayerX = function() {
 		return player.body.x;
+		console.log(typeof(player.body));
 	};
 	
 	this.getPlayerY = function() {
@@ -190,7 +191,9 @@ Objects = function() {
 		goatGrp.forEach(function(goat) { resolveAImovement(goat, 'goat') }, this);
 	};
 	
-	
+	this.getPlayer = function() {
+		return player;
+	};
 	
 	function resolveAImovement(npc, type) {	
 		if (carriedObject === npc.body) {
