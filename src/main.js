@@ -27,6 +27,7 @@ var switchTimer;
 var switchTimer2;
 var rot_tmp;
 var spellSprites;
+var animState;
 
 /**
  * which way to turn to get from angle a to b the fastest (math. rotation)
@@ -133,6 +134,7 @@ function create () {
 	selectIdx = 0;
 	ringSpeed = 0;
 	switchTimer = game.time.now-5000;
+	animState = false;
 
 	spellSprites = [];
 
@@ -265,9 +267,22 @@ function update() {
 	}
 
 	
-	if (game.input.keyboard.isDown(Phaser.Keyboard.L))
+	//if (game.input.keyboard.isDown(Phaser.Keyboard.L))
+	if (playerRitualDist<2)
 	{
-		effects.toggleLight();
+		if (!animState) 
+		{
+			effects.toggleLight();
+			animState = true;
+		}
+	}
+	else
+	{
+		if (animState) 
+		{
+			effects.toggleLight();
+			animState = false;
+		}
 	}
 	
 

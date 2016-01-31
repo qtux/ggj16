@@ -13,7 +13,7 @@ var Effects = function() {
 	var filter;
 	var switchTimer3; 
 	
-	var fragmentSrc = [
+	/*var fragmentSrc = [
 			"precision mediump float;",
 			// Incoming texture coordinates. 
 			'varying vec2 vTextureCoord;',
@@ -32,6 +32,32 @@ var Effects = function() {
 			//"a_tmp = texture2D(uSampler, vTextureCoord).a;";
 			"gl_FragColor = (1.- min(1.,sqrt((gl_FragCoord.y-(resolution.y-player.y))* (gl_FragCoord.y-(resolution.y-player.y))+ (gl_FragCoord.x-player.x)* (gl_FragCoord.x-player.x))/150.)) * texture2D(uSampler, vTextureCoord);",
 			"gl_FragColor.a = 0.5;",
+			"}"
+		];*/
+	
+	var fragmentSrc = [
+			"precision mediump float;",
+			// Incoming texture coordinates. 
+			'varying vec2 vTextureCoord;',
+			// Incoming vertex color
+			'varying vec4 vColor;',
+			// Sampler for a) sprite image or b) rendertarget in case of game.world.filter
+			'uniform sampler2D uSampler;',
+
+			"uniform vec2      resolution;",
+			"uniform float     time;",
+			"uniform vec2      mouse;",
+			"uniform vec2      player;",
+
+			"void main( void ) {",
+			// colorRGBA = (y % 2) * texel(u,v);
+			//"a_tmp = texture2D(uSampler, vTextureCoord).a;";
+			"vec4 colTmp = texture2D(uSampler, vTextureCoord);",
+			"const vec3 refCol = vec3(146./255., 39./255., 143./255.);",
+			"float colDiff = length(colTmp.rgb - refCol);",
+			"if (colDiff < .02) colTmp.a = abs(sin((gl_FragCoord.y/10.+time)));",
+			//"gl_FragColor = (1.- min(1.,sqrt((gl_FragCoord.y-(resolution.y-player.y))* (gl_FragCoord.y-(resolution.y-player.y))+ (gl_FragCoord.x-player.x)* (gl_FragCoord.x-player.x))/150.)) * texture2D(uSampler, vTextureCoord);",
+			"gl_FragColor = colTmp;",
 			"}"
 		];
 	var lightActive = false;
