@@ -307,20 +307,6 @@ Objects = function() {
 		staticGrp.forEach(function(obj) { resolveStatics(obj) }, this);
 	};
 	
-	this.stopPlayer = function() {
-		player.body.velocity.x = 0.;
-		player.body.velocity.y = 0.;
-	};
-	
-	this.getPlayerX = function() {
-		return player.body.x;
-		console.log(typeof(player.body));
-	};
-	
-	this.getPlayerY = function() {
-		return player.body.y;
-	};
-	
 	this.getPlayer = function() {
 		return player;
 	};

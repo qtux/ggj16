@@ -83,7 +83,7 @@ var Effects = function() {
 				lightActive = !lightActive;
 				filter = new Phaser.Filter(game, null, fragmentSrc);
 				filter.setResolution(1152, 720);
-				filter.uniforms.player = { type: '2f', value: { x: objects.getPlayerX, y: objects.getPlayerY } };
+				filter.uniforms.player = { type: '2f', value: { x: objects.getPlayer().body.x, y: objects.getPlayer().body.y } };
 				game.world.filters = [ filter ];
 			}
 			switchTimer3 = game.time.now;
@@ -195,8 +195,8 @@ var Effects = function() {
 		if (lightActive)
 		{
 			console.log(typeof(filter.uniforms.player.value));
-			/*filter.uniforms.player.value.x = objects.getPlayerX;
-			filter.uniforms.player.value.y = objects.getPlayerY;*/
+			/*filter.uniforms.player.value.x = objects.getPlayer().body.x;
+			filter.uniforms.player.value.y = objects.getPlayer().body.y;*/
 			filter.uniforms.player.value = objects.getPlayer().body;
 			filter.update();
 		}

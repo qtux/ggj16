@@ -151,11 +151,12 @@ function create () {
 		});
 	
 	fsm.onbeforeactivateSpellMenu = function(event, from, to) {
-			objects.stopPlayer();
+			objects.getPlayer().body.velocity.x = 0;
+			objects.getPlayer().body.velocity.y = 0;
 			
-			spellSprites.push(game.add.sprite(objects.getPlayerX(),objects.getPlayerY(),'spells'))
-			spellSprites.push(game.add.sprite(objects.getPlayerX(),objects.getPlayerY(),'spells'))
-			spellSprites.push(game.add.sprite(objects.getPlayerX(),objects.getPlayerY(),'spells'))
+			spellSprites.push(game.add.sprite(objects.getPlayer().body.x, objects.getPlayer().body.y,'spells'))
+			spellSprites.push(game.add.sprite(objects.getPlayer().body.x, objects.getPlayer().body.y,'spells'))
+			spellSprites.push(game.add.sprite(objects.getPlayer().body.x, objects.getPlayer().body.y,'spells'))
 			spellSprites[0].frameName = 'fire_spell';
 			spellSprites[1].frameName = 'poison_spell';
 			spellSprites[2].frameName = 'arcane_spell';
@@ -165,14 +166,14 @@ function create () {
 				spellSprites[i].pivot.y=-200;
 				spellSprites[i].anchor.setTo(.5,.5);
 			
-				spellSprites[i].x = objects.getPlayerX();
-				spellSprites[i].y = objects.getPlayerY();
+				spellSprites[i].x = objects.getPlayer().body.x;
+				spellSprites[i].y = objects.getPlayer().body.y;
 			
 				spellSprites[i].rotation = 2.*Math.PI / nSpells * i;
 			}
 			
-			selector.x = objects.getPlayerX()-18;
-			selector.y = objects.getPlayerY()-18+200;
+			selector.x = objects.getPlayer().body.x-18;
+			selector.y = objects.getPlayer().body.y-18+200;
 			
 			//  And display our rect on the top
 			graphics = game.add.graphics(0, 0);
