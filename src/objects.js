@@ -16,7 +16,7 @@ Objects = function() {
 			'ritual_fika'
 			];
 	
-	var ritualSound, mehSnd, wormSnd, skullSnd, goatSnd, parrotSnd;
+	var ritualSound, mehSnd, wormSnd, skullSnd, goatSnd, parrotSnd, splashSnd;
 	
 	this.getCarriedObject = function (){
 		if (carriedObject)
@@ -63,6 +63,7 @@ Objects = function() {
 		game.load.audio('skull', 'assets/audio/skull.ogg');
 		game.load.audio('goat', 'assets/audio/goat.ogg');
 		game.load.audio('parrot', 'assets/audio/parrot.ogg');
+		game.load.audio('splash', 'assets/audio/splash.ogg');
 	};
 	
 	this.create = function() {
@@ -72,6 +73,7 @@ Objects = function() {
 		skullSnd = game.add.audio('skull');
 		goatSnd = game.add.audio('goat');
 		parrotSnd = game.add.audio('parrot');
+		splashSnd = game.add.audio('splash');
 		
 		playerstate = 'passive';
 		
@@ -89,15 +91,16 @@ Objects = function() {
 			sheep.animations.add('right', [ 0, 1, 2 ], sheepAnimFPS, true);
 			sheep.animations.add('left', [ 3, 4, 5 ], sheepAnimFPS, true);
 			sheep.animations.add('panic', [ 12, 13, 14 ], sheepAnimFPS, true);
+			// set health
+			sheep.health = 3;
 			// enable physics for sheep
 			game.physics.p2.enable(sheep);
 			sheep.body.fixedRotation = true;
 			sheep.body.setCollisionGroup(npcCG);
 			sheep.body.collides(playerCG, npcBumpedPlayer, this);
 			sheep.body.collides(tileCG, npcBumpedWall, this);
-			sheep.body.collides(bulletsCG, function() {
-				mehSnd.play();
-			}, this);
+			sheep.snd = mehSnd;
+			sheep.body.collides(bulletsCG, collideWithBullet, this);
 		}, this);
 		
 		// add parrot
@@ -111,6 +114,8 @@ Objects = function() {
 			parrot.animations.add('right', [ 0, 1, 2, 3 ], parrotAnimFPS, true);
 			parrot.animations.add('left', [ 4, 5, 6, 7 ], parrotAnimFPS, true);
 			parrot.animations.add('panic', [ 13, 14 ], parrotAnimFPS, true);
+			// set health
+			parrot.health = 2;
 			// enable physics for parrot
 			game.physics.p2.enable(parrot);
 			parrot.body.fixedRotation = true;
@@ -132,6 +137,8 @@ Objects = function() {
 			worm.animations.add('right', [ 0, 1 ], wormAnimFPS, true);
 			worm.animations.add('left', [ 2, 3 ], wormAnimFPS, true);
 			worm.animations.add('panic', [ 0 ], wormAnimFPS, true);
+			// set health
+			worm.health = 1;
 			// enable physics for sheep
 			game.physics.p2.enable(worm);
 			worm.body.fixedRotation = true;
@@ -154,6 +161,8 @@ Objects = function() {
 			goat.animations.add('right', [ 0, 1, 2 ], goatAnimFPS, true);
 			goat.animations.add('left', [ 3, 4, 5 ], goatAnimFPS, true);
 			goat.animations.add('panic', [ 12, 13, 14 ], goatAnimFPS, true);
+			// set health
+			goat.health = 3;
 			// enable physics for goat
 			game.physics.p2.enable(goat);
 			goat.body.fixedRotation = true;
@@ -175,6 +184,8 @@ Objects = function() {
 			deadhead.animations.add('up', [ 3 ], deadheadAnimFPS, true);
 			deadhead.animations.add('right', [ 1 ], deadheadAnimFPS, true);
 			deadhead.animations.add('left', [ 2 ], deadheadAnimFPS, true);
+			// set health
+			deadhead.health = 3;
 			// enable physics for deadhead
 			game.physics.p2.enable(deadhead);
 			deadhead.body.fixedRotation = true;
@@ -215,6 +226,9 @@ Objects = function() {
 		player.animations.add('player_carrying_right', [ 18, 19, 18, 20 ], playerAnimFPS, true);
 		player.animations.add('player_carrying_left', [ 21, 22, 21, 23 ], playerAnimFPS, true);
 		// player.body.debug = true;
+		
+		// set health
+		player.health = 5;
 		
 		// enable physics for player
 		game.physics.p2.enable(player);
@@ -354,7 +368,7 @@ Objects = function() {
 	function resolveAImovement(npc, type) {
 		if (carriedObject === npc.body) {
 			if (type == 'deadhead') {
-				// TODO get damage
+				player.damage(1);
 				return;
 			}
 			else if (type == 'parrot' || type == 'sheep' || type == 'goat' || type == 'worm') {
@@ -415,12 +429,33 @@ Objects = function() {
 	};
 
 	function npcBumpedPlayer(npcBody, playerBody) {
+		if (playerstate == 'angeredNPC') {
+			player.damage(1);
+		}
 		playerstate = 'passive';
 		if (carriedObject == null
 				&& game.input.keyboard.isDown(Phaser.Keyboard.X)) {
 			carriedObject = npcBody;
 		}
 	};
+	
+	function collideWithBullet(npcBody, bulletBody) {
+		bulletBody.sprite.kill();
+		playerstate = 'angeredNPC';
+		effects.particleEffectBloodExplosion(npcBody.x, npcBody.y, 20, 500);
+		npcSprite = npcBody.sprite;
+		npcBody.sprite.damage(1);
+		if (!npcSprite.alive) {
+			splashSnd.play();
+			if (npcSprite.group) {
+				npcSprite.group.remove(npcSprite);
+			} else if (npcSprite.parent) {
+				npcSprite.parent.removeChild(npcSprite);
+			}
+		} else {
+			npcSprite.snd.play();
+		}
+	}
 	
 	this.playRitualSoundRnd = function () {
 		var tmpInd = Math.floor(Math.random()*ritualSounds.length);
