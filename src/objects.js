@@ -351,8 +351,9 @@ Objects = function() {
 					carriedObject.emitter.on = false;
 					carriedObject.emitter = null;
 				}
-				
-				 sacrificeAnimal(npcSprite);
+				if (carriedObject.body != null) {
+					 sacrificeAnimal(npcSprite);
+				 }
 				 carriedObject = null;
 			} else
 			{
