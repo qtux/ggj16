@@ -58,8 +58,8 @@ Objects = function() {
 		game.load.audio('crack', 'assets/audio/crack.ogg');
 		game.load.audio('pain', 'assets/audio/pain.ogg');
 		// door
-		game.load.spritesheet('door', 'assets/tilesets/basictiles.png', 36, 36, 40);
-		game.load.spritesheet('opendoor', 'assets/tilesets/basictiles.png', 36, 36, 40);
+		game.load.spritesheet('door', 'assets/tilesets/objecttiles.png', 36, 36, 40);
+		game.load.spritesheet('opendoor', 'assets/tilesets/opendoor.png', 36, 36, 40);
 	};
 	
 	this.create = function() {
@@ -87,8 +87,8 @@ Objects = function() {
 		
 		//doors
 		doorsGrp = game.add.group();
-		map.createFromObjects('objects', 6, 'door', 5, true, false, doorsGrp);
-		map.createFromObjects('objects', 16, 'opendoor', 15, true, false, doorsGrp);
+		map.createFromObjects('objects', 118, 'door', 17, true, false, doorsGrp);
+		map.createFromObjects('objects', 119, 'opendoor', 0, true, false, doorsGrp);
 		
 		// add worms
 		wormGrp = game.add.group();
@@ -324,7 +324,6 @@ Objects = function() {
 		}
 
 		if (carriedObject != null && game.input.keyboard.isDown(Phaser.Keyboard.Y)) {
-			console.log(carriedObject);
 			if (carriedObject.ritualized)
 			{
 				var npcSprite = carriedObject.sprite;
@@ -350,6 +349,10 @@ Objects = function() {
 		deadheadGrp.forEach(function(obj) { resolveAImovement(obj, 'deadhead') }, this);
 		parrotGrp.forEach(function(obj) { resolveAImovement(obj, 'parrot') }, this);
 		staticGrp.forEach(function(obj) { resolveStatics(obj) }, this);
+		doorsGrp.forEach(function(obj) { if (obj.name == 'openDoor' && Phaser.Rectangle.intersects(player, obj)) { if (levelNum + 1 < levelNames.length) {
+				levelNum += 1;
+			}
+			game.state.restart(); }}, this);
 	};
 	
 	function sacrificeAnimal(npcSprite)
@@ -383,6 +386,7 @@ Objects = function() {
 	}
 	
 	function resolveAImovement(npc, type) {
+		
 		if (carriedObject === npc.body) {
 			if (type == 'deadhead') {
 				player.damage(1);
@@ -511,10 +515,8 @@ Objects = function() {
 	}
 	
 	function opendoors(door) {
-		console.debug('lalala');
 		var xPos = door.x;
 		var yPos = door.y;
-		console.debug(xPos);
 		
 		door.kill();
 		if (door.group) {
@@ -522,7 +524,11 @@ Objects = function() {
 		} else if (door.parent) {
 			door.parent.removeChild(door);
 		}
-		game.add.sprite(xPos, yPos, 'opendoor');
+		var od = game.add.sprite(xPos, yPos, 'opendoor');
+		od.name = 'openDoor';
+		doorsGrp.add(od);
+		od.moveDown();		// alter z depth so the door is behind the player
+		//od.height -= 10;
 	}
 
 	this.getCarriedObject = function (){
@@ -554,7 +560,7 @@ Objects = function() {
 	};
 	
 	this.opendoor = function () {
-		doorsGrp.forEach(function(obj) { console.debug('lalula'); opendoors(obj); }, this);
+		doorsGrp.forEach(function(obj) { opendoors(obj); }, this);
 	};
 	
 };
