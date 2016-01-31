@@ -5,6 +5,7 @@ Objects = function() {
 	var playerstate;
 	var locked;
 	var carriedObject = null;
+	var lockThrow = false;
 	
 	var ritualSounds = [
 		'ritual_tier_brennt',
@@ -307,7 +308,24 @@ Objects = function() {
 		}
 
 		if (carriedObject != null && game.input.keyboard.isDown(Phaser.Keyboard.Y)) {
-			carriedObject = null;
+			console.log(carriedObject);
+			if (carriedObject.ritualized)
+			{
+				var npcSprite = carriedObject.sprite;
+				
+				if (carriedObject.emitter)
+				{
+					carriedObject.emitter.on = false;
+					carriedObject.emitter = null;
+				}
+				
+				 sacrificeAnimal(npcSprite);
+				 carriedObject = null;
+			} else
+			{
+				carriedObject = null;
+			}
+			
 		}
 		
 		sheepGrp.forEach(function(obj) { resolveAImovement(obj, 'sheep') }, this);
@@ -317,6 +335,21 @@ Objects = function() {
 		parrotGrp.forEach(function(obj) { resolveAImovement(obj, 'parrot') }, this);
 		staticGrp.forEach(function(obj) { resolveStatics(obj) }, this);
 	};
+	
+	function sacrificeAnimal(npcSprite)
+	{
+		var tmpX = npcSprite.x;
+		var tmpY = npcSprite.y;
+
+		if (npcSprite.group) {
+			npcSprite.group.remove(npcSprite);
+		} else if (npcSprite.parent) {
+			npcSprite.parent.removeChild(npcSprite);
+		}
+		console.log("animal destroyed " + tmpX + ", " + tmpY);
+		effects.particleEffectBloodExplosion(tmpX, tmpY, 50, 3000);
+		lockThrow = false;
+	}
 	
 	this.getPlayer = function() {
 		return player;
@@ -328,7 +361,7 @@ Objects = function() {
 			static.y = player.body.y - 40;
 			return;
 		}
-		if (Phaser.Rectangle.intersects(player, static) && game.input.keyboard.isDown(Phaser.Keyboard.X)) {
+		if (Phaser.Rectangle.intersects(player, static) && game.input.keyboard.isDown(Phaser.Keyboard.F)) {
 			carriedObject = static;
 		}
 	}
@@ -402,7 +435,7 @@ Objects = function() {
 		}
 		playerstate = 'passive';
 		if (carriedObject == null
-				&& game.input.keyboard.isDown(Phaser.Keyboard.X)) {
+				&& game.input.keyboard.isDown(Phaser.Keyboard.F)) {
 			carriedObject = npcBody;
 		}
 	};
