@@ -1,6 +1,7 @@
 Objects = function() {
+	
+	var playerGrp, sheepGrp, goatGrp, wormGrp, staticGrp, deadheadGrp;	// sprite groupes
 
-	var playerGrp, sheepGrp, goatGrp, wormGrp; // sprite groupes
 	var playerstate;
 	var carriedObject = null;
 //	this.carriedObject = carriedObject;
@@ -21,14 +22,23 @@ Objects = function() {
 	};
 	
 	this.preload = function() {
-		game.load.spritesheet('wizard', 'assets/spritesheets/wizard.png', 42,
-				72, 24);
-		game.load.spritesheet('sheep', 'assets/spritesheets/sheep.png', 36, 36,
-				15);
-		game.load.spritesheet('goat', 'assets/spritesheets/goat.png', 36, 36,
-				15);
-		game.load
-				.spritesheet('worm', 'assets/spritesheets/worm.png', 36, 36, 8);
+
+		game.load.spritesheet('wizard', 'assets/spritesheets/wizard.png', 42, 72, 24);
+		game.load.spritesheet('sheep', 'assets/spritesheets/sheep.png', 36, 36, 15);
+		game.load.spritesheet('goat', 'assets/spritesheets/goat.png', 36, 36, 15);
+		game.load.spritesheet('worm', 'assets/spritesheets/worm.png', 36, 36, 8);
+		game.load.spritesheet('deadhead', 'assets/spritesheets/enemy.png', 36, 36, 4);
+		// statics
+		game.load.spritesheet('key', 'assets/tilesets/objecttiles.png', 36, 36, 20);
+		game.load.spritesheet('pearl', 'assets/tilesets/objecttiles.png', 36, 36, 20);
+		game.load.spritesheet('torch', 'assets/tilesets/objecttiles.png', 36, 36, 20);
+		game.load.spritesheet('bucket', 'assets/tilesets/objecttiles.png', 36, 36, 20);
+		game.load.spritesheet('book', 'assets/tilesets/objecttiles.png', 36, 36, 20);
+		game.load.spritesheet('abyss', 'assets/tilesets/objecttiles.png', 36, 36, 20);
+		game.load.spritesheet('spikes', 'assets/tilesets/objecttiles.png', 36, 36, 20);
+		game.load.spritesheet('runestone', 'assets/tilesets/objecttiles.png', 36, 36, 20);
+		game.load.spritesheet('questionmark', 'assets/tilesets/objecttiles.png', 36, 36, 20);
+		game.load.spritesheet('exclamationmark', 'assets/tilesets/objecttiles.png', 36, 36, 20);
 		game.load.audio('ritual_tier_brennt', 'assets/audio/ritual_tier_brennt.ogg');
 		game.load.audio('ritual_kanelbullar', 'assets/audio/kanelbullar.ogg');
 		game.load.audio('ritual_mörkret', 'assets/audio/moerkret.ogg');
@@ -44,6 +54,7 @@ Objects = function() {
 
 	this.getPlayerX = function() {
 		return player.body.x;
+		console.log(typeof(player.body));
 	};
 
 	this.getPlayerY = function() {
@@ -58,34 +69,25 @@ Objects = function() {
 
 		// add sheeps
 		sheepGrp = game.add.group();
-		map
-				.createFromObjects('objects', 103, 'sheep', 1, true, false,
-						sheepGrp);
-		sheepGrp.forEach(
-				function(sheep) {
-					var sheepAnimFPS = 10;
-					sheep.animations.add('sheep_idle', [ 0 ], sheepAnimFPS,
-							true);
-					sheep.animations.add('sheep_down', [ 9, 10, 11 ],
-							sheepAnimFPS, true);
-					sheep.animations.add('sheep_up', [ 6, 7, 8 ], sheepAnimFPS,
-							true);
-					sheep.animations.add('sheep_right', [ 3, 4, 5 ],
-							sheepAnimFPS, true);
-					sheep.animations.add('sheep_left', [ 0, 1, 2 ],
-							sheepAnimFPS, true);
-					sheep.animations.add('sheep_panic', [ 12, 13, 14 ],
-							sheepAnimFPS, true);
-					// enable physics for sheep
-					game.physics.p2.enable(sheep);
-					sheep.body.fixedRotation = true;
-					sheep.body.setCollisionGroup(npcCG);
-					sheep.body.collides(playerCG, npcBumpedPlayer, this);
-					sheep.body.collides(tileCG, npcBumpedWall, this);
-					sheep.body.collides(bulletsCG, function() {
-						effects.meh();
-					}, this);
-				}, this);
+		map.createFromObjects('objects', 103, 'sheep', 1, true, false, sheepGrp);
+		sheepGrp.forEach(function(sheep) {
+			var sheepAnimFPS = 10;
+			sheep.animations.add('sheep_idle', [ 0 ], sheepAnimFPS, true);
+			sheep.animations.add('sheep_down', [ 9, 10, 11 ], sheepAnimFPS, true);
+			sheep.animations.add('sheep_up', [ 6, 7, 8 ], sheepAnimFPS, true);
+			sheep.animations.add('sheep_right', [ 0, 1, 2 ], sheepAnimFPS, true);
+			sheep.animations.add('sheep_left', [ 3, 4, 5 ], sheepAnimFPS, true);
+			sheep.animations.add('sheep_panic', [ 12, 13, 14 ], sheepAnimFPS, true);
+			// enable physics for sheep
+			game.physics.p2.enable(sheep);
+			sheep.body.fixedRotation = true;
+			sheep.body.setCollisionGroup(npcCG);
+			sheep.body.collides(playerCG, npcBumpedPlayer, this);
+			sheep.body.collides(tileCG, npcBumpedWall, this);
+			sheep.body.collides(bulletsCG, function() {
+				effects.meh();
+			}, this);
+		}, this);
 
 		// add worms
 		wormGrp = game.add.group();
@@ -116,8 +118,8 @@ Objects = function() {
 			goat.animations.add('goat_idle', [ 0 ], goatAnimFPS, true);
 			goat.animations.add('goat_down', [ 9, 10, 11 ], goatAnimFPS, true);
 			goat.animations.add('goat_up', [ 6, 7, 8 ], goatAnimFPS, true);
-			goat.animations.add('goat_right', [ 3, 4, 5 ], goatAnimFPS, true);
-			goat.animations.add('goat_left', [ 0, 1, 2 ], goatAnimFPS, true);
+			goat.animations.add('goat_right', [ 0, 1, 2 ], goatAnimFPS, true);
+			goat.animations.add('goat_left', [ 3, 4, 5 ], goatAnimFPS, true);
 			goat.animations
 					.add('goat_panic', [ 12, 13, 14 ], goatAnimFPS, true);
 			// enable physics for goat
@@ -131,7 +133,42 @@ Objects = function() {
 				sound.play();
 			}, this);
 		}, this);
+		
+		// add deadhead
+		deadheadGrp = game.add.group();
+		map.createFromObjects('objects', 115, 'deadhead', 0, true, false, deadheadGrp);
+		deadheadGrp.forEach(function(deadhead) {
+			var deadheadAnimFPS = 10;
+			deadhead.animations.add('deadhead_idle', [ 0 ], deadheadAnimFPS, true);
+			deadhead.animations.add('deadhead_down', [ 0 ], deadheadAnimFPS, true);
+			deadhead.animations.add('deadhead_up', [ 3 ], deadheadAnimFPS, true);
+			deadhead.animations.add('deadhead_right', [ 1 ], deadheadAnimFPS, true);
+			deadhead.animations.add('deadhead_left', [ 2 ], deadheadAnimFPS, true);
+			// enable physics for deadhead
+			game.physics.p2.enable(deadhead);
+			deadhead.body.fixedRotation = true;
+			deadhead.body.setCollisionGroup(npcCG);
+			deadhead.body.collides(playerCG, npcBumpedPlayer, this);
+			deadhead.body.collides(tileCG, npcBumpedWall, this);
+			deadhead.body.collides(bulletsCG, function() {
+				effects.meh();
+			}, this);
+		}, this);
 
+		// static item group
+		staticGrp = game.add.group();
+		map.createFromObjects('objects', 101, 'key', 0, true, false, staticGrp);
+		map.createFromObjects('objects', 104, 'pearl', 3, true, false, staticGrp);
+		map.createFromObjects('objects', 105, 'torch', 4, true, false, staticGrp);
+		map.createFromObjects('objects', 106, 'bucket', 5, true, false, staticGrp);
+		map.createFromObjects('objects', 108, 'book', 7, true, false, staticGrp);
+		map.createFromObjects('objects', 109, 'abyss', 8, true, false, staticGrp);
+		map.createFromObjects('objects', 110, 'spikes', 9, true, false, staticGrp);
+		map.createFromObjects('objects', 111, 'runestone', 10, true, false, staticGrp);
+		map.createFromObjects('objects', 112, 'questionmark', 11, true, false, staticGrp);
+		map.createFromObjects('objects', 113, 'exclamationmark', 12, true, false, staticGrp);
+
+		// player group
 		playerGrp = game.add.group();
 		map.createFromObjects('objects', 102, 'wizard', 1, true, false,
 				playerGrp);
@@ -216,14 +253,14 @@ Objects = function() {
 			if (levelNum + 1 < levelNames.length) {
 				levelNum += 1;
 			}
-			this.game.state.restart();
+			game.state.restart();
 		}
 
 		if (game.input.keyboard.isDown(Phaser.Keyboard.P)) {
 			if (levelNum > 0) {
 				levelNum -= 1;
 			}
-			this.game.state.restart();
+			game.state.restart();
 		}
 
 		if (game.input.keyboard.isDown(Phaser.Keyboard.R)) {
@@ -250,19 +287,35 @@ Objects = function() {
 				&& game.input.keyboard.isDown(Phaser.Keyboard.Y)) {
 			carriedObject = null;
 		}
-		sheepGrp.forEach(function(sheep) {
-			resolveAImovement(sheep, 'sheep')
-		}, this);
-		goatGrp.forEach(function(goat) {
-			resolveAImovement(goat, 'goat')
-		}, this);
-		wormGrp.forEach(function(worm) {
-			resolveAImovement(worm, 'worm')
-		}, this);
+
+		sheepGrp.forEach(function(sheep) { resolveAImovement(sheep, 'sheep') }, this);
+		goatGrp.forEach(function(goat) { resolveAImovement(goat, 'goat') }, this);
+		wormGrp.forEach(function(worm) { resolveAImovement(worm, 'worm') }, this);
+		deadheadGrp.forEach(function(deadhead) { resolveAImovement(deadhead, 'deadhead') }, this);
+		staticGrp.forEach(function(static) { resolveStatics(static) }, this);
 	};
 
+	this.getPlayer = function() {
+		return player;
+	};
+	
+	function resolveStatics(static) {
+		if (carriedObject === static) {
+			static.x = player.body.x - 17;
+			static.y = player.body.y - 40;
+			return;
+		}
+		if (Phaser.Rectangle.intersects(player, static) && game.input.keyboard.isDown(Phaser.Keyboard.X)) {
+			carriedObject = static;
+		}
+	}
+	
 	function resolveAImovement(npc, type) {
 		if (carriedObject === npc.body) {
+			if (type == 'deadhead') {
+				// TODO get damage
+				return;
+			}
 			if (type == 'sheep') {
 				npc.animations.play('sheep_panic');
 			}
@@ -278,7 +331,7 @@ Objects = function() {
 		}
 
 		// random walk
-		if (playerstate == 'passive') {
+		if (playerstate == 'passive' && type != 'deadhead') {
 			// npc.body.force.x = ((game.rnd.integer() % 20) - 10) * 10;
 			// npc.body.force.y = ((game.rnd.integer() % 20) - 10) * 10;
 			var newVelo = new Phaser.Point(((game.rnd.integer() % 300) - 150),
@@ -287,7 +340,7 @@ Objects = function() {
 			npc.body.force.y = newVelo.y;
 		}
 		// seek
-		if (playerstate == 'angeredNPC') {
+		if (playerstate == 'angeredNPC' || type == 'deadhead') {
 			var maxSpeed = 100;
 			var target = new Phaser.Point(player.body.x, player.body.y);
 			var seeker = new Phaser.Point(npc.body.x, npc.body.y);
@@ -312,9 +365,9 @@ Objects = function() {
 
 			if (Math.abs(npc.body.velocity.y) < Math.abs(npc.body.velocity.x)) {
 				if (npc.body.velocity.x > 0) {
-					npc.animations.play('sheep_left');
-				} else if (npc.body.velocity.x < 0) {
 					npc.animations.play('sheep_right');
+				} else if (npc.body.velocity.x < 0) {
+					npc.animations.play('sheep_left');
 				} else {
 					npc.animations.play('sheep_idle');
 				}
@@ -335,9 +388,9 @@ Objects = function() {
 
 			if (Math.abs(npc.body.velocity.y) < Math.abs(npc.body.velocity.x)) {
 				if (npc.body.velocity.x > 0) {
-					npc.animations.play('worm_left');
-				} else if (npc.body.velocity.x < 0) {
 					npc.animations.play('worm_right');
+				} else if (npc.body.velocity.x < 0) {
+					npc.animations.play('worm_left');
 				} else {
 					npc.animations.play('worm_idle');
 				}
@@ -358,11 +411,34 @@ Objects = function() {
 
 			if (Math.abs(npc.body.velocity.y) < Math.abs(npc.body.velocity.x)) {
 				if (npc.body.velocity.x > 0) {
-					npc.animations.play('goat_left');
-				} else if (npc.body.velocity.x < 0) {
 					npc.animations.play('goat_right');
+				} else if (npc.body.velocity.x < 0) {
+					npc.animations.play('goat_left');
 				} else {
 					npc.animations.play('goat_idle');
+				}
+			}
+		}
+		
+		// deadhead animation
+		if (type == 'deadhead') {
+			if (Math.abs(npc.body.velocity.y) > Math.abs(npc.body.velocity.x)) {
+				if (npc.body.velocity.y > 0) {
+					npc.animations.play('deadhead_down');
+				} else if (npc.body.velocity.y < 0) {
+					npc.animations.play('deadhead_up');
+				} else {
+					npc.animations.play('deadhead_idle');
+				}
+			}
+
+			if (Math.abs(npc.body.velocity.y) < Math.abs(npc.body.velocity.x)) {
+				if (npc.body.velocity.x > 0) {
+					npc.animations.play('deadhead_right');
+				} else if (npc.body.velocity.x < 0) {
+					npc.animations.play('deadhead_left');
+				} else {
+					npc.animations.play('deadhead_idle');
 				}
 			}
 		}

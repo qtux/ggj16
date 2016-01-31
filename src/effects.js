@@ -10,6 +10,31 @@ var Effects = function() {
 	var lightningTimeMax = 100;
 	var lightningTime = lightningTimeMax;
 	var overlay;
+	var filter;
+	var switchTimer3; 
+	
+	var fragmentSrc = [
+			"precision mediump float;",
+			// Incoming texture coordinates. 
+			'varying vec2 vTextureCoord;',
+			// Incoming vertex color
+			'varying vec4 vColor;',
+			// Sampler for a) sprite image or b) rendertarget in case of game.world.filter
+			'uniform sampler2D uSampler;',
+
+			"uniform vec2      resolution;",
+			"uniform float     time;",
+			"uniform vec2      mouse;",
+			"uniform vec2      player;",
+
+			"void main( void ) {",
+			// colorRGBA = (y % 2) * texel(u,v);
+			//"a_tmp = texture2D(uSampler, vTextureCoord).a;";
+			"gl_FragColor = (1.- min(1.,sqrt((gl_FragCoord.y-(resolution.y-player.y))* (gl_FragCoord.y-(resolution.y-player.y))+ (gl_FragCoord.x-player.x)* (gl_FragCoord.x-player.x))/150.)) * texture2D(uSampler, vTextureCoord);",
+			"gl_FragColor.a = 0.5;",
+			"}"
+		];
+	var lightActive = false;
 	
 	// sounds
 	var shootSnd;
@@ -21,7 +46,27 @@ var Effects = function() {
 		game.load.audio('meh', 'assets/audio/meh.ogg');
 	};
 	
+	this.toggleLight = function() {
+		if (  game.time.now- switchTimer3>200)
+		{
+			if (lightActive)
+			{
+				lightActive = !lightActive;
+				game.world.filters = null;
+				filter.destroy();
+			}else{
+				lightActive = !lightActive;
+				filter = new Phaser.Filter(game, null, fragmentSrc);
+				filter.setResolution(1152, 720);
+				filter.uniforms.player = { type: '2f', value: { x: objects.getPlayerX, y: objects.getPlayerY } };
+				game.world.filters = [ filter ];
+			}
+			switchTimer3 = game.time.now;
+		}
+	}
+	
 	this.create = function() {
+		switchTimer3 = game.time.now;
 		shootSnd = game.add.audio('shoot');
 		mehSnd = game.add.audio('meh');
 		
@@ -75,6 +120,8 @@ var Effects = function() {
 		mehSnd.play();
 	};
 	
+
+	
 	this.fire = function(x, y) {
 		if (game.time.now > nextFire && bullets.countDead() > 0) {
 			nextFire = game.time.now + FIRE_RATE;
@@ -126,6 +173,14 @@ var Effects = function() {
 			emitter.forEachAlive(function(p) {
 				p.alpha = p.lifespan / emitter.lifespan;
 			});
+		}
+		if (lightActive)
+		{
+			console.log(typeof(filter.uniforms.player.value));
+			/*filter.uniforms.player.value.x = objects.getPlayerX;
+			filter.uniforms.player.value.y = objects.getPlayerY;*/
+			filter.uniforms.player.value = objects.getPlayer().body;
+			filter.update();
 		}
 	};
 	
