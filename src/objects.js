@@ -1,35 +1,21 @@
 Objects = function() {
 	
 	var playerGrp, sheepGrp, parrotGrp, goatGrp, wormGrp, staticGrp, deadheadGrp;	// sprite groupes
-
+	
 	var playerstate;
 	var locked;
 	var carriedObject = null;
-//	this.carriedObject = carriedObject;
 	
 	var ritualSounds = [
-			'ritual_tier_brennt',
-			'ritual_kanelbullar',
-			'ritual_mörkret',
-			'ritual_öppna_fönstret',
-			'ritual_ostfralla',
-			'ritual_fika'
-			];
+		'ritual_tier_brennt',
+		'ritual_kanelbullar',
+		'ritual_mörkret',
+		'ritual_öppna_fönstret',
+		'ritual_ostfralla',
+		'ritual_fika'
+	];
 	
 	var ritualSound, mehSnd, wormSnd, skullSnd, goatSnd, parrotSnd, splashSnd;
-	
-	this.getCarriedObject = function (){
-		if (carriedObject)
-		{
-			/*if ("sprite" in carriedObject) 
-			{
-				console.log(carriedObject.sprite.key);
-			}else{
-				console.log(carriedObject.key);
-			}*/
-		}
-		return carriedObject;
-	};
 	
 	this.preload = function() {
 		// object spritesheets
@@ -323,31 +309,16 @@ Objects = function() {
 			effects.doSomeEffects();
 		}
 
-		if (carriedObject != null
-				&& game.input.keyboard.isDown(Phaser.Keyboard.Y)) {
+		if (carriedObject != null && game.input.keyboard.isDown(Phaser.Keyboard.Y)) {
 			carriedObject = null;
 		}
 		
-		sheepGrp.forEach(function(sheep) { resolveAImovement(sheep, 'sheep') }, this);
-		goatGrp.forEach(function(goat) { resolveAImovement(goat, 'goat') }, this);
-		wormGrp.forEach(function(worm) { resolveAImovement(worm, 'worm') }, this);
-		deadheadGrp.forEach(function(deadhead) { resolveAImovement(deadhead, 'deadhead') }, this);
-		parrotGrp.forEach(function(parrot) { resolveAImovement(parrot, 'parrot') }, this);
-		staticGrp.forEach(function(static) { resolveStatics(static) }, this);
-	};
-	
-	this.stopPlayer = function() {
-		player.body.velocity.x = 0.;
-		player.body.velocity.y = 0.;
-	};
-	
-	this.getPlayerX = function() {
-		return player.body.x;
-		console.log(typeof(player.body));
-	};
-	
-	this.getPlayerY = function() {
-		return player.body.y;
+		sheepGrp.forEach(function(obj) { resolveAImovement(obj, 'sheep') }, this);
+		goatGrp.forEach(function(obj) { resolveAImovement(obj, 'goat') }, this);
+		wormGrp.forEach(function(obj) { resolveAImovement(obj, 'worm') }, this);
+		deadheadGrp.forEach(function(obj) { resolveAImovement(obj, 'deadhead') }, this);
+		parrotGrp.forEach(function(obj) { resolveAImovement(obj, 'parrot') }, this);
+		staticGrp.forEach(function(obj) { resolveStatics(obj) }, this);
 	};
 	
 	this.getPlayer = function() {
@@ -439,6 +410,7 @@ Objects = function() {
 		}
 	};
 	
+
 	function collideWithBullet(npcBody, bulletBody) {
 		bulletBody.sprite.kill();
 		playerstate = 'angeredNPC';
@@ -456,6 +428,17 @@ Objects = function() {
 			npcSprite.snd.play();
 		}
 	}
+
+	this.getCarriedObject = function (){
+		if (carriedObject) {
+			/*if ("sprite" in carriedObject) {
+				console.log(carriedObject.sprite.key);
+			} else {
+				console.log(carriedObject.key);
+			}*/
+		}
+		return carriedObject;
+	};
 	
 	this.playRitualSoundRnd = function () {
 		var tmpInd = Math.floor(Math.random()*ritualSounds.length);
