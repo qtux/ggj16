@@ -15,7 +15,7 @@ Objects = function() {
 		'ritual_fika'
 	];
 	
-	var ritualSound, mehSnd, wormSnd, skullSnd, goatSnd, parrotSnd, splashSnd;
+	var ritualSound, splashSnd;
 	
 	this.preload = function() {
 		// object spritesheets
@@ -54,11 +54,6 @@ Objects = function() {
 	
 	this.create = function() {
 		// sounds
-		mehSnd = game.add.audio('meh');
-		wormSnd = game.add.audio('worm');
-		skullSnd = game.add.audio('skull');
-		goatSnd = game.add.audio('goat');
-		parrotSnd = game.add.audio('parrot');
 		splashSnd = game.add.audio('splash');
 		
 		playerstate = 'passive';
@@ -79,13 +74,13 @@ Objects = function() {
 			sheep.animations.add('panic', [ 12, 13, 14 ], sheepAnimFPS, true);
 			// set health
 			sheep.health = 3;
+			sheep.snd = game.add.audio('meh');
 			// enable physics for sheep
 			game.physics.p2.enable(sheep);
 			sheep.body.fixedRotation = true;
 			sheep.body.setCollisionGroup(npcCG);
 			sheep.body.collides(playerCG, npcBumpedPlayer, this);
 			sheep.body.collides(tileCG, npcBumpedWall, this);
-			sheep.snd = mehSnd;
 			sheep.body.collides(bulletsCG, collideWithBullet, this);
 		}, this);
 		
@@ -102,15 +97,14 @@ Objects = function() {
 			parrot.animations.add('panic', [ 13, 14 ], parrotAnimFPS, true);
 			// set health
 			parrot.health = 2;
+			parrot.snd = game.add.audio('parrot');
 			// enable physics for parrot
 			game.physics.p2.enable(parrot);
 			parrot.body.fixedRotation = true;
 			parrot.body.setCollisionGroup(npcCG);
 			parrot.body.collides(playerCG, npcBumpedPlayer, this);
 			parrot.body.collides(tileCG, npcBumpedWall, this);
-			parrot.body.collides(bulletsCG, function() {
-				parrotSnd.play();
-			}, this);
+			parrot.body.collides(bulletsCG, collideWithBullet, this);
 		}, this);
 		
 		// add worms
@@ -125,15 +119,14 @@ Objects = function() {
 			worm.animations.add('panic', [ 0 ], wormAnimFPS, true);
 			// set health
 			worm.health = 1;
+			worm.snd = game.add.audio('worm');
 			// enable physics for sheep
 			game.physics.p2.enable(worm);
 			worm.body.fixedRotation = true;
 			worm.body.setCollisionGroup(npcCG);
 			worm.body.collides(playerCG, npcBumpedPlayer, this);
 			worm.body.collides(tileCG, npcBumpedWall, this);
-			worm.body.collides(bulletsCG, function() {
-				wormSnd.play();
-			}, this);
+			worm.body.collides(bulletsCG, collideWithBullet, this);
 		}, this);
 
 		// add goats
@@ -149,15 +142,14 @@ Objects = function() {
 			goat.animations.add('panic', [ 12, 13, 14 ], goatAnimFPS, true);
 			// set health
 			goat.health = 3;
+			goat.snd = game.add.audio('goat');
 			// enable physics for goat
 			game.physics.p2.enable(goat);
 			goat.body.fixedRotation = true;
 			goat.body.setCollisionGroup(npcCG);
 			goat.body.collides(playerCG, npcBumpedPlayer, this);
 			goat.body.collides(tileCG, npcBumpedWall, this);
-			goat.body.collides(bulletsCG, function() {
-				goatSnd.play();
-			}, this);
+			goat.body.collides(bulletsCG, collideWithBullet, this);
 		}, this);
 		
 		// add deadhead
@@ -172,15 +164,14 @@ Objects = function() {
 			deadhead.animations.add('left', [ 2 ], deadheadAnimFPS, true);
 			// set health
 			deadhead.health = 3;
+			deadhead.snd = game.add.audio('skull');
 			// enable physics for deadhead
 			game.physics.p2.enable(deadhead);
 			deadhead.body.fixedRotation = true;
 			deadhead.body.setCollisionGroup(npcCG);
 			deadhead.body.collides(playerCG, npcBumpedPlayer, this);
 			deadhead.body.collides(tileCG, npcBumpedWall, this);
-			deadhead.body.collides(bulletsCG, function() {
-				skullSnd.play();
-			}, this);
+			deadhead.body.collides(bulletsCG, collideWithBullet, this);
 		}, this);
 		
 		// static item group
@@ -416,7 +407,7 @@ Objects = function() {
 		playerstate = 'angeredNPC';
 		effects.particleEffectBloodExplosion(npcBody.x, npcBody.y, 20, 500);
 		npcSprite = npcBody.sprite;
-		npcBody.sprite.damage(1);
+		npcBody.sprite.damage(0.5);
 		if (!npcSprite.alive) {
 			splashSnd.play();
 			if (npcSprite.group) {
