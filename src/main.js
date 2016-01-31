@@ -329,6 +329,16 @@ function update() {
 				key = tmpObj.key;
 				tmpSprite = tmpObj;
 			}
+			
+			// rituals go here
+			if (selectIdx == 2 && key == "goat")
+			{
+				objects.opendoor();
+				objects.playRitualSoundRnd();
+				
+				fsm.activateMoveMode();
+			}
+			
 			// rituals blood rain
 			if (selectIdx == 1 && key == "goat")
 			{

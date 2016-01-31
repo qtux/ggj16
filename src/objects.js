@@ -1,6 +1,6 @@
 Objects = function() {
 	
-	var playerGrp, sheepGrp, parrotGrp, goatGrp, wormGrp, staticGrp, deadheadGrp;	// sprite groupes
+	var playerGrp, sheepGrp, parrotGrp, goatGrp, wormGrp, staticGrp, deadheadGrp, doorsGrp;	// sprite groupes
 	
 	var playerstate;
 	var locked;
@@ -57,6 +57,9 @@ Objects = function() {
 		game.load.audio('splash', 'assets/audio/splash.ogg');
 		game.load.audio('crack', 'assets/audio/crack.ogg');
 		game.load.audio('pain', 'assets/audio/pain.ogg');
+		// door
+		game.load.spritesheet('door', 'assets/tilesets/objecttiles.png', 36, 36, 40);
+		game.load.spritesheet('opendoor', 'assets/tilesets/opendoor.png', 36, 36, 40);
 	};
 	
 	this.create = function() {
@@ -81,6 +84,11 @@ Objects = function() {
 		map.createFromObjects('objects', 111, 'runestone', 10, true, false, staticGrp);
 		map.createFromObjects('objects', 112, 'questionmark', 11, true, false, staticGrp);
 		map.createFromObjects('objects', 113, 'exclamationmark', 12, true, false, staticGrp);
+		
+		//doors
+		doorsGrp = game.add.group();
+		map.createFromObjects('objects', 118, 'door', 17, true, false, doorsGrp);
+		map.createFromObjects('objects', 119, 'opendoor', 0, true, false, doorsGrp);
 		
 		// add worms
 		wormGrp = game.add.group();
@@ -316,7 +324,6 @@ Objects = function() {
 		}
 
 		if (carriedObject != null && game.input.keyboard.isDown(Phaser.Keyboard.Y)) {
-			console.log(carriedObject);
 			if (carriedObject.ritualized)
 			{
 				var npcSprite = carriedObject.sprite;
@@ -342,6 +349,10 @@ Objects = function() {
 		deadheadGrp.forEach(function(obj) { resolveAImovement(obj, 'deadhead') }, this);
 		parrotGrp.forEach(function(obj) { resolveAImovement(obj, 'parrot') }, this);
 		staticGrp.forEach(function(obj) { resolveStatics(obj) }, this);
+		doorsGrp.forEach(function(obj) { if (obj.name == 'openDoor' && Phaser.Rectangle.intersects(player, obj)) { if (levelNum + 1 < levelNames.length) {
+				levelNum += 1;
+			}
+			game.state.restart(); }}, this);
 	};
 	
 	function sacrificeAnimal(npcSprite)
@@ -375,6 +386,7 @@ Objects = function() {
 	}
 	
 	function resolveAImovement(npc, type) {
+		
 		if (carriedObject === npc.body) {
 			if (type == 'deadhead') {
 				player.damage(1);
@@ -501,6 +513,23 @@ Objects = function() {
 			npcSprite.snd.play();
 		}
 	}
+	
+	function opendoors(door) {
+		var xPos = door.x;
+		var yPos = door.y;
+		
+		door.kill();
+		if (door.group) {
+			door.group.remove(door);
+		} else if (door.parent) {
+			door.parent.removeChild(door);
+		}
+		var od = game.add.sprite(xPos, yPos, 'opendoor');
+		od.name = 'openDoor';
+		doorsGrp.add(od);
+		od.moveDown();		// alter z depth so the door is behind the player
+		//od.height -= 10;
+	}
 
 	this.getCarriedObject = function (){
 		if (carriedObject) {
@@ -529,4 +558,9 @@ Objects = function() {
 		ritualSound = game.add.audio(ritualSounds[tmpInd]);
 		ritualSound.play();
 	};
+	
+	this.opendoor = function () {
+		doorsGrp.forEach(function(obj) { opendoors(obj); }, this);
+	};
+	
 };
