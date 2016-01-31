@@ -18,6 +18,15 @@ Objects = function() {
 	var ritualSound, mehSnd, wormSnd, skullSnd, goatSnd;
 	
 	this.getCarriedObject = function (){
+		if (carriedObject)
+		{
+			/*if ("sprite" in carriedObject) 
+			{
+				console.log(carriedObject.sprite.key);
+			}else{
+				console.log(carriedObject.key);
+			}*/
+		}
 		return carriedObject;
 	};
 	

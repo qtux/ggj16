@@ -12,6 +12,7 @@ var Effects = function() {
 	var overlay;
 	var filter;
 	var switchTimer3; 
+	var emitterRain;
 	
 	/*var fragmentSrc = [
 			"precision mediump float;",
@@ -112,7 +113,7 @@ var Effects = function() {
 		bullets.setAll('outOfBoundsKill', true);
 		
 		// initialise rain
-		var emitterRain = game.add.emitter(game.world.centerX, 0, 400);
+		emitterRain = game.add.emitter(game.world.centerX, 0, 400);
 		//emitter.angle = 5; // uncomment to set an angle for the rain.
 		emitterRain.width = game.world.width;
 		emitterRain.makeParticles('particles', [20, 21]);
@@ -122,7 +123,7 @@ var Effects = function() {
 		emitterRain.setXSpeed(-5, 5);
 		emitterRain.minRotation = 0;
 		emitterRain.maxRotation = 0;
-		emitterRain.start(false, 1600, 5, 0);
+		//emitterRain.start(false, 1600, 5, 0);
 		
 		// initialise overlay
 		// create a new bitmap data object
@@ -201,10 +202,18 @@ var Effects = function() {
 		}
 	};
 	
+	this.doLightning = function() {
+		lightningTime = 0;
+	}
+	
 	this.doSomeEffects = function() {
 		overlay.alpha = 1.0;
 		lightningTime = 0;
 	};
+	
+	this.doStartRain = function() {
+		emitterRain.start(false, 1600, 5, 0);
+	}
 	
 	this.setOverlay = function(val) {
 		overlay.alpha = val;
