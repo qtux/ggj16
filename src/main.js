@@ -32,6 +32,16 @@ var ritualKillBleeding = {
 	emitter : null,
 	connectedSprite : null
 };
+var levelReq = {
+	numFire : 1,
+	numPoison : 0,
+	numArcane : 0,
+	numGoat : 0,
+	numSheep : 0,
+	numParrot : 0,
+	numWorm : 0,
+	sprites : []
+};
 
 /**
  * which way to turn to get from angle a to b the fastest (math. rotation)
@@ -65,6 +75,8 @@ function preload () {
  * create - generate and initialise game content
  */
 function create () {
+	setLevelRequirements(levelNum);
+	
 	// start physics system
 	game.physics.startSystem(Phaser.Physics.P2JS);
 	game.physics.p2.setImpactEvents(true);
@@ -224,6 +236,8 @@ function create () {
 			graphics.destroy();
 			
 		};
+		
+		updateRequirementSprites();
 }
 
 function gofull() {
@@ -232,6 +246,122 @@ function gofull() {
 	}
 	else {
 		game.scale.startFullScreen(false);
+	}
+}
+
+function updateRequirementSprites()
+{
+	var tmpPos = 0;
+	console.log(levelReq.sprites.length);
+	
+	for (i in levelReq.sprites)
+	{
+		levelReq.sprites[i].kill();
+//		levelReq.sprites[i].destroy();
+	}
+	console.log("after: " + levelReq.sprites.length);
+	
+	for (var i=0; i<levelReq.numFire; i++)
+	{
+		tmpSprite = game.add.sprite(objects.getPlayer().body.x, objects.getPlayer().body.y,'spells')
+		tmpSprite.frameName = 'fire_spell';
+		tmpSprite.x = 20 + tmpPos * 30;
+		tmpSprite.y = 20;
+		levelReq.sprites.push(tmpSprite);
+		tmpPos++;
+	}
+	
+	for (var i=0; i<levelReq.numPoison; i++)
+	{
+		tmpSprite = game.add.sprite(objects.getPlayer().body.x, objects.getPlayer().body.y,'spells')
+		tmpSprite.frameName = 'poison_spell';
+		tmpSprite.x = 20 + tmpPos * 30;
+		tmpSprite.y = 20;
+		levelReq.sprites.push(tmpSprite);
+		tmpPos++;
+	}
+	
+	for (var i=0; i<levelReq.numArcane; i++)
+	{
+		tmpSprite = game.add.sprite(objects.getPlayer().body.x, objects.getPlayer().body.y,'spells')
+		tmpSprite.frameName = 'arcane_spell';
+		tmpSprite.x = 20 + tmpPos * 30;
+		tmpSprite.y = 20;
+		levelReq.sprites.push(tmpSprite);
+		tmpPos++;
+	}
+	
+	var tmpTypes = ['goat', 'sheep', 'worm', 'parrot'];
+	var tmpNum = [levelReq.numGoat, levelReq.numSheep, levelReq.numWorm, levelReq.numParrot];
+	
+	for (var j in tmpTypes)
+	{
+		for (var i=0; i<tmpNum[j]; i++)
+		{
+			tmpSprite = game.add.sprite(objects.getPlayer().body.x, objects.getPlayer().body.y, tmpTypes[j])
+			tmpSprite.x = 20 + tmpPos * 30;
+			tmpSprite.y = 20;
+			levelReq.sprites.push(tmpSprite);
+			tmpPos++;
+		}
+	}
+
+//	numFire : 1,
+//	numPoison : 0,
+//	numArcane : 0,
+//	numGoat : 1,
+//	numSheep : 0,
+//	numParrot : 0,
+//	numWorm : 0	
+}
+
+function setLevelRequirements(theLevelNum)
+{
+	if (theLevelNum == 0)
+	{
+		levelReq.numFire = 1;
+		levelReq.numPoison = 1;
+		levelReq.numArcane = 0;
+		levelReq.numGoat = 1;
+		levelReq.numSheep = 0;
+		levelReq.numWorm = 0;
+		levelReq.numParrot = 0;
+	} else if (theLevelNum == 1)
+	{
+		levelReq.numFire = 0;
+		levelReq.numPoison = 1;
+		levelReq.numArcane = 1;
+		levelReq.numGoat = 0;
+		levelReq.numSheep = 1;
+		levelReq.numWorm = 0;
+		levelReq.numParrot = 0;
+	} else if (theLevelNum == 2)
+	{
+		levelReq.numFire = 1;
+		levelReq.numPoison = 1;
+		levelReq.numArcane = 0;
+		levelReq.numGoat = 0;
+		levelReq.numSheep = 0;
+		levelReq.numWorm = 2;
+		levelReq.numParrot = 0;
+	} else if (theLevelNum == 3)
+	{
+		levelReq.numFire = 1;
+		levelReq.numPoison = 0;
+		levelReq.numArcane = 1;
+		levelReq.numGoat = 1;
+		levelReq.numSheep = 0;
+		levelReq.numWorm = 0;
+		levelReq.numParrot = 0;
+	} else if (theLevelNum == 4)
+	{
+		levelReq.numFire = 0;
+		levelReq.numPoison = 1;
+		levelReq.numArcane = 1;
+		levelReq.numGoat = 0;
+		levelReq.numSheep = 0;
+		levelReq.numWorm = 2;
+		levelReq.numParrot = 0;
 	}
 }
 
@@ -330,13 +460,61 @@ function update() {
 				tmpSprite = tmpObj;
 			}
 			
+			//0:f, 1:p, 2:a
+			
+			if (key == "goat")
+			{
+				if (levelReq.numGoat > 0)
+				{
+					levelReq.numGoat--;
+				}
+			} else if (key == "sheep")
+			{
+				if (levelReq.numSheep > 0)
+				{
+					levelReq.numSheep--;
+				}
+			} else if (key == "worm")
+			{
+				if (levelReq.numWorm > 0)
+				{
+					levelReq.numWorm--;
+				}
+			} else if (key == "parrot")
+			{
+				if (levelReq.numParrot > 0)
+				{
+					levelReq.numParrot--;
+				}
+			} 
+			
+			if (selectIdx == 0)
+			{
+				if (levelReq.numFire > 0)
+				{
+					levelReq.numFire--;
+				}
+			} else if (selectIdx == 1)
+			{
+				if (levelReq.numPoison > 0)
+				{
+					levelReq.numPoison--;
+				}
+			} else if (selectIdx == 2)
+			{
+				if (levelReq.numArcane > 0)
+				{
+					levelReq.numArcane--;
+				}
+			}
+			
 			// rituals go here
 			if (selectIdx == 2 && key == "goat")
 			{
 				objects.opendoor();
 				objects.playRitualSoundRnd();
 				
-				fsm.activateMoveMode();
+//				fsm.activateMoveMode();
 			}
 			
 			// rituals blood rain
@@ -347,13 +525,13 @@ function update() {
 				tmpObj.sprite.tint = 0xff0000;
 				objects.playRitualSoundRnd();
 				
-				fsm.activateMoveMode();
+//				fsm.activateMoveMode();
 			}
 			
 			// ritual kill
 			if (selectIdx == 0 && key == "goat")
 			{
-				fsm.activateMoveMode();
+//				fsm.activateMoveMode();
 				effects.doSomeEffects();
 				tmpObj.emitter = effects.particleEffectBleeding(tmpSprite.x + tmpSprite.width / 2., tmpSprite.y + tmpSprite.height / 2., 20, 1000);
 				tmpObj.ritualized = true;
@@ -364,14 +542,15 @@ function update() {
 			// ritual kill
 			if (selectIdx == 0 && key == "worm")
 			{
-				fsm.activateMoveMode();
+//				fsm.activateMoveMode();
 				effects.doSomeEffects();
 				tmpObj.emitter = effects.particleEffectBleeding(tmpSprite.x + tmpSprite.width / 2., tmpSprite.y + tmpSprite.height / 2., 20, 1000);
 				tmpObj.ritualized = true;
 				
 				objects.playRitualSoundRnd();
 			}
-			
+			updateRequirementSprites();
+			fsm.activateMoveMode();	
 		}
 	}
 
