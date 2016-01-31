@@ -437,6 +437,16 @@ Objects = function() {
 		return carriedObject;
 	};
 	
+	this.getCarriedSprite = function (){
+		if (carriedObject) {
+			if ("sprite" in carriedObject) {
+				return carriedObject.sprite;
+			} else {
+				return carriedObject;
+			}
+		}
+	};
+	
 	this.playRitualSoundRnd = function () {
 		var tmpInd = Math.floor(Math.random()*ritualSounds.length);
 		//console.log(tmpInd);

@@ -151,8 +151,24 @@ function create () {
 		});
 	
 	fsm.onbeforeactivateSpellMenu = function(event, from, to) {
+			/*
+			objects.getPlayer().body.reset(objects.getPlayer().body.x,objects.getPlayer().body.y);
+			objects.getCarriedSprite().body.reset(objects.getCarriedSprite().body.x,objects.getCarriedSprite().body.y);*/
+			objects.getPlayer().body.enabled=false;
+			objects.getCarriedSprite().body.enabled=false;
+
+			
+
+			//objects.getPlayer().body.immovable = true;
 			objects.getPlayer().body.velocity.x = 0;
 			objects.getPlayer().body.velocity.y = 0;
+			objects.getCarriedSprite().body.velocity.x = 0;
+			objects.getCarriedSprite().body.velocity.y = 0;
+			
+			//console.log(objects.getCarriedSprite());
+			//objects.getCarriedSprite().immovable = true;
+			/**/
+
 			
 			spellSprites.push(game.add.sprite(objects.getPlayer().body.x, objects.getPlayer().body.y,'spells'))
 			spellSprites.push(game.add.sprite(objects.getPlayer().body.x, objects.getPlayer().body.y,'spells'))
@@ -189,6 +205,10 @@ function create () {
 				spellSprites[i].destroy();
 				spellSprites.pop();
 			}	
+			objects.getPlayer().body.enabled=true;
+			objects.getCarriedSprite().body.enabled=true;
+			//objects.getCarriedSprite().immovable = false;
+			//objects.getPlayer().body.immovable = false;
 			effects.setOverlay(0.);
 			graphics.destroy();
 			
@@ -224,6 +244,12 @@ function update() {
 	}
 	if (fsm.is('spellMenu'))
 	{
+		objects.getPlayer().body.velocity.x = 0;
+		objects.getPlayer().body.velocity.y = 0;
+		objects.getCarriedSprite().body.velocity.x = 0;
+		objects.getCarriedSprite().body.velocity.y = 0;
+		
+		//console.log(objects.getPlayer().body);
 		var angRange = 2*Math.PI / nSpells;
 		if (game.input.keyboard.isDown(Phaser.Keyboard.A) && Math.abs(game.time.now - switchTimer2) > 500) {
 			selectIdx -= 1;
