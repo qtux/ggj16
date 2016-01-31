@@ -7,7 +7,7 @@ var player;
 var npcCG, tileCG, playerCG, bulletsCG, ritualResultCG;		// collision groups
 
 // TODO local variables
-var levelNames = ['test', 'test2', 'test3'];
+var levelNames = ['level00', 'level01', 'level02'];
 var levelNum = 0;
 var map, layer, layer1;		// tilemap related
 var circleTile;
