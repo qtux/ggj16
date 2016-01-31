@@ -215,7 +215,9 @@ function create () {
 				spellSprites.pop();
 			}	
 			objects.getPlayer().body.enabled=true;
-			objects.getCarriedSprite().body.enabled=true;
+			if (objects.getCarriedSprite().body != null) {
+				objects.getCarriedSprite().body.enabled=true;
+			}
 			//objects.getCarriedSprite().immovable = false;
 			//objects.getPlayer().body.immovable = false;
 			effects.setOverlay(0.);
