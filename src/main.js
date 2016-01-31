@@ -1,5 +1,5 @@
 // global variables
-var game = new Phaser.Game(1152, 720, Phaser.AUTO, '', { preload: preload, create: create, update: update});
+var game = new Phaser.Game(1152, 720, Phaser.AUTO, '', { preload: preload, create: create, update: update, shutdown: shutdown});
 var effects = new Effects();
 var objects = new Objects();
 var cursors;
@@ -61,6 +61,9 @@ function turnDist(a,b, direction)
 	return direction * (2*Math.PI + b - a);
 }
 
+function shutdown() {
+	bgm.stop();
+}
 
 /**
  * preload - load assets
