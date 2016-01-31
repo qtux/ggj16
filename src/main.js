@@ -7,7 +7,7 @@ var player;
 var npcCG, tileCG, playerCG, bulletsCG, ritualResultCG;		// collision groups
 
 // TODO local variables
-var levelNames = ['level00', 'level01', 'level02'];
+var levelNames = ['level00', 'level01', 'level02', 'level03', 'level04'];
 var levelNum = 0;
 var map, layer, layer1;		// tilemap related
 var circleTile;
@@ -329,6 +329,7 @@ function update() {
 				key = tmpObj.key;
 				tmpSprite = tmpObj;
 			}
+			
 			// rituals go here
 			if (selectIdx == 2 && key == "goat")
 			{
@@ -337,7 +338,8 @@ function update() {
 				
 				fsm.activateMoveMode();
 			}
-			// rituals go here
+			
+			// rituals blood rain
 			if (selectIdx == 1 && key == "goat")
 			{
 				effects.doStartRain();
@@ -347,7 +349,20 @@ function update() {
 				
 				fsm.activateMoveMode();
 			}
+			
+			// ritual kill
 			if (selectIdx == 0 && key == "goat")
+			{
+				fsm.activateMoveMode();
+				effects.doSomeEffects();
+				tmpObj.emitter = effects.particleEffectBleeding(tmpSprite.x + tmpSprite.width / 2., tmpSprite.y + tmpSprite.height / 2., 20, 1000);
+				tmpObj.ritualized = true;
+				
+				objects.playRitualSoundRnd();
+			}
+			
+			// ritual kill
+			if (selectIdx == 0 && key == "worm")
 			{
 				fsm.activateMoveMode();
 				effects.doSomeEffects();
@@ -361,12 +376,16 @@ function update() {
 	}
 
 	
-	//if (game.input.keyboard.isDown(Phaser.Keyboard.L))
+	if (game.input.keyboard.isDown(Phaser.Keyboard.L))
+	{
+		effects.toggleLight();
+	}
+	
 	if (playerRitualDist<2)
 	{
 		if (!animState) 
 		{
-			effects.toggleLight();
+			effects.toggleGlow();
 			animState = true;
 		}
 	}
@@ -374,7 +393,7 @@ function update() {
 	{
 		if (animState) 
 		{
-			effects.toggleLight();
+			effects.toggleGlow();
 			animState = false;
 		}
 	}
