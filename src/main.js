@@ -205,6 +205,17 @@ function gofull() {
 
 function update() {
 	var dt = game.time.elapsed;
+	
+	var tmpX = player.x / 36;
+	var tmpY = player.y / 36;
+	var playerRitualDist = Math.sqrt((ritualCircle.posX - tmpX)
+			* (ritualCircle.posX - tmpX) + (ritualCircle.posY - tmpY)
+			* (ritualCircle.posY - tmpY));
+
+//	if (playerRitualDist < 2) {
+//		effects.particleEffectBloodExplosion(player.x, player.y, 10, 300);
+//	}
+	
 	// update objects and effects
 	if (fsm.is('move')){
 		objects.update();
@@ -254,8 +265,8 @@ function update() {
 			rot_tmp -= rot_tmp2;
 		}
 	}
-	
-	if (game.input.keyboard.isDown(Phaser.Keyboard.M)  && Math.abs(game.time.now - switchTimer) > 200)
+
+	if ((objects.getCarriedObject() != null) && (playerRitualDist < 2) && game.input.keyboard.isDown(Phaser.Keyboard.M)  && Math.abs(game.time.now - switchTimer) > 200)
 	{
 		switchTimer = game.time.now;
 		if (fsm.is('move'))
