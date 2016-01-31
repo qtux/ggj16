@@ -4,10 +4,10 @@ var effects = new Effects();
 var objects = new Objects();
 var cursors;
 var player;
-var npcCG, tileCG, playerCG, bulletsCG;		// collision groups
+var npcCG, tileCG, playerCG, bulletsCG, ritualResultCG;		// collision groups
 
 // TODO local variables
-var levelNames = ['test', 'test2', 'test3'];
+var levelNames = ['level00', 'level01', 'level02'];
 var levelNum = 0;
 var map, layer, layer1;		// tilemap related
 var circleTile;
@@ -28,6 +28,10 @@ var switchTimer2;
 var rot_tmp;
 var spellSprites;
 var animState;
+var ritualKillBleeding = {
+	emitter : null,
+	connectedSprite : null
+};
 
 /**
  * which way to turn to get from angle a to b the fastest (math. rotation)
@@ -70,6 +74,7 @@ function create () {
 	tileCG = game.physics.p2.createCollisionGroup();
 	playerCG = game.physics.p2.createCollisionGroup();
 	bulletsCG = game.physics.p2.createCollisionGroup();
+	ritualResultCG = game.physics.p2.createCollisionGroup();
 	
 	// enable collision with world bounds
 	game.physics.p2.updateBoundsCollisionGroup();
@@ -155,15 +160,19 @@ function create () {
 			objects.getPlayer().body.reset(objects.getPlayer().body.x,objects.getPlayer().body.y);
 			objects.getCarriedSprite().body.reset(objects.getCarriedSprite().body.x,objects.getCarriedSprite().body.y);*/
 			objects.getPlayer().body.enabled=false;
-			objects.getCarriedSprite().body.enabled=false;
+			if (objects.getCarriedSprite().body != null) {
+				objects.getCarriedSprite().body.enabled=false;
+			}
 
 			
 
 			//objects.getPlayer().body.immovable = true;
 			objects.getPlayer().body.velocity.x = 0;
 			objects.getPlayer().body.velocity.y = 0;
-			objects.getCarriedSprite().body.velocity.x = 0;
-			objects.getCarriedSprite().body.velocity.y = 0;
+			if (objects.getCarriedSprite().body != null) {
+				objects.getCarriedSprite().body.velocity.x = 0;
+				objects.getCarriedSprite().body.velocity.y = 0;
+			}
 			
 			//console.log(objects.getCarriedSprite());
 			//objects.getCarriedSprite().immovable = true;
@@ -206,7 +215,9 @@ function create () {
 				spellSprites.pop();
 			}	
 			objects.getPlayer().body.enabled=true;
-			objects.getCarriedSprite().body.enabled=true;
+			if (objects.getCarriedSprite().body != null) {
+				objects.getCarriedSprite().body.enabled=true;
+			}
 			//objects.getCarriedSprite().immovable = false;
 			//objects.getPlayer().body.immovable = false;
 			effects.setOverlay(0.);
@@ -233,6 +244,18 @@ function update() {
 			* (ritualCircle.posX - tmpX) + (ritualCircle.posY - tmpY)
 			* (ritualCircle.posY - tmpY));
 
+	var tmpObj = objects.getCarriedObject();
+//	console.log(tmpObj);
+	if (tmpObj)
+	{
+		if (tmpObj.emitter)
+		{
+//			console.log(tmpObj + ", " + tmpObj.emitter);
+			tmpObj.emitter.x = tmpObj.x;
+			tmpObj.emitter.y = tmpObj.y;
+		}
+	}
+	
 //	if (playerRitualDist < 2) {
 //		effects.particleEffectBloodExplosion(player.x, player.y, 10, 300);
 //	}
@@ -246,8 +269,10 @@ function update() {
 	{
 		objects.getPlayer().body.velocity.x = 0;
 		objects.getPlayer().body.velocity.y = 0;
-		objects.getCarriedSprite().body.velocity.x = 0;
-		objects.getCarriedSprite().body.velocity.y = 0;
+		if (objects.getCarriedSprite().body != null) {
+			objects.getCarriedSprite().body.velocity.x = 0;
+			objects.getCarriedSprite().body.velocity.y = 0;
+		}
 		
 		//console.log(objects.getPlayer().body);
 		var angRange = 2*Math.PI / nSpells;
@@ -295,11 +320,14 @@ function update() {
 		if (game.input.keyboard.isDown(Phaser.Keyboard.ENTER)) {
 			var tmpObj = objects.getCarriedObject();
 			var key = null;
+			var tmpSprite;
 			if ("sprite" in tmpObj) 
 			{
 				key = tmpObj.sprite.key;
+				tmpSprite = tmpObj.sprite;
 			}else{
 				key = tmpObj.key;
+				tmpSprite = tmpObj;
 			}
 			// rituals go here
 			if (selectIdx == 1 && key == "goat")
@@ -315,6 +343,8 @@ function update() {
 			{
 				fsm.activateMoveMode();
 				effects.doSomeEffects();
+				tmpObj.emitter = effects.particleEffectBleeding(tmpSprite.x + tmpSprite.width / 2., tmpSprite.y + tmpSprite.height / 2., 20, 1000);
+				tmpObj.ritualized = true;
 				
 				objects.playRitualSoundRnd();
 			}

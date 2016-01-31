@@ -5,6 +5,7 @@ Objects = function() {
 	var playerstate;
 	var locked;
 	var carriedObject = null;
+	var lockThrow = false;
 	
 	var ritualSounds = [
 		'ritual_tier_brennt',
@@ -15,7 +16,7 @@ Objects = function() {
 		'ritual_fika'
 	];
 	
-	var ritualSound, splashSnd;
+	var ritualSound, splashSnd, crushsnd;
 	
 	this.preload = function() {
 		// object spritesheets
@@ -50,16 +51,54 @@ Objects = function() {
 		game.load.audio('goat', 'assets/audio/goat.ogg');
 		game.load.audio('parrot', 'assets/audio/parrot.ogg');
 		game.load.audio('splash', 'assets/audio/splash.ogg');
+		game.load.audio('crack', 'assets/audio/crack.ogg');
+		game.load.audio('pain', 'assets/audio/pain.ogg');
 	};
 	
 	this.create = function() {
 		// sounds
 		splashSnd = game.add.audio('splash');
+		crushsnd = game.add.audio('crack');
 		
 		playerstate = 'passive';
 		
 		// enable user input
 		cursors = game.input.keyboard.createCursorKeys();
+		
+		// static item group
+		staticGrp = game.add.group();
+		map.createFromObjects('objects', 101, 'key', 0, true, false, staticGrp);
+		map.createFromObjects('objects', 104, 'pearl', 3, true, false, staticGrp);
+		map.createFromObjects('objects', 105, 'torch', 4, true, false, staticGrp);
+		map.createFromObjects('objects', 106, 'bucket', 5, true, false, staticGrp);
+		map.createFromObjects('objects', 108, 'book', 7, true, false, staticGrp);
+		map.createFromObjects('objects', 109, 'abyss', 8, true, false, staticGrp);
+		map.createFromObjects('objects', 110, 'spikes', 9, true, false, staticGrp);
+		map.createFromObjects('objects', 111, 'runestone', 10, true, false, staticGrp);
+		map.createFromObjects('objects', 112, 'questionmark', 11, true, false, staticGrp);
+		map.createFromObjects('objects', 113, 'exclamationmark', 12, true, false, staticGrp);
+		
+		// add worms
+		wormGrp = game.add.group();
+		map.createFromObjects('objects', 114, 'worm', 1, true, false, wormGrp);
+		wormGrp.forEach(function(worm) {
+			var wormAnimFPS = 10;
+			worm.animations.add('down', [ 4, 5 ], wormAnimFPS, true);
+			worm.animations.add('up', [ 6, 7 ], wormAnimFPS, true);
+			worm.animations.add('right', [ 0, 1 ], wormAnimFPS, true);
+			worm.animations.add('left', [ 2, 3 ], wormAnimFPS, true);
+			worm.animations.add('panic', [ 0 ], wormAnimFPS, true);
+			// set health
+			worm.health = 2;
+			worm.snd = game.add.audio('worm');
+			// enable physics for sheep
+			game.physics.p2.enable(worm);
+			worm.body.fixedRotation = true;
+			worm.body.setCollisionGroup(npcCG);
+			worm.body.collides(playerCG, npcBumpedPlayer, this);
+			worm.body.collides(tileCG, npcBumpedWall, this);
+			worm.body.collides(bulletsCG, collideWithBullet, this);
+		}, this);
 		
 		// add sheeps
 		sheepGrp = game.add.group();
@@ -82,51 +121,6 @@ Objects = function() {
 			sheep.body.collides(playerCG, npcBumpedPlayer, this);
 			sheep.body.collides(tileCG, npcBumpedWall, this);
 			sheep.body.collides(bulletsCG, collideWithBullet, this);
-		}, this);
-		
-		// add parrot
-		parrotGrp = game.add.group();
-		map.createFromObjects('objects', 117, 'parrot', 0, true, false, parrotGrp);
-		parrotGrp.forEach(function(parrot) {
-			var parrotAnimFPS = 10;
-			parrot.animations.add('idle', [ 0 ], parrotAnimFPS, true);
-			parrot.animations.add('down', [ 10, 11, 12 ], parrotAnimFPS, true);
-			parrot.animations.add('up', [ 8, 9 ], parrotAnimFPS, true);
-			parrot.animations.add('right', [ 0, 1, 2, 3 ], parrotAnimFPS, true);
-			parrot.animations.add('left', [ 4, 5, 6, 7 ], parrotAnimFPS, true);
-			parrot.animations.add('panic', [ 13, 14 ], parrotAnimFPS, true);
-			// set health
-			parrot.health = 2;
-			parrot.snd = game.add.audio('parrot');
-			// enable physics for parrot
-			game.physics.p2.enable(parrot);
-			parrot.body.fixedRotation = true;
-			parrot.body.setCollisionGroup(npcCG);
-			parrot.body.collides(playerCG, npcBumpedPlayer, this);
-			parrot.body.collides(tileCG, npcBumpedWall, this);
-			parrot.body.collides(bulletsCG, collideWithBullet, this);
-		}, this);
-		
-		// add worms
-		wormGrp = game.add.group();
-		map.createFromObjects('objects', 114, 'worm', 1, true, false, wormGrp);
-		wormGrp.forEach(function(worm) {
-			var wormAnimFPS = 10;
-			worm.animations.add('down', [ 4, 5 ], wormAnimFPS, true);
-			worm.animations.add('up', [ 6, 7 ], wormAnimFPS, true);
-			worm.animations.add('right', [ 0, 1 ], wormAnimFPS, true);
-			worm.animations.add('left', [ 2, 3 ], wormAnimFPS, true);
-			worm.animations.add('panic', [ 0 ], wormAnimFPS, true);
-			// set health
-			worm.health = 1;
-			worm.snd = game.add.audio('worm');
-			// enable physics for sheep
-			game.physics.p2.enable(worm);
-			worm.body.fixedRotation = true;
-			worm.body.setCollisionGroup(npcCG);
-			worm.body.collides(playerCG, npcBumpedPlayer, this);
-			worm.body.collides(tileCG, npcBumpedWall, this);
-			worm.body.collides(bulletsCG, collideWithBullet, this);
 		}, this);
 
 		// add goats
@@ -152,6 +146,29 @@ Objects = function() {
 			goat.body.collides(bulletsCG, collideWithBullet, this);
 		}, this);
 		
+		// add parrot
+		parrotGrp = game.add.group();
+		map.createFromObjects('objects', 117, 'parrot', 0, true, false, parrotGrp);
+		parrotGrp.forEach(function(parrot) {
+			var parrotAnimFPS = 10;
+			parrot.animations.add('idle', [ 0 ], parrotAnimFPS, true);
+			parrot.animations.add('down', [ 10, 11, 12 ], parrotAnimFPS, true);
+			parrot.animations.add('up', [ 8, 9 ], parrotAnimFPS, true);
+			parrot.animations.add('right', [ 0, 1, 2, 3 ], parrotAnimFPS, true);
+			parrot.animations.add('left', [ 4, 5, 6, 7 ], parrotAnimFPS, true);
+			parrot.animations.add('panic', [ 13, 14 ], parrotAnimFPS, true);
+			// set health
+			parrot.health = 2;
+			parrot.snd = game.add.audio('parrot');
+			// enable physics for parrot
+			game.physics.p2.enable(parrot);
+			parrot.body.fixedRotation = true;
+			parrot.body.setCollisionGroup(npcCG);
+			parrot.body.collides(playerCG, npcBumpedPlayer, this);
+			parrot.body.collides(tileCG, npcBumpedWall, this);
+			parrot.body.collides(bulletsCG, collideWithBullet, this);
+		}, this);
+		
 		// add deadhead
 		deadheadGrp = game.add.group();
 		map.createFromObjects('objects', 115, 'deadhead', 0, true, false, deadheadGrp);
@@ -169,23 +186,10 @@ Objects = function() {
 			game.physics.p2.enable(deadhead);
 			deadhead.body.fixedRotation = true;
 			deadhead.body.setCollisionGroup(npcCG);
-			deadhead.body.collides(playerCG, npcBumpedPlayer, this);
+			deadhead.body.collides(playerCG, caughtPlayer, this);
 			deadhead.body.collides(tileCG, npcBumpedWall, this);
-			deadhead.body.collides(bulletsCG, collideWithBullet, this);
+			deadhead.body.collides(bulletsCG, hitByBullet, this);
 		}, this);
-		
-		// static item group
-		staticGrp = game.add.group();
-		map.createFromObjects('objects', 101, 'key', 0, true, false, staticGrp);
-		map.createFromObjects('objects', 104, 'pearl', 3, true, false, staticGrp);
-		map.createFromObjects('objects', 105, 'torch', 4, true, false, staticGrp);
-		map.createFromObjects('objects', 106, 'bucket', 5, true, false, staticGrp);
-		map.createFromObjects('objects', 108, 'book', 7, true, false, staticGrp);
-		map.createFromObjects('objects', 109, 'abyss', 8, true, false, staticGrp);
-		map.createFromObjects('objects', 110, 'spikes', 9, true, false, staticGrp);
-		map.createFromObjects('objects', 111, 'runestone', 10, true, false, staticGrp);
-		map.createFromObjects('objects', 112, 'questionmark', 11, true, false, staticGrp);
-		map.createFromObjects('objects', 113, 'exclamationmark', 12, true, false, staticGrp);
 		
 		// player group
 		playerGrp = game.add.group();
@@ -206,6 +210,7 @@ Objects = function() {
 		
 		// set health
 		player.health = 5;
+		player.snd = game.add.audio('pain');
 		
 		// enable physics for player
 		game.physics.p2.enable(player);
@@ -307,7 +312,24 @@ Objects = function() {
 		}
 
 		if (carriedObject != null && game.input.keyboard.isDown(Phaser.Keyboard.Y)) {
-			carriedObject = null;
+			console.log(carriedObject);
+			if (carriedObject.ritualized)
+			{
+				var npcSprite = carriedObject.sprite;
+				
+				if (carriedObject.emitter)
+				{
+					carriedObject.emitter.on = false;
+					carriedObject.emitter = null;
+				}
+				
+				 sacrificeAnimal(npcSprite);
+				 carriedObject = null;
+			} else
+			{
+				carriedObject = null;
+			}
+			
 		}
 		
 		sheepGrp.forEach(function(obj) { resolveAImovement(obj, 'sheep') }, this);
@@ -317,6 +339,21 @@ Objects = function() {
 		parrotGrp.forEach(function(obj) { resolveAImovement(obj, 'parrot') }, this);
 		staticGrp.forEach(function(obj) { resolveStatics(obj) }, this);
 	};
+	
+	function sacrificeAnimal(npcSprite)
+	{
+		var tmpX = npcSprite.x;
+		var tmpY = npcSprite.y;
+
+		if (npcSprite.group) {
+			npcSprite.group.remove(npcSprite);
+		} else if (npcSprite.parent) {
+			npcSprite.parent.removeChild(npcSprite);
+		}
+		console.log("animal destroyed " + tmpX + ", " + tmpY);
+		effects.particleEffectBloodExplosion(tmpX, tmpY, 50, 3000);
+		lockThrow = false;
+	}
 	
 	this.getPlayer = function() {
 		return player;
@@ -328,7 +365,7 @@ Objects = function() {
 			static.y = player.body.y - 40;
 			return;
 		}
-		if (Phaser.Rectangle.intersects(player, static) && game.input.keyboard.isDown(Phaser.Keyboard.X)) {
+		if (Phaser.Rectangle.intersects(player, static) && game.input.keyboard.isDown(Phaser.Keyboard.F)) {
 			carriedObject = static;
 		}
 	}
@@ -337,6 +374,7 @@ Objects = function() {
 		if (carriedObject === npc.body) {
 			if (type == 'deadhead') {
 				player.damage(1);
+				playerBody.sprite.snd.play();
 				return;
 			}
 			else if (type == 'parrot' || type == 'sheep' || type == 'goat' || type == 'worm') {
@@ -399,21 +437,49 @@ Objects = function() {
 	function npcBumpedPlayer(npcBody, playerBody) {
 		if (playerstate == 'angeredNPC') {
 			player.damage(1);
+			playerBody.sprite.snd.play();
 		}
 		playerstate = 'passive';
 		if (carriedObject == null
-				&& game.input.keyboard.isDown(Phaser.Keyboard.X)) {
+				&& game.input.keyboard.isDown(Phaser.Keyboard.F)) {
 			carriedObject = npcBody;
 		}
 	};
 	
+	function caughtPlayer(npcBody, playerBody) {
+		player.damage(1);
+		playerBody.sprite.snd.play();
+	};
+	
+	function hitByBullet(npcBody, bulletBody) {
+		if (!bulletBody.sprite.alive) {
+			return;
+		}
+		bulletBody.sprite.kill();
+		effects.particleEffectBloodExplosion(npcBody.x, npcBody.y, 20, 500);
+		npcSprite = npcBody.sprite;
+		npcBody.sprite.damage(1);
+		if (!npcSprite.alive) {
+			crushsnd.play();
+			if (npcSprite.group) {
+				npcSprite.group.remove(npcSprite);
+			} else if (npcSprite.parent) {
+				npcSprite.parent.removeChild(npcSprite);
+			}
+		} else {
+			npcSprite.snd.play();
+		}
+	}
 
 	function collideWithBullet(npcBody, bulletBody) {
+		if (!bulletBody.sprite.alive) {
+			return;
+		}
 		bulletBody.sprite.kill();
 		playerstate = 'angeredNPC';
 		effects.particleEffectBloodExplosion(npcBody.x, npcBody.y, 20, 500);
 		npcSprite = npcBody.sprite;
-		npcBody.sprite.damage(0.5);
+		npcBody.sprite.damage(1);
 		if (!npcSprite.alive) {
 			splashSnd.play();
 			if (npcSprite.group) {
