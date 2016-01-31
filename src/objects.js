@@ -74,12 +74,12 @@ Objects = function() {
 		map.createFromObjects('objects', 103, 'sheep', 1, true, false, sheepGrp);
 		sheepGrp.forEach(function(sheep) {
 			var sheepAnimFPS = 10;
-			sheep.animations.add('sheep_idle', [ 0 ], sheepAnimFPS, true);
-			sheep.animations.add('sheep_down', [ 9, 10, 11 ], sheepAnimFPS, true);
-			sheep.animations.add('sheep_up', [ 6, 7, 8 ], sheepAnimFPS, true);
-			sheep.animations.add('sheep_right', [ 0, 1, 2 ], sheepAnimFPS, true);
-			sheep.animations.add('sheep_left', [ 3, 4, 5 ], sheepAnimFPS, true);
-			sheep.animations.add('sheep_panic', [ 12, 13, 14 ], sheepAnimFPS, true);
+			sheep.animations.add('idle', [ 0 ], sheepAnimFPS, true);
+			sheep.animations.add('down', [ 9, 10, 11 ], sheepAnimFPS, true);
+			sheep.animations.add('up', [ 6, 7, 8 ], sheepAnimFPS, true);
+			sheep.animations.add('right', [ 0, 1, 2 ], sheepAnimFPS, true);
+			sheep.animations.add('left', [ 3, 4, 5 ], sheepAnimFPS, true);
+			sheep.animations.add('panic', [ 12, 13, 14 ], sheepAnimFPS, true);
 			// enable physics for sheep
 			game.physics.p2.enable(sheep);
 			sheep.body.fixedRotation = true;
@@ -96,11 +96,11 @@ Objects = function() {
 		map.createFromObjects('objects', 115, 'parrot', 0, true, false, parrotGrp);
 		parrotGrp.forEach(function(parrot) {
 			var parrotAnimFPS = 10;
-			parrot.animations.add('parrot_idle', [ 0 ], parrotAnimFPS, true);
-			parrot.animations.add('parrot_down', [ 0 ], parrotAnimFPS, true);
-			parrot.animations.add('parrot_up', [ 3 ], parrotAnimFPS, true);
-			parrot.animations.add('parrot_right', [ 1 ], parrotAnimFPS, true);
-			parrot.animations.add('parrot_left', [ 2 ], parrotAnimFPS, true);
+			parrot.animations.add('idle', [ 0 ], parrotAnimFPS, true);
+			parrot.animations.add('down', [ 0 ], parrotAnimFPS, true);
+			parrot.animations.add('up', [ 3 ], parrotAnimFPS, true);
+			parrot.animations.add('right', [ 1 ], parrotAnimFPS, true);
+			parrot.animations.add('left', [ 2 ], parrotAnimFPS, true);
 			// enable physics for parrot
 			game.physics.p2.enable(parrot);
 			parrot.body.fixedRotation = true;
@@ -117,11 +117,11 @@ Objects = function() {
 		map.createFromObjects('objects', 114, 'worm', 1, true, false, wormGrp);
 		wormGrp.forEach(function(worm) {
 			var wormAnimFPS = 10;
-			worm.animations.add('worm_down', [ 4, 5 ], wormAnimFPS, true);
-			worm.animations.add('worm_up', [ 6, 7 ], wormAnimFPS, true);
-			worm.animations.add('worm_right', [ 0, 1 ], wormAnimFPS, true);
-			worm.animations.add('worm_left', [ 2, 3 ], wormAnimFPS, true);
-			worm.animations.add('worm_panic', [ 0 ], wormAnimFPS, true);
+			worm.animations.add('down', [ 4, 5 ], wormAnimFPS, true);
+			worm.animations.add('up', [ 6, 7 ], wormAnimFPS, true);
+			worm.animations.add('right', [ 0, 1 ], wormAnimFPS, true);
+			worm.animations.add('left', [ 2, 3 ], wormAnimFPS, true);
+			worm.animations.add('panic', [ 0 ], wormAnimFPS, true);
 			// enable physics for sheep
 			game.physics.p2.enable(worm);
 			worm.body.fixedRotation = true;
@@ -138,13 +138,12 @@ Objects = function() {
 		map.createFromObjects('objects', 107, 'goat', 1, true, false, goatGrp);
 		goatGrp.forEach(function(goat) {
 			var goatAnimFPS = 10;
-			goat.animations.add('goat_idle', [ 0 ], goatAnimFPS, true);
-			goat.animations.add('goat_down', [ 9, 10, 11 ], goatAnimFPS, true);
-			goat.animations.add('goat_up', [ 6, 7, 8 ], goatAnimFPS, true);
-			goat.animations.add('goat_right', [ 0, 1, 2 ], goatAnimFPS, true);
-			goat.animations.add('goat_left', [ 3, 4, 5 ], goatAnimFPS, true);
-			goat.animations
-					.add('goat_panic', [ 12, 13, 14 ], goatAnimFPS, true);
+			goat.animations.add('idle', [ 0 ], goatAnimFPS, true);
+			goat.animations.add('down', [ 9, 10, 11 ], goatAnimFPS, true);
+			goat.animations.add('up', [ 6, 7, 8 ], goatAnimFPS, true);
+			goat.animations.add('right', [ 0, 1, 2 ], goatAnimFPS, true);
+			goat.animations.add('left', [ 3, 4, 5 ], goatAnimFPS, true);
+			goat.animations.add('panic', [ 12, 13, 14 ], goatAnimFPS, true);
 			// enable physics for goat
 			game.physics.p2.enable(goat);
 			goat.body.fixedRotation = true;
@@ -161,11 +160,11 @@ Objects = function() {
 		map.createFromObjects('objects', 115, 'deadhead', 0, true, false, deadheadGrp);
 		deadheadGrp.forEach(function(deadhead) {
 			var deadheadAnimFPS = 10;
-			deadhead.animations.add('deadhead_idle', [ 0 ], deadheadAnimFPS, true);
-			deadhead.animations.add('deadhead_down', [ 0 ], deadheadAnimFPS, true);
-			deadhead.animations.add('deadhead_up', [ 3 ], deadheadAnimFPS, true);
-			deadhead.animations.add('deadhead_right', [ 1 ], deadheadAnimFPS, true);
-			deadhead.animations.add('deadhead_left', [ 2 ], deadheadAnimFPS, true);
+			deadhead.animations.add('idle', [ 0 ], deadheadAnimFPS, true);
+			deadhead.animations.add('down', [ 0 ], deadheadAnimFPS, true);
+			deadhead.animations.add('up', [ 3 ], deadheadAnimFPS, true);
+			deadhead.animations.add('right', [ 1 ], deadheadAnimFPS, true);
+			deadhead.animations.add('left', [ 2 ], deadheadAnimFPS, true);
 			// enable physics for deadhead
 			game.physics.p2.enable(deadhead);
 			deadhead.body.fixedRotation = true;
@@ -176,7 +175,7 @@ Objects = function() {
 				skullSnd.play();
 			}, this);
 		}, this);
-
+		
 		// static item group
 		staticGrp = game.add.group();
 		map.createFromObjects('objects', 101, 'key', 0, true, false, staticGrp);
@@ -189,33 +188,24 @@ Objects = function() {
 		map.createFromObjects('objects', 111, 'runestone', 10, true, false, staticGrp);
 		map.createFromObjects('objects', 112, 'questionmark', 11, true, false, staticGrp);
 		map.createFromObjects('objects', 113, 'exclamationmark', 12, true, false, staticGrp);
-
+		
 		// player group
 		playerGrp = game.add.group();
-		map.createFromObjects('objects', 102, 'wizard', 1, true, false,
-				playerGrp);
+		map.createFromObjects('objects', 102, 'wizard', 1, true, false, playerGrp);
 		player = playerGrp.getTop();
 		var playerAnimFPS = 10;
 		player.animations.add('player_idle', [ 0 ], playerAnimFPS, true);
-		player.animations.add('player_down', [ 0, 1, 0, 2 ], playerAnimFPS,
-				true);
+		player.animations.add('player_down', [ 0, 1, 0, 2 ], playerAnimFPS, true);
 		player.animations.add('player_up', [ 3, 4, 3, 5 ], playerAnimFPS, true);
-		player.animations.add('player_right', [ 6, 7, 6, 8 ], playerAnimFPS,
-				true);
-		player.animations.add('player_left', [ 9, 10, 9, 11 ], playerAnimFPS,
-				true);
-		player.animations.add('player_carrying_idle', [ 12 ], playerAnimFPS,
-				true);
-		player.animations.add('player_carrying_down', [ 12, 13, 12, 14 ],
-				playerAnimFPS, true);
-		player.animations.add('player_carrying_up', [ 15, 16, 15, 17 ],
-				playerAnimFPS, true);
-		player.animations.add('player_carrying_right', [ 18, 19, 18, 20 ],
-				playerAnimFPS, true);
-		player.animations.add('player_carrying_left', [ 21, 22, 21, 23 ],
-				playerAnimFPS, true);
+		player.animations.add('player_right', [ 6, 7, 6, 8 ], playerAnimFPS, true);
+		player.animations.add('player_left', [ 9, 10, 9, 11 ], playerAnimFPS, true);
+		player.animations.add('player_carrying_idle', [ 12 ], playerAnimFPS, true);
+		player.animations.add('player_carrying_down', [ 12, 13, 12, 14 ], playerAnimFPS, true);
+		player.animations.add('player_carrying_up', [ 15, 16, 15, 17 ], playerAnimFPS, true);
+		player.animations.add('player_carrying_right', [ 18, 19, 18, 20 ], playerAnimFPS, true);
+		player.animations.add('player_carrying_left', [ 21, 22, 21, 23 ], playerAnimFPS, true);
 		// player.body.debug = true;
-
+		
 		// enable physics for player
 		game.physics.p2.enable(player);
 		player.body.setRectangle(42, 36, 0, 18);
@@ -224,9 +214,8 @@ Objects = function() {
 		player.body.collides(tileCG);
 		player.body.collides(npcCG);
 	};
-
+	
 	this.update = function() {
-
 		var speed = 300;
 		if (game.input.keyboard.isDown(Phaser.Keyboard.A)) {
 			player.body.velocity.x = -speed;
@@ -358,17 +347,11 @@ Objects = function() {
 				// TODO get damage
 				return;
 			}
-			if (type == 'parrot') {
+			else if (type == 'parrot') {
 				return;
 			}
-			if (type == 'sheep') {
-				npc.animations.play('sheep_panic');
-			}
-			if (type == 'goat') {
-				npc.animations.play('goat_panic');
-			}
-			if (type == 'worm') {
-				npc.animations.play('worm_panic');
+			else if (type == 'sheep' || type == 'goat' || type == 'worm') {
+				npc.animations.play('panic');
 			}
 			npc.body.x = player.body.x + 0.01;
 			npc.body.y = player.body.y - 15;
@@ -395,118 +378,25 @@ Objects = function() {
 			npc.body.force.x = distNPCPlayer.x * maxSpeed;
 			npc.body.force.y = distNPCPlayer.y * maxSpeed;
 		}
-
-		// sheep animation
-		if (type == 'sheep') {
-			if (Math.abs(npc.body.velocity.y) > Math.abs(npc.body.velocity.x)) {
-				if (npc.body.velocity.y > 0) {
-					npc.animations.play('sheep_down');
-				} else if (npc.body.velocity.y < 0) {
-					npc.animations.play('sheep_up');
-				} else {
-					npc.animations.play('sheep_idle');
-				}
-			}
-
-			if (Math.abs(npc.body.velocity.y) < Math.abs(npc.body.velocity.x)) {
-				if (npc.body.velocity.x > 0) {
-					npc.animations.play('sheep_right');
-				} else if (npc.body.velocity.x < 0) {
-					npc.animations.play('sheep_left');
-				} else {
-					npc.animations.play('sheep_idle');
-				}
-			}
-		}
-
-		// worm animation
-		if (type == 'worm') {
-			if (Math.abs(npc.body.velocity.y) > Math.abs(npc.body.velocity.x)) {
-				if (npc.body.velocity.y > 0) {
-					npc.animations.play('worm_down');
-				} else if (npc.body.velocity.y < 0) {
-					npc.animations.play('worm_up');
-				} else {
-					npc.animations.play('worm_idle');
-				}
-			}
-
-			if (Math.abs(npc.body.velocity.y) < Math.abs(npc.body.velocity.x)) {
-				if (npc.body.velocity.x > 0) {
-					npc.animations.play('worm_right');
-				} else if (npc.body.velocity.x < 0) {
-					npc.animations.play('worm_left');
-				} else {
-					npc.animations.play('worm_idle');
-				}
-			}
-		}
-
-		// goat animation
-		if (type == 'goat') {
-			if (Math.abs(npc.body.velocity.y) > Math.abs(npc.body.velocity.x)) {
-				if (npc.body.velocity.y > 0) {
-					npc.animations.play('goat_down');
-				} else if (npc.body.velocity.y < 0) {
-					npc.animations.play('goat_up');
-				} else {
-					npc.animations.play('goat_idle');
-				}
-			}
-
-			if (Math.abs(npc.body.velocity.y) < Math.abs(npc.body.velocity.x)) {
-				if (npc.body.velocity.x > 0) {
-					npc.animations.play('goat_right');
-				} else if (npc.body.velocity.x < 0) {
-					npc.animations.play('goat_left');
-				} else {
-					npc.animations.play('goat_idle');
-				}
-			}
-		}
 		
-		// deadhead animation
-		if (type == 'deadhead') {
+		// animation
+		if (type == 'sheep' || type == 'worm' || type == 'goat' || type == 'deadhead' || type == 'parrot') {
 			if (Math.abs(npc.body.velocity.y) > Math.abs(npc.body.velocity.x)) {
 				if (npc.body.velocity.y > 0) {
-					npc.animations.play('deadhead_down');
+					npc.animations.play('down');
 				} else if (npc.body.velocity.y < 0) {
-					npc.animations.play('deadhead_up');
+					npc.animations.play('up');
 				} else {
-					npc.animations.play('deadhead_idle');
+					npc.animations.play('idle');
 				}
 			}
-
 			if (Math.abs(npc.body.velocity.y) < Math.abs(npc.body.velocity.x)) {
 				if (npc.body.velocity.x > 0) {
-					npc.animations.play('deadhead_right');
+					npc.animations.play('right');
 				} else if (npc.body.velocity.x < 0) {
-					npc.animations.play('deadhead_left');
+					npc.animations.play('left');
 				} else {
-					npc.animations.play('deadhead_idle');
-				}
-			}
-		}
-		
-		// parrot animation
-		if (type == 'parrot') {
-			if (Math.abs(npc.body.velocity.y) > Math.abs(npc.body.velocity.x)) {
-				if (npc.body.velocity.y > 0) {
-					npc.animations.play('parrot_down');
-				} else if (npc.body.velocity.y < 0) {
-					npc.animations.play('parrot_up');
-				} else {
-					npc.animations.play('parrot_idle');
-				}
-			}
-
-			if (Math.abs(npc.body.velocity.y) < Math.abs(npc.body.velocity.x)) {
-				if (npc.body.velocity.x > 0) {
-					npc.animations.play('parrot_right');
-				} else if (npc.body.velocity.x < 0) {
-					npc.animations.play('parrot_left');
-				} else {
-					npc.animations.play('parrot_idle');
+					npc.animations.play('idle');
 				}
 			}
 		}
