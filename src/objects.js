@@ -1,6 +1,6 @@
 Objects = function() {
 	
-	var playerGrp, sheepGrp, parrotGrp, goatGrp, wormGrp, staticGrp, deadheadGrp;	// sprite groupes
+	var playerGrp, sheepGrp, parrotGrp, goatGrp, wormGrp, staticGrp, deadheadGrp, doorsGrp;	// sprite groupes
 	
 	var playerstate;
 	var locked;
@@ -53,6 +53,9 @@ Objects = function() {
 		game.load.audio('splash', 'assets/audio/splash.ogg');
 		game.load.audio('crack', 'assets/audio/crack.ogg');
 		game.load.audio('pain', 'assets/audio/pain.ogg');
+		// door
+		game.load.spritesheet('door', 'assets/tilesets/basictiles.png', 36, 36, 40);
+		game.load.spritesheet('opendoor', 'assets/tilesets/basictiles.png', 36, 36, 40);
 	};
 	
 	this.create = function() {
@@ -77,6 +80,11 @@ Objects = function() {
 		map.createFromObjects('objects', 111, 'runestone', 10, true, false, staticGrp);
 		map.createFromObjects('objects', 112, 'questionmark', 11, true, false, staticGrp);
 		map.createFromObjects('objects', 113, 'exclamationmark', 12, true, false, staticGrp);
+		
+		//doors
+		doorsGrp = game.add.group();
+		map.createFromObjects('objects', 6, 'door', 5, true, false, doorsGrp);
+		map.createFromObjects('objects', 16, 'opendoor', 15, true, false, doorsGrp);
 		
 		// add worms
 		wormGrp = game.add.group();
@@ -491,6 +499,21 @@ Objects = function() {
 			npcSprite.snd.play();
 		}
 	}
+	
+	function opendoors(door) {
+		console.debug('lalala');
+		var xPos = door.x;
+		var yPos = door.y;
+		console.debug(xPos);
+		
+		door.kill();
+		if (door.group) {
+			door.group.remove(door);
+		} else if (door.parent) {
+			door.parent.removeChild(door);
+		}
+		game.add.sprite(xPos, yPos, 'opendoor');
+	}
 
 	this.getCarriedObject = function (){
 		if (carriedObject) {
@@ -519,4 +542,9 @@ Objects = function() {
 		ritualSound = game.add.audio(ritualSounds[tmpInd]);
 		ritualSound.play();
 	};
+	
+	this.opendoor = function () {
+		doorsGrp.forEach(function(obj) { console.debug('lalula'); opendoors(obj); }, this);
+	};
+	
 };

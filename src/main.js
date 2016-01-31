@@ -330,6 +330,14 @@ function update() {
 				tmpSprite = tmpObj;
 			}
 			// rituals go here
+			if (selectIdx == 2 && key == "goat")
+			{
+				objects.opendoor();
+				objects.playRitualSoundRnd();
+				
+				fsm.activateMoveMode();
+			}
+			// rituals go here
 			if (selectIdx == 1 && key == "goat")
 			{
 				effects.doStartRain();
