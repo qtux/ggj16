@@ -178,7 +178,7 @@ function create () {
 			graphics = game.add.graphics(0, 0);
 			graphics.lineStyle(2, 0xeeeeee, .7);
 			graphics.drawRect(selector.x, selector.y, selector.width, selector.height);
-			
+			effects.setOverlayColor(0x000000);
 			effects.setOverlay(.7);
 			switchTimer2 = game.time.now;
 		};
@@ -274,13 +274,22 @@ function update() {
 			}else{
 				key = tmpObj.key;
 			}
-			
-			if (selectIdx == 1 && key == "sheep")
+			// rituals go here
+			if (selectIdx == 1 && key == "goat")
 			{
 				effects.doStartRain();
+				objects.playRitualSoundRnd();
 				
 				fsm.activateMoveMode();
 			}
+			if (selectIdx == 0 && key == "goat")
+			{
+				fsm.activateMoveMode();
+				effects.doSomeEffects();
+				
+				objects.playRitualSoundRnd();
+			}
+			
 		}
 	}
 

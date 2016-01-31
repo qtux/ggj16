@@ -106,8 +106,8 @@ Objects = function() {
 		parrotGrp.forEach(function(parrot) {
 			var parrotAnimFPS = 10;
 			parrot.animations.add('idle', [ 0 ], parrotAnimFPS, true);
-			parrot.animations.add('down', [ 8, 9 ], parrotAnimFPS, true);
-			parrot.animations.add('up', [ 10, 11, 12 ], parrotAnimFPS, true);
+			parrot.animations.add('down', [ 10, 11, 12 ], parrotAnimFPS, true);
+			parrot.animations.add('up', [ 8, 9 ], parrotAnimFPS, true);
 			parrot.animations.add('right', [ 0, 1, 2, 3 ], parrotAnimFPS, true);
 			parrot.animations.add('left', [ 4, 5, 6, 7 ], parrotAnimFPS, true);
 			parrot.animations.add('panic', [ 13, 14 ], parrotAnimFPS, true);
@@ -287,7 +287,7 @@ Objects = function() {
 		if (game.input.keyboard.isDown(Phaser.Keyboard.R) && !locked) {
 			locked = true;
 			var tmpInd = Math.floor(Math.random()*ritualSounds.length);
-			console.log(tmpInd);
+			//console.log(tmpInd);
 			ritualSound = game.add.audio(ritualSounds[tmpInd]);
 			ritualSound.play();
 			effects.particleEffectBloodExplosion(player.body.x, player.body.y, 30, 2000);
@@ -406,12 +406,12 @@ Objects = function() {
 				}
 			}
 		}
-	}
+	};
 
 	function npcBumpedWall(npcBody, wallBody) {
 		npcBody.velocity.x = -npcBody.velocity.x;
 		npcBody.velocity.y = -npcBody.velocity.y;
-	}
+	};
 
 	function npcBumpedPlayer(npcBody, playerBody) {
 		playerstate = 'passive';
@@ -419,5 +419,12 @@ Objects = function() {
 				&& game.input.keyboard.isDown(Phaser.Keyboard.X)) {
 			carriedObject = npcBody;
 		}
-	}
+	};
+	
+	this.playRitualSoundRnd = function () {
+		var tmpInd = Math.floor(Math.random()*ritualSounds.length);
+		//console.log(tmpInd);
+		ritualSound = game.add.audio(ritualSounds[tmpInd]);
+		ritualSound.play();
+	};
 };
