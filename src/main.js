@@ -264,6 +264,24 @@ function update() {
 			}
 			rot_tmp -= rot_tmp2;
 		}
+		
+		if (game.input.keyboard.isDown(Phaser.Keyboard.ENTER)) {
+			var tmpObj = objects.getCarriedObject();
+			var key = null;
+			if ("sprite" in tmpObj) 
+			{
+				key = tmpObj.sprite.key;
+			}else{
+				key = tmpObj.key;
+			}
+			
+			if (selectIdx == 1 && key == "sheep")
+			{
+				effects.doStartRain();
+				
+				fsm.activateMoveMode();
+			}
+		}
 	}
 
 	
