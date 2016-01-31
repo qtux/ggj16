@@ -329,7 +329,7 @@ function update() {
 				key = tmpObj.key;
 				tmpSprite = tmpObj;
 			}
-			// rituals go here
+			// rituals blood rain
 			if (selectIdx == 1 && key == "goat")
 			{
 				effects.doStartRain();
@@ -339,7 +339,20 @@ function update() {
 				
 				fsm.activateMoveMode();
 			}
+			
+			// ritual kill
 			if (selectIdx == 0 && key == "goat")
+			{
+				fsm.activateMoveMode();
+				effects.doSomeEffects();
+				tmpObj.emitter = effects.particleEffectBleeding(tmpSprite.x + tmpSprite.width / 2., tmpSprite.y + tmpSprite.height / 2., 20, 1000);
+				tmpObj.ritualized = true;
+				
+				objects.playRitualSoundRnd();
+			}
+			
+			// ritual kill
+			if (selectIdx == 0 && key == "worm")
 			{
 				fsm.activateMoveMode();
 				effects.doSomeEffects();
