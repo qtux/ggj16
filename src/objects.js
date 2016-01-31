@@ -16,7 +16,7 @@ Objects = function() {
 		'ritual_fika'
 	];
 	
-	var ritualSound, splashSnd;
+	var ritualSound, splashSnd, crushsnd;
 	
 	this.preload = function() {
 		// object spritesheets
@@ -51,11 +51,14 @@ Objects = function() {
 		game.load.audio('goat', 'assets/audio/goat.ogg');
 		game.load.audio('parrot', 'assets/audio/parrot.ogg');
 		game.load.audio('splash', 'assets/audio/splash.ogg');
+		game.load.audio('crack', 'assets/audio/crack.ogg');
+		game.load.audio('pain', 'assets/audio/pain.ogg');
 	};
 	
 	this.create = function() {
 		// sounds
 		splashSnd = game.add.audio('splash');
+		crushsnd = game.add.audio('crack');
 		
 		playerstate = 'passive';
 		
@@ -170,9 +173,9 @@ Objects = function() {
 			game.physics.p2.enable(deadhead);
 			deadhead.body.fixedRotation = true;
 			deadhead.body.setCollisionGroup(npcCG);
-			deadhead.body.collides(playerCG, npcBumpedPlayer, this);
+			deadhead.body.collides(playerCG, caughtPlayer, this);
 			deadhead.body.collides(tileCG, npcBumpedWall, this);
-			deadhead.body.collides(bulletsCG, collideWithBullet, this);
+			deadhead.body.collides(bulletsCG, hitByBullet, this);
 		}, this);
 		
 		// static item group
@@ -207,6 +210,7 @@ Objects = function() {
 		
 		// set health
 		player.health = 5;
+		player.snd = game.add.audio('pain');
 		
 		// enable physics for player
 		game.physics.p2.enable(player);
@@ -370,6 +374,7 @@ Objects = function() {
 		if (carriedObject === npc.body) {
 			if (type == 'deadhead') {
 				player.damage(1);
+				playerBody.sprite.snd.play();
 				return;
 			}
 			else if (type == 'parrot' || type == 'sheep' || type == 'goat' || type == 'worm') {
@@ -432,6 +437,7 @@ Objects = function() {
 	function npcBumpedPlayer(npcBody, playerBody) {
 		if (playerstate == 'angeredNPC') {
 			player.damage(1);
+			playerBody.sprite.snd.play();
 		}
 		playerstate = 'passive';
 		if (carriedObject == null
@@ -440,6 +446,27 @@ Objects = function() {
 		}
 	};
 	
+	function caughtPlayer(npcBody, playerBody) {
+		player.damage(1);
+		playerBody.sprite.snd.play();
+	};
+	
+	function hitByBullet(npcBody, bulletBody) {
+		bulletBody.sprite.kill();
+		effects.particleEffectBloodExplosion(npcBody.x, npcBody.y, 20, 500);
+		npcSprite = npcBody.sprite;
+		npcBody.sprite.damage(0.5);
+		if (!npcSprite.alive) {
+			crushsnd.play();
+			if (npcSprite.group) {
+				npcSprite.group.remove(npcSprite);
+			} else if (npcSprite.parent) {
+				npcSprite.parent.removeChild(npcSprite);
+			}
+		} else {
+			npcSprite.snd.play();
+		}
+	}
 
 	function collideWithBullet(npcBody, bulletBody) {
 		bulletBody.sprite.kill();
@@ -468,6 +495,16 @@ Objects = function() {
 			}*/
 		}
 		return carriedObject;
+	};
+	
+	this.getCarriedSprite = function (){
+		if (carriedObject) {
+			if ("sprite" in carriedObject) {
+				return carriedObject.sprite;
+			} else {
+				return carriedObject;
+			}
+		}
 	};
 	
 	this.playRitualSoundRnd = function () {
