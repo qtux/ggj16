@@ -1,6 +1,6 @@
 Objects = function() {
 	
-	var playerGrp, sheepGrp, goatGrp, wormGrp, staticGrp, deadheadGrp;	// sprite groupes
+	var playerGrp, sheepGrp, parrotGrp, goatGrp, wormGrp, staticGrp, deadheadGrp;	// sprite groupes
 
 	var playerstate;
 	var locked;
@@ -19,6 +19,15 @@ Objects = function() {
 	var ritualSound, mehSnd, wormSnd, skullSnd, goatSnd, parrotSnd;
 	
 	this.getCarriedObject = function (){
+		if (carriedObject)
+		{
+			/*if ("sprite" in carriedObject) 
+			{
+				console.log(carriedObject.sprite.key);
+			}else{
+				console.log(carriedObject.key);
+			}*/
+		}
 		return carriedObject;
 	};
 	
@@ -29,7 +38,7 @@ Objects = function() {
 		game.load.spritesheet('goat', 'assets/spritesheets/goat.png', 36, 36, 15);
 		game.load.spritesheet('worm', 'assets/spritesheets/worm.png', 36, 36, 8);
 		game.load.spritesheet('deadhead', 'assets/spritesheets/enemy.png', 36, 36, 4);
-		game.load.spritesheet('parrot', 'assets/spritesheets/parrot.png', 36, 36, 4);
+		game.load.spritesheet('parrot', 'assets/spritesheets/parrot.png', 36, 36, 15);
 		// statics
 		game.load.spritesheet('key', 'assets/tilesets/objecttiles.png', 36, 36, 20);
 		game.load.spritesheet('pearl', 'assets/tilesets/objecttiles.png', 36, 36, 20);
@@ -93,7 +102,7 @@ Objects = function() {
 		
 		// add parrot
 		parrotGrp = game.add.group();
-		map.createFromObjects('objects', 115, 'parrot', 0, true, false, parrotGrp);
+		map.createFromObjects('objects', 117, 'parrot', 0, true, false, parrotGrp);
 		parrotGrp.forEach(function(parrot) {
 			var parrotAnimFPS = 10;
 			parrot.animations.add('idle', [ 0 ], parrotAnimFPS, true);
@@ -101,6 +110,7 @@ Objects = function() {
 			parrot.animations.add('up', [ 3 ], parrotAnimFPS, true);
 			parrot.animations.add('right', [ 1 ], parrotAnimFPS, true);
 			parrot.animations.add('left', [ 2 ], parrotAnimFPS, true);
+			parrot.animations.add('panic', [ 13, 14 ], parrotAnimFPS, true);
 			// enable physics for parrot
 			game.physics.p2.enable(parrot);
 			parrot.body.fixedRotation = true;
@@ -347,10 +357,7 @@ Objects = function() {
 				// TODO get damage
 				return;
 			}
-			else if (type == 'parrot') {
-				return;
-			}
-			else if (type == 'sheep' || type == 'goat' || type == 'worm') {
+			else if (type == 'parrot' || type == 'sheep' || type == 'goat' || type == 'worm') {
 				npc.animations.play('panic');
 			}
 			npc.body.x = player.body.x + 0.01;
