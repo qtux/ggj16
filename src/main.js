@@ -544,11 +544,11 @@ function update() {
 			}
 			
 			// ritual kill
-			if (selectIdx == 0 && key == "key")
+			if (selectIdx == 0 && key == "questionmark")
 			{
 //				fsm.activateMoveMode();
 				effects.doSomeEffects();
-				//change to exlamation mark
+				objects.changeToSth(tmpObj);
 				
 				objects.playRitualSoundRnd();
 			}
