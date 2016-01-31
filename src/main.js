@@ -274,7 +274,7 @@ function update() {
 			}else{
 				key = tmpObj.key;
 			}
-			
+			// rituals go here
 			if (selectIdx == 1 && key == "goat")
 			{
 				effects.doStartRain();
