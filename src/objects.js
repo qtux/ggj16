@@ -258,6 +258,7 @@ Objects = function() {
 			effects.particleEffectBloodExplosion(player.body.x, player.body.y, 20, 2000);
 			playerImmune = false;
 			carrierObject = null;
+			player.animations.play('player_idle');
 			game.state.restart();
 		}
 		
@@ -310,6 +311,7 @@ Objects = function() {
 				levelNum += 1;
 			}
 			carrierObject = null;
+			player.animations.play('player_idle');
 			game.state.restart();
 		}
 
@@ -318,6 +320,7 @@ Objects = function() {
 				levelNum -= 1;
 			}
 			carrierObject = null;
+			player.animations.play('player_idle');
 			game.state.restart();
 		}
 
@@ -377,6 +380,7 @@ Objects = function() {
 				levelNum += 1;
 			}
 			carrierObject = null;
+			player.animations.play('player_idle');
 			game.state.restart(); }}, this);
 	};
 	
