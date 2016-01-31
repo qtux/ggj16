@@ -217,6 +217,12 @@ Objects = function() {
 	};
 	
 	this.update = function() {
+		// if player dies
+		if (!player.alive) {
+			effects.particleEffectBloodExplosion(player.body.x, player.body.y, 20, 2000);
+			game.state.restart();
+		}
+		
 		var speed = 300;
 		if (game.input.keyboard.isDown(Phaser.Keyboard.A)) {
 			player.body.velocity.x = -speed;

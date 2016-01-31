@@ -279,6 +279,8 @@ function update() {
 			if (selectIdx == 1 && key == "goat")
 			{
 				effects.doStartRain();
+				// color the goat
+				tmpObj.sprite.tint = 0xff0000;
 				objects.playRitualSoundRnd();
 				
 				fsm.activateMoveMode();
