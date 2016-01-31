@@ -8,7 +8,7 @@ var playerImmune = false;
 var npcCG, tileCG, playerCG, bulletsCG, ritualResultCG;		// collision groups (not used: dmgObjCG)
 
 // TODO local variables
-var levelNames = ['level00', 'level01', 'level02', 'level03', 'level04'];
+var levelNames = ['level00', 'level01', 'level02', 'level03', 'level04', 'level05'];
 var levelNum = 0;
 var map, layer, layer1;		// tilemap related
 var circleTile;
