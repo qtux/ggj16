@@ -17,7 +17,7 @@ echo "A live version is avaiable at http://qtux.github.io/ggj16/." >> archive/sr
 
 cp archive/src/readme.txt archive/release/readme.txt
 
-#echo "TODO youtube link" > archive/press/youtube.txt
+echo "https://www.youtube.com/watch?v=UPFGqE8A6Ag" > archive/press/youtube.txt
 
 # create zip
 zip -r archive.zip archive
