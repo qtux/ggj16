@@ -110,7 +110,7 @@ Objects = function() {
 			parrot.animations.add('parrot_up', [ 10, 11, 12 ], parrotAnimFPS, true);
 			parrot.animations.add('parrot_right', [ 0, 1, 2, 3 ], parrotAnimFPS, true);
 			parrot.animations.add('parrot_left', [ 4, 5, 6, 7 ], parrotAnimFPS, true);
-			parrot.animations.add('parrot_panic', [ 13, 14 ], sheepAnimFPS, true);
+			parrot.animations.add('parrot_panic', [ 13, 14 ], parrotAnimFPS, true);
 			// enable physics for parrot
 			game.physics.p2.enable(parrot);
 			parrot.body.fixedRotation = true;
