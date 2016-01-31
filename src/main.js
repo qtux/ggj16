@@ -323,12 +323,16 @@ function update() {
 	}
 
 	
-	//if (game.input.keyboard.isDown(Phaser.Keyboard.L))
+	if (game.input.keyboard.isDown(Phaser.Keyboard.L))
+	{
+		effects.toggleLight();
+	}
+	
 	if (playerRitualDist<2)
 	{
 		if (!animState) 
 		{
-			effects.toggleLight();
+			effects.toggleGlow();
 			animState = true;
 		}
 	}
@@ -336,7 +340,7 @@ function update() {
 	{
 		if (animState) 
 		{
-			effects.toggleLight();
+			effects.toggleGlow();
 			animState = false;
 		}
 	}
