@@ -15,11 +15,8 @@ Objects = function() {
 			'ritual_fika'
 			];
 	
-	var ritualSound;
-	var mehSnd;
-	var wormSnd;
-	var skullSnd;
-
+	var ritualSound, mehSnd, wormSnd, skullSnd, goatSnd;
+	
 	this.getCarriedObject = function (){
 		return carriedObject;
 	};
@@ -55,6 +52,7 @@ Objects = function() {
 		game.load.audio('meh', 'assets/audio/meh.ogg');
 		game.load.audio('worm', 'assets/audio/worm.ogg');
 		game.load.audio('skull', 'assets/audio/skull.ogg');
+		game.load.audio('goat', 'assets/audio/goat.ogg');
 	};
 	
 	this.create = function() {
@@ -62,6 +60,7 @@ Objects = function() {
 		mehSnd = game.add.audio('meh');
 		wormSnd = game.add.audio('worm');
 		skullSnd = game.add.audio('skull');
+		goatSnd = game.add.audio('goat');
 		
 		playerstate = 'passive';
 		
@@ -130,7 +129,7 @@ Objects = function() {
 			goat.body.collides(playerCG, npcBumpedPlayer, this);
 			goat.body.collides(tileCG, npcBumpedWall, this);
 			goat.body.collides(bulletsCG, function() {
-				mehSnd.play();
+				goatSnd.play();
 			}, this);
 		}, this);
 		
