@@ -82,13 +82,15 @@ var Effects = function() {
 				glowActive = !glowActive;
 				
 				var delIdx = -1;
-				for (var i = 0; i < game.world.filters.length; i++)
-				{
-					if (game.world.filters[i] == filter) delIdx = i;
+				if (game.world.filters != null) {
+					for (var i = 0; i < game.world.filters.length; i++)
+					{
+						if (game.world.filters[i] == filter) delIdx = i;
+					}
+					if (delIdx > -1) game.world.filters.splice(delIdx,1);
+					if (game.world.filters.length == 0) game.world.filters = null;
+					filter.destroy();
 				}
-				if (delIdx > -1) game.world.filters.splice(delIdx,1);
-				if (game.world.filters.length == 0) game.world.filters = null;
-				filter.destroy();
 			}else{
 				glowActive = !glowActive;
 				filter = new Phaser.Filter(game, null, fragmentSrc);
